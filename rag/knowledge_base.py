@@ -71,8 +71,9 @@ MOCK_HPE_DOCS = [
     },
 ]
 
-# --- Mock Past Errors & Fixes ---
+
 MOCK_PAST_ERRORS = [
+    # ---Mock Error ---
     {
         "id": "err_001",
         "text": "Error: ConnectionRefusedError during iLO configuration task. "
@@ -81,45 +82,83 @@ MOCK_PAST_ERRORS = [
                 "Fix Applied: Enabled iLO dedicated network port via physical server access, re-ran configure_ilo task successfully.",
         "source": "Past Error Log #001"
     },
+    #---Actual error logs---
     {
         "id": "err_002",
-        "text": "Error: TimeoutError during deploy_os task. "
-                "PXE boot timeout after 300 seconds. Server did not receive PXE response. "
-                "Root Cause: BIOS boot order had local disk before PXE. "
-                "Fix Applied: Changed BIOS boot order to PXE first via iLO virtual console, re-triggered deploy_os.",
-        "source": "Past Error Log #002"
+        "text":"wget: unable to resolve host address",
+               
+        "source":"Diagnosis: The system cannot resolve the hostname to an IP address. This indicates a DNS resolution failure. Possible underlying issues are no internet connectivity, DNS server not configured or not reachable, incorrect or empty /etc/resolv.conf, firewall/proxy blocking DNS queries or temporary DNS server failure."
+                "Solution: Check network connectivity and DNS resolution with ping (e.g. ping google.com). Edit /etc/resolv.conf and add reliable DNS servers (Put nameserver 8.8.8.8 to the first line of /etc/resolv.conf). Restart DNS services (e.g. sudo systemctl restart systemd-resolved)."
+                "Prevention: Ensure stable network connection. Configure stable DNS servers. Monitor DNS resolution regularly. Verify firewall settings do not block DNS traffic. "
+                "Error_type: Network configuration"
+                "Severity: Medium"
+                "Retrieved_sources: https://stackoverflow.com/questions/24821521/wget-unable-to-resolve-host-address-http"
     },
     {
         "id": "err_003",
-        "text": "Error: S3Error Access Denied during configure_storage task. "
-                "MinIO bucket 'pcai-data' access denied with provided credentials. "
-                "Root Cause: Access key rotated but pipeline config not updated. "
-                "Fix Applied: Updated MINIO_ACCESS_KEY and MINIO_SECRET_KEY in pipeline config, re-ran configure_storage.",
-        "source": "Past Error Log #003"
+        "text": "Resolving <domain_name> failed: Temporary failure in name resolution",
+                
+        "source": "Diagnosis: System cannot resolve the domain name to an IP address. Possible causes include no internet connectivity, DNS server not configured or unreachable, incorrect/empty /etc/resolv.conf, firewall/proxy blocking DNS queries, or temporary DNS server failure."
+                "Solution: Test connectivity with ping (e.g. ping google.com). Edit /etc/resolv.conf to add reliable DNS servers (e.g. nameserver 8.8.8.8). Restart DNS services (e.g. sudo systemctl restart systemd-resolved). Check if nameservers are configured in systemd-resolved with resolvectl status."
+                "Prevention: Ensure stable network connection. Configure reliable DNS servers. Veify firewall settings do not block DNS traffic" 
+                "Error_type: Network configuration"
+                "Severity: Medium"
+                "Retrieved_sources: https://unix.stackexchange.com/questions/504963/how-to-solve-a-temporary-failure-in-name-resolution-error "
     },
     {
         "id": "err_004",
-        "text": "Error: AnsibleConnectionError during configure_network task. "
-                "SSH connection to worker node 192.168.2.5 failed. "
-                "Root Cause: Worker node OS not yet fully booted when network config task triggered. "
-                "Fix Applied: Added wait_for_connection task before configure_network in Airflow DAG.",
-        "source": "Past Error Log #004"
+        "text": "sudo: A terminal is required to read the password; either use the -S option to read from standard input or configure an askpass helper",
+                
+        "source": "Diagnosis: Occurs when a script or automated process attempts to use sudo without an interactive terminal (TTY) to prompt for a password. No TTY allocated."
+                "Solution: Use the -S flag to pipe the password via stdin (echo $password | sudo -S /path/to/command) or (sudo -S /path/to/command < password.secret). This method is not recommended because a password can appear in logs and environment variables can be exposed. An alternate method is to configure /etc/sudoers file to allow specific commands without a password (E.g. myuser ALL=(ALL) NOPASSWD: /usr/local/bin/minio)."
+                "Prevention: Always use passwordless sudo for specific commands in scripts by editing the sudoers file."
+                "Error_type: Privilege escalation failure"
+                "Severity: Medium - prevents command execution only when sudo requires authentication and no terminal is available."
+                "Retrieved_sources: https://askubuntu.com/questions/1244898/sudo-a-terminal-is-required-to-read-the-password-either-use-the-s-option-to-r"
     },
     {
         "id": "err_005",
-        "text": "Error: CalledProcessError during deploy_spp task. "
-                "SPP ISO mount failed: wrong SPP version for Gen10 server. "
-                "Root Cause: SPP 2022.09 used but server requires SPP 2023.03 for Gen10 Plus. "
-                "Fix Applied: Downloaded SPP 2023.03 ISO, updated SPP_ISO_PATH in config, re-ran deploy_spp.",
-        "source": "Past Error Log #005"
+        "text": "sudo: A password is required",
+                
+        "source": "Diagnosis: Occurs when a script or automated process attempts to use sudo without an interactive terminal (TTY) to prompt for a password. No TTY allocated."
+                "Solution: Use the -S flag to pipe the password via stdin (echo $password | sudo -S /path/to/command) or (sudo -S /path/to/command < password.secret). This method is not recommended because a password can appear in logs and environment variables can be exposed. An alternate method is to configure /etc/sudoers file to allow specific commands without a password (E.g. myuser ALL=(ALL) NOPASSWD: /usr/local/bin/minio)."
+                "Prevention: Always use passwordless sudo for specific commands in scripts by editing the sudoers file."
+                "Error_type: Privilege escalation failure"
+                "Severity: Medium - prevents command execution only when sudo requires authentication and no terminal is available."
+                "Retrieved_sources: https://askubuntu.com/questions/1244898/sudo-a-terminal-is-required-to-read-the-password-either-use-the-s-option-to-r"
     },
     {
         "id": "err_006",
-        "text": "Error: NFSMountError on worker node during configure_storage task. "
-                "mount.nfs: Connection timed out for 10.0.0.1:/exports/pcai. "
-                "Root Cause: nfs-server service not started on control node. "
-                "Fix Applied: Ran systemctl enable --now nfs-server on control node, opened port 2049 in firewalld.",
-        "source": "Past Error Log #006"
+        "text": "<command>: command not found",
+                
+        "source": "Diagnosis: Occurs when the script or file that the system is trying to execute doesn't exist in the location specified by the PATH variable."
+                "Solution: Execute the file directly using its absolute or relative path (e.g., ~/script or ./script), or add a new directory containing the command to the PATH variable (export PATH=$PATH:/path/to/directory). Also, make sure to install the missing package containing the command. Make sure there are no typos in the command using which command (which <command>)."
+                "Prevention: Always place custom executables in directories included in the PATH (e.g., ~/.local/bin), add new directories to PATH via shell configuration files like .bashrc for persistent changes across all future sessions, and ensure required packages are installed before attempting to run their commands."
+                "Error_type: Configuration error"
+                "Severity: Medium - task fails, but system is not corrupted, and the fix is typically simple"
+                "Retrieved_sources: https://www.redhat.com/en/blog/fix-command-not-found-error-linux"
+    },
+    {
+        "id": "err_007",
+        "text": "Command exited with return code 127",
+                
+        "source": "Diagnosis: Indicates that the command was not found. This occurs when the system cannot locate the executable file in any of the paths defined by the PATH variable for the attempted command. "
+                "Solution: Check that the command is typed correctly using the which command (which <command>). Check if the directory containing the command is included in the PATH variable (echo $PATH). If not, add it to PATH (export PATH=$PATH:/path/to/directory). Ensure that the required package providing the command is installed. Specify the full path to the command."
+                "Prevention: Ensure the command or script exists and is executable by verifying its installation and path configuration before execution."
+                "Error_type: Configuration error"
+                "Severity: Medium - prevents command execution, but fix is typically straightforward and does not indicate deeper system issues."
+                "Retrieved_sources: https://linuxconfig.org/how-to-fix-bash-127-error-return-code"
+    },
+    {
+        "id": "err_008",
+        "text": "No such file or directory: <file_path>",
+                
+        "source": "Diagnosis: The system cannot find the specified file or directory at the provided path. This can occur if the file was deleted, moved, or if there is a typo in the path. It can also happen if the script is being run from a different working directory than expected. Additionally, the file might require special permissions to access."
+                "Solution:  Use absolute paths or ensure the script is run from the correct working directory. Check the exact path spelling. If the file is expected to be generated by a previous command, verify that command executed successfully."
+                "Prevention: Always use absolute paths in scripts or ensure the working directory is correct. Implement error handling to check for file existence before attempting to access it."
+                "Error_type: File System Error "
+                "Severity: Medium - prevents file access, but fix is typically straightforward and does not indicate deeper system issues."
+                "Retrieved_sources: "
     },
 ]
 

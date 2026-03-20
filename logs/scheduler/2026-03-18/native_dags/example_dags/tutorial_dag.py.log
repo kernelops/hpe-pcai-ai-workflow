@@ -1,0 +1,483 @@
+[2026-03-18T17:39:04.169+0530] {processor.py:161} INFO - Started process (PID=5244) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:39:04.171+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:39:04.173+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:39:04.172+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:39:04.186+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:39:04.225+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:39:04.224+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:39:04.242+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:39:04.242+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:39:04.368+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.205 seconds
+[2026-03-18T17:40:16.122+0530] {processor.py:161} INFO - Started process (PID=5447) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:40:16.197+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:40:16.202+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:40:16.201+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:40:16.212+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:40:16.236+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:40:16.235+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:40:16.254+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:40:16.254+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:40:16.371+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.257 seconds
+[2026-03-18T17:41:35.363+0530] {processor.py:161} INFO - Started process (PID=5560) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:41:35.469+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:41:35.473+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:41:35.472+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:41:35.486+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:41:35.514+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:41:35.513+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:41:35.537+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:41:35.536+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:41:35.645+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.288 seconds
+[2026-03-18T17:42:39.719+0530] {processor.py:161} INFO - Started process (PID=5712) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:42:39.882+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:42:39.886+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:42:39.885+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:42:39.899+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:42:39.932+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:42:39.931+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:42:39.952+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:42:39.952+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:42:40.088+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.375 seconds
+[2026-03-18T17:43:48.086+0530] {processor.py:161} INFO - Started process (PID=6785) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:43:48.093+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:43:48.125+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:43:48.123+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:43:48.160+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:43:48.264+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:43:48.262+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:43:48.498+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:43:48.496+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:43:49.060+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.989 seconds
+[2026-03-18T17:45:01.147+0530] {processor.py:161} INFO - Started process (PID=7815) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:45:01.153+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:45:01.156+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:45:01.156+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:45:01.166+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:45:01.191+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:45:01.190+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:45:01.210+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:45:01.209+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:45:01.279+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.139 seconds
+[2026-03-18T17:46:07.644+0530] {processor.py:161} INFO - Started process (PID=8885) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:46:07.711+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:46:07.720+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:46:07.718+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:46:07.743+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:46:07.796+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:46:07.795+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:46:07.832+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:46:07.831+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:46:07.975+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.339 seconds
+[2026-03-18T17:47:28.522+0530] {processor.py:161} INFO - Started process (PID=9514) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:47:28.782+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:47:28.785+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:47:28.785+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:47:28.796+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:47:28.819+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:47:28.819+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:47:28.840+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:47:28.839+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:47:28.949+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.435 seconds
+[2026-03-18T17:48:33.115+0530] {processor.py:161} INFO - Started process (PID=10030) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:48:33.189+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:48:33.192+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:48:33.191+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:48:33.200+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:48:33.216+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:48:33.215+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:48:33.228+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:48:33.228+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:48:33.344+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.236 seconds
+[2026-03-18T17:49:33.634+0530] {processor.py:161} INFO - Started process (PID=10512) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:49:33.689+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:49:33.692+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:49:33.692+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:49:33.700+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:49:33.716+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:49:33.716+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:49:33.728+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:49:33.728+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:49:33.829+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.202 seconds
+[2026-03-18T17:50:41.919+0530] {processor.py:161} INFO - Started process (PID=11026) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:50:41.931+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:50:41.933+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:50:41.933+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:50:41.941+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:50:41.956+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:50:41.956+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:50:41.968+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:50:41.968+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:50:42.074+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.163 seconds
+[2026-03-18T17:51:46.195+0530] {processor.py:161} INFO - Started process (PID=11597) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:51:46.213+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:51:46.216+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:51:46.215+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:51:46.224+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:51:46.240+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:51:46.240+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:51:46.252+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:51:46.252+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:51:46.379+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.189 seconds
+[2026-03-18T17:53:00.797+0530] {processor.py:161} INFO - Started process (PID=12416) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:53:00.811+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:53:00.822+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:53:00.819+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:53:00.838+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:53:00.862+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:53:00.861+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:53:00.883+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:53:00.883+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:53:00.982+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.189 seconds
+[2026-03-18T17:53:41.222+0530] {processor.py:161} INFO - Started process (PID=12808) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:53:41.224+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:53:41.226+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:53:41.226+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:53:41.235+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:53:41.251+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:53:41.250+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:53:41.263+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:53:41.263+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:53:41.373+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.159 seconds
+[2026-03-18T17:54:48.361+0530] {processor.py:161} INFO - Started process (PID=13357) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:54:48.448+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:54:48.452+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:54:48.452+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:54:48.469+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:54:48.499+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:54:48.498+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:54:48.511+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:54:48.510+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:54:48.613+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.259 seconds
+[2026-03-18T17:55:50.428+0530] {processor.py:161} INFO - Started process (PID=13830) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:55:50.489+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:55:50.492+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:55:50.492+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:55:50.501+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:55:50.517+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:55:50.516+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:55:50.529+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:55:50.528+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:55:50.648+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.228 seconds
+[2026-03-18T17:57:00.440+0530] {processor.py:161} INFO - Started process (PID=14406) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:57:00.501+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:57:00.504+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:57:00.504+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:57:00.513+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:57:00.529+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:57:00.528+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:57:00.541+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:57:00.540+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:57:00.583+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.149 seconds
+[2026-03-18T17:58:09.614+0530] {processor.py:161} INFO - Started process (PID=14935) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:58:09.635+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:58:09.639+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:58:09.638+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:58:09.647+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:58:09.665+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:58:09.664+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:58:09.680+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:58:09.679+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:58:09.807+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.201 seconds
+[2026-03-18T17:59:07.455+0530] {processor.py:161} INFO - Started process (PID=15300) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:59:07.467+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T17:59:07.470+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:59:07.470+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:59:07.479+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T17:59:07.497+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:59:07.497+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T17:59:07.512+0530] {logging_mixin.py:188} INFO - [2026-03-18T17:59:07.512+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T17:59:07.567+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.117 seconds
+[2026-03-18T18:00:15.073+0530] {processor.py:161} INFO - Started process (PID=15462) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:00:15.100+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:00:15.104+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:00:15.103+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:00:15.117+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:00:15.140+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:00:15.140+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:00:15.153+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:00:15.152+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:00:15.307+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.239 seconds
+[2026-03-18T18:01:14.596+0530] {processor.py:161} INFO - Started process (PID=16660) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:01:14.602+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:01:14.606+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:01:14.605+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:01:14.626+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:01:14.649+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:01:14.649+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:01:14.666+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:01:14.665+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:01:14.771+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.181 seconds
+[2026-03-18T18:02:28.802+0530] {processor.py:161} INFO - Started process (PID=17976) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:02:28.873+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:02:28.879+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:02:28.877+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:02:28.977+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:02:29.072+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:02:29.071+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:02:29.092+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:02:29.092+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:02:29.205+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.411 seconds
+[2026-03-18T18:03:40.212+0530] {processor.py:161} INFO - Started process (PID=18145) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:03:40.261+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:03:40.268+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:03:40.266+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:03:40.287+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:03:40.313+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:03:40.312+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:03:40.326+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:03:40.325+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:03:40.389+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.184 seconds
+[2026-03-18T18:04:46.263+0530] {processor.py:161} INFO - Started process (PID=18658) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:04:46.983+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:04:46.986+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:04:46.986+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:04:46.997+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:04:47.018+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:04:47.017+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:04:47.030+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:04:47.030+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:04:47.076+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.818 seconds
+[2026-03-18T18:05:53.598+0530] {processor.py:161} INFO - Started process (PID=18827) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:05:53.684+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:05:53.688+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:05:53.687+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:05:53.698+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:05:53.716+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:05:53.715+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:05:53.729+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:05:53.729+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:05:53.822+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.234 seconds
+[2026-03-18T18:06:51.320+0530] {processor.py:161} INFO - Started process (PID=19006) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:06:51.378+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:06:51.382+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:06:51.381+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:06:51.391+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:06:51.410+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:06:51.410+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:06:51.424+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:06:51.423+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:06:51.479+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.168 seconds
+[2026-03-18T18:07:53.763+0530] {processor.py:161} INFO - Started process (PID=19166) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:07:53.786+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:07:53.789+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:07:53.788+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:07:53.798+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:07:53.814+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:07:53.814+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:07:53.827+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:07:53.826+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:07:53.874+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.120 seconds
+[2026-03-18T18:08:54.687+0530] {processor.py:161} INFO - Started process (PID=19333) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:08:54.691+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:08:54.693+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:08:54.693+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:08:54.701+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:08:54.719+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:08:54.719+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:08:54.733+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:08:54.732+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:08:54.825+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.143 seconds
+[2026-03-18T18:09:51.370+0530] {processor.py:161} INFO - Started process (PID=19486) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:09:51.406+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:09:51.410+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:09:51.409+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:09:51.421+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:09:51.447+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:09:51.446+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:09:51.462+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:09:51.462+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:09:51.543+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.180 seconds
+[2026-03-18T18:10:51.070+0530] {processor.py:161} INFO - Started process (PID=19655) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:10:51.084+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:10:51.087+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:10:51.086+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:10:51.096+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:10:51.115+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:10:51.115+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:10:51.130+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:10:51.130+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:10:51.214+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.150 seconds
+[2026-03-18T18:11:58.931+0530] {processor.py:161} INFO - Started process (PID=19871) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:11:59.018+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:11:59.021+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:11:59.021+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:11:59.037+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:11:59.062+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:11:59.062+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:11:59.077+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:11:59.076+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:11:59.432+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.508 seconds
+[2026-03-18T18:13:10.680+0530] {processor.py:161} INFO - Started process (PID=20035) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:13:10.713+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:13:10.717+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:13:10.716+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:13:10.726+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:13:10.745+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:13:10.745+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:13:10.760+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:13:10.759+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:13:10.914+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.243 seconds
+[2026-03-18T18:14:26.817+0530] {processor.py:161} INFO - Started process (PID=20219) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:14:26.937+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:14:26.941+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:14:26.940+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:14:26.950+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:14:26.969+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:14:26.969+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:14:26.984+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:14:26.983+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:14:27.140+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.333 seconds
+[2026-03-18T18:15:11.598+0530] {processor.py:161} INFO - Started process (PID=20313) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:15:11.680+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:15:11.683+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:15:11.683+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:15:11.694+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:15:11.713+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:15:11.712+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:15:11.728+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:15:11.728+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:15:11.821+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.228 seconds
+[2026-03-18T18:16:14.155+0530] {processor.py:161} INFO - Started process (PID=20502) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:16:14.188+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:16:14.195+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:16:14.193+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:16:14.213+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:16:14.235+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:16:14.235+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:16:14.249+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:16:14.249+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:16:14.346+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.200 seconds
+[2026-03-18T18:17:29.759+0530] {processor.py:161} INFO - Started process (PID=20684) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:17:29.859+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:17:29.862+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:17:29.862+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:17:29.872+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:17:29.891+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:17:29.890+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:17:29.907+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:17:29.906+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:17:30.011+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.258 seconds
+[2026-03-18T18:18:09.642+0530] {processor.py:161} INFO - Started process (PID=21871) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:18:09.645+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:18:09.666+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:18:09.663+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:18:09.707+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:18:09.755+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:18:09.755+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:18:09.791+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:18:09.790+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:18:09.865+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.238 seconds
+[2026-03-18T18:19:16.993+0530] {processor.py:161} INFO - Started process (PID=22138) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:19:17.110+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:19:17.116+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:19:17.115+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:19:17.129+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:19:17.147+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:19:17.146+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:19:17.161+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:19:17.161+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:19:17.283+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.296 seconds
+[2026-03-18T18:19:58.170+0530] {processor.py:161} INFO - Started process (PID=22265) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:19:58.172+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:19:58.175+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:19:58.175+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:19:58.183+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:19:58.200+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:19:58.200+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:19:58.213+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:19:58.213+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:19:58.327+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.166 seconds
+[2026-03-18T18:21:01.220+0530] {processor.py:161} INFO - Started process (PID=22478) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:21:01.306+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:21:01.311+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:21:01.310+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:21:01.321+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:21:01.341+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:21:01.341+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:21:01.354+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:21:01.354+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:21:01.458+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.242 seconds
+[2026-03-18T18:22:04.130+0530] {processor.py:161} INFO - Started process (PID=22634) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:22:04.154+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:22:04.159+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:22:04.158+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:22:04.172+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:22:04.192+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:22:04.192+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:22:04.206+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:22:04.206+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:22:04.288+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.164 seconds
+[2026-03-18T18:22:45.288+0530] {processor.py:161} INFO - Started process (PID=22733) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:22:45.364+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:22:45.368+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:22:45.368+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:22:45.380+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:22:45.405+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:22:45.405+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:22:45.422+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:22:45.421+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:22:45.502+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.220 seconds
+[2026-03-18T18:23:49.355+0530] {processor.py:161} INFO - Started process (PID=22892) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:23:49.409+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:23:49.414+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:23:49.413+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:23:49.427+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:23:49.447+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:23:49.447+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:23:49.462+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:23:49.461+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:23:49.545+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.196 seconds
+[2026-03-18T18:24:57.234+0530] {processor.py:161} INFO - Started process (PID=23068) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:24:57.248+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:24:57.251+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:24:57.251+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:24:57.260+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:24:57.277+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:24:57.277+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:24:57.291+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:24:57.291+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:24:57.364+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.134 seconds
+[2026-03-18T18:25:54.329+0530] {processor.py:161} INFO - Started process (PID=23211) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:25:54.341+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:25:54.344+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:25:54.344+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:25:54.353+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:25:54.371+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:25:54.371+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:25:54.385+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:25:54.384+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:25:54.465+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.141 seconds
+[2026-03-18T18:26:53.752+0530] {processor.py:161} INFO - Started process (PID=23419) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:26:53.772+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:26:53.776+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:26:53.775+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:26:53.787+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:26:53.809+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:26:53.808+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:26:53.827+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:26:53.827+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:26:53.900+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.154 seconds
+[2026-03-18T18:27:53.783+0530] {processor.py:161} INFO - Started process (PID=23587) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:27:53.785+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:27:53.788+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:27:53.787+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:27:53.796+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:27:53.816+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:27:53.815+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:27:53.830+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:27:53.830+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:27:53.917+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.137 seconds
+[2026-03-18T18:28:33.546+0530] {processor.py:161} INFO - Started process (PID=23686) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:28:33.579+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:28:33.583+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:28:33.582+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:28:33.592+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:28:33.610+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:28:33.609+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:28:33.624+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:28:33.623+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:28:33.717+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.181 seconds
+[2026-03-18T18:29:16.685+0530] {processor.py:161} INFO - Started process (PID=23801) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:29:16.748+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:29:16.752+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:29:16.751+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:29:16.760+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:29:16.776+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:29:16.775+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:29:16.788+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:29:16.788+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:29:16.886+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.209 seconds
+[2026-03-18T18:29:58.366+0530] {processor.py:161} INFO - Started process (PID=23903) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:29:58.442+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:29:58.446+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:29:58.445+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:29:58.453+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:29:58.469+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:29:58.469+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:29:58.482+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:29:58.482+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:29:58.585+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.227 seconds
+[2026-03-18T18:31:11.843+0530] {processor.py:161} INFO - Started process (PID=24149) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:31:11.891+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:31:11.895+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:31:11.894+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:31:11.905+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:31:11.922+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:31:11.921+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:31:11.934+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:31:11.933+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:31:12.440+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.604 seconds
+[2026-03-18T18:32:18.291+0530] {processor.py:161} INFO - Started process (PID=24486) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:32:18.390+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:32:18.393+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:32:18.393+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:32:18.402+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:32:18.419+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:32:18.419+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:32:18.431+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:32:18.431+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:32:18.535+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.252 seconds
+[2026-03-18T18:33:19.794+0530] {processor.py:161} INFO - Started process (PID=24638) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:33:19.799+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:33:19.801+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:33:19.801+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:33:19.808+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:33:19.825+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:33:19.824+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:33:19.837+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:33:19.836+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:33:19.949+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.162 seconds
+[2026-03-18T18:34:23.154+0530] {processor.py:161} INFO - Started process (PID=24795) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:34:23.293+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:34:23.298+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:34:23.297+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:34:23.312+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:34:23.341+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:34:23.340+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:34:23.354+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:34:23.354+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:34:23.505+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.359 seconds
+[2026-03-18T18:35:23.591+0530] {processor.py:161} INFO - Started process (PID=24976) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:35:23.597+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:35:23.600+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:35:23.599+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:35:23.607+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:35:23.623+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:35:23.623+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:35:23.636+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:35:23.636+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:35:23.735+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.152 seconds
+[2026-03-18T18:36:28.661+0530] {processor.py:161} INFO - Started process (PID=25182) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:36:28.703+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:36:28.706+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:36:28.705+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:36:28.716+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:36:28.744+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:36:28.743+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:36:28.767+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:36:28.766+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:36:28.851+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.198 seconds
+[2026-03-18T18:37:42.309+0530] {processor.py:161} INFO - Started process (PID=25376) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:37:42.348+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:37:42.352+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:37:42.351+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:37:42.360+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:37:42.376+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:37:42.376+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:37:42.388+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:37:42.388+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:37:42.622+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.321 seconds
+[2026-03-18T18:38:51.002+0530] {processor.py:161} INFO - Started process (PID=25542) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:38:51.090+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:38:51.094+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:38:51.093+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:38:51.102+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:38:51.118+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:38:51.118+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:38:51.131+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:38:51.131+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:38:51.233+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.238 seconds
+[2026-03-18T18:39:48.886+0530] {processor.py:161} INFO - Started process (PID=25695) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:39:49.163+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:39:49.166+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:39:49.165+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:39:49.180+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:39:49.202+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:39:49.201+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:39:49.214+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:39:49.214+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:39:49.270+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.390 seconds
+[2026-03-18T18:40:56.153+0530] {processor.py:161} INFO - Started process (PID=25877) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:40:56.197+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:40:56.202+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:40:56.201+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:40:56.217+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:40:56.241+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:40:56.240+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:40:56.253+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:40:56.253+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:40:56.530+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.381 seconds
+[2026-03-18T18:41:59.173+0530] {processor.py:161} INFO - Started process (PID=26053) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:41:59.177+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:41:59.179+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:41:59.179+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:41:59.187+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:41:59.203+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:41:59.202+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:41:59.215+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:41:59.215+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:41:59.312+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.147 seconds
+[2026-03-18T18:43:18.753+0530] {processor.py:161} INFO - Started process (PID=26235) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:43:18.770+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:43:18.773+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:43:18.773+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:43:18.782+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:43:18.798+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:43:18.798+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:43:18.810+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:43:18.810+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:43:18.903+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.157 seconds
+[2026-03-18T18:44:03.624+0530] {processor.py:161} INFO - Started process (PID=26342) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:44:03.642+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:44:03.645+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:44:03.645+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:44:03.654+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:44:03.670+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:44:03.670+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:44:03.682+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:44:03.682+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:44:03.768+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.153 seconds
+[2026-03-18T18:45:02.974+0530] {processor.py:161} INFO - Started process (PID=26485) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:45:03.156+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:45:03.161+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:45:03.160+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:45:03.178+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:45:03.211+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:45:03.211+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:45:03.223+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:45:03.223+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:45:03.358+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.392 seconds
+[2026-03-18T18:46:23.900+0530] {processor.py:161} INFO - Started process (PID=26698) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:46:23.914+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:46:23.917+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:46:23.916+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:46:23.925+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:46:23.942+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:46:23.942+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:46:23.954+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:46:23.954+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:46:24.059+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.167 seconds
+[2026-03-18T18:47:06.245+0530] {processor.py:161} INFO - Started process (PID=26788) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:47:06.286+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:47:06.292+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:47:06.291+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:47:06.312+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:47:06.337+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:47:06.337+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:47:06.352+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:47:06.351+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:47:06.473+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.234 seconds
+[2026-03-18T18:48:20.527+0530] {processor.py:161} INFO - Started process (PID=27000) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:48:20.552+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:48:20.556+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:48:20.555+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:48:20.565+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:48:20.581+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:48:20.580+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:48:20.593+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:48:20.592+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:48:20.745+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.226 seconds
+[2026-03-18T18:49:04.237+0530] {processor.py:161} INFO - Started process (PID=27090) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:49:04.247+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:49:04.250+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:49:04.249+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:49:04.260+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:49:04.278+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:49:04.277+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:49:04.293+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:49:04.293+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:49:04.409+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.181 seconds
+[2026-03-18T18:50:01.106+0530] {processor.py:161} INFO - Started process (PID=27233) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:50:01.199+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py for tasks to queue
+[2026-03-18T18:50:01.203+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:50:01.203+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:50:01.212+0530] {processor.py:840} INFO - DAG(s) 'tutorial_dag' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py
+[2026-03-18T18:50:01.228+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:50:01.228+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T18:50:01.240+0530] {logging_mixin.py:188} INFO - [2026-03-18T18:50:01.240+0530] {dag.py:3834} INFO - Setting next_dagrun for tutorial_dag to None, run_after=None
+[2026-03-18T18:50:01.325+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/example_dags/tutorial_dag.py took 0.227 seconds

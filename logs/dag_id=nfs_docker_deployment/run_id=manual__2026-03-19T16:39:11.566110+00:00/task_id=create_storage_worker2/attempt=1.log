@@ -1,0 +1,19 @@
+[2026-03-19T22:09:18.771+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: nfs_docker_deployment.create_storage_worker2 manual__2026-03-19T16:39:11.566110+00:00 [queued]>
+[2026-03-19T22:09:18.779+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: nfs_docker_deployment.create_storage_worker2 manual__2026-03-19T16:39:11.566110+00:00 [queued]>
+[2026-03-19T22:09:18.780+0530] {taskinstance.py:2193} INFO - Starting attempt 1 of 2
+[2026-03-19T22:09:18.829+0530] {taskinstance.py:2214} INFO - Executing <Task(SSHOperator): create_storage_worker2> on 2026-03-19 16:39:11.566110+00:00
+[2026-03-19T22:09:18.836+0530] {standard_task_runner.py:60} INFO - Started process 72857 to run task
+[2026-03-19T22:09:18.845+0530] {standard_task_runner.py:87} INFO - Running: ['airflow', 'tasks', 'run', 'nfs_docker_deployment', 'create_storage_worker2', 'manual__2026-03-19T16:39:11.566110+00:00', '--job-id', '22', '--raw', '--subdir', 'DAGS_FOLDER/NFS.py', '--cfg-path', '/tmp/tmpe49bp6f4']
+[2026-03-19T22:09:18.846+0530] {standard_task_runner.py:88} INFO - Job 22: Subtask create_storage_worker2
+[2026-03-19T22:09:18.912+0530] {task_command.py:423} INFO - Running <TaskInstance: nfs_docker_deployment.create_storage_worker2 manual__2026-03-19T16:39:11.566110+00:00 [running]> on host tejasvi-Vostro-15-3515
+[2026-03-19T22:09:19.047+0530] {taskinstance.py:2510} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='nfs_docker_deployment' AIRFLOW_CTX_TASK_ID='create_storage_worker2' AIRFLOW_CTX_EXECUTION_DATE='2026-03-19T16:39:11.566110+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-19T16:39:11.566110+00:00'
+[2026-03-19T22:09:19.048+0530] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-19T22:09:19.048+0530] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-19T22:09:19.055+0530] {base.py:83} INFO - Using connection ID 'worker2' for task execution.
+[2026-03-19T22:09:19.059+0530] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-19T22:09:19.074+0530] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-03-19T22:09:19.270+0530] {transport.py:1909} INFO - Authentication (publickey) successful!
+[2026-03-19T22:09:19.272+0530] {ssh.py:480} INFO - Running command: mkdir -p /tmp/nfs-data-worker2 && chmod 0777 /tmp/nfs-data-worker2
+[2026-03-19T22:09:19.523+0530] {taskinstance.py:1149} INFO - Marking task as SUCCESS. dag_id=nfs_docker_deployment, task_id=create_storage_worker2, execution_date=20260319T163911, start_date=20260319T163918, end_date=20260319T163919
+[2026-03-19T22:09:19.614+0530] {local_task_job_runner.py:234} INFO - Task exited with return code 0
+[2026-03-19T22:09:19.640+0530] {taskinstance.py:3309} INFO - 1 downstream tasks scheduled from follow-on schedule check

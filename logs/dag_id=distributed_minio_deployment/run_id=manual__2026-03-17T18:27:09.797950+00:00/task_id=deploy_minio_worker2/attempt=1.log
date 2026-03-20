@@ -1,0 +1,31 @@
+[2026-03-17T23:57:25.459+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: distributed_minio_deployment.deploy_minio_worker2 manual__2026-03-17T18:27:09.797950+00:00 [queued]>
+[2026-03-17T23:57:25.467+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: distributed_minio_deployment.deploy_minio_worker2 manual__2026-03-17T18:27:09.797950+00:00 [queued]>
+[2026-03-17T23:57:25.467+0530] {taskinstance.py:2193} INFO - Starting attempt 1 of 2
+[2026-03-17T23:57:25.498+0530] {taskinstance.py:2214} INFO - Executing <Task(SSHOperator): deploy_minio_worker2> on 2026-03-17 18:27:09.797950+00:00
+[2026-03-17T23:57:25.504+0530] {standard_task_runner.py:60} INFO - Started process 167180 to run task
+[2026-03-17T23:57:25.513+0530] {standard_task_runner.py:87} INFO - Running: ['airflow', 'tasks', 'run', 'distributed_minio_deployment', 'deploy_minio_worker2', 'manual__2026-03-17T18:27:09.797950+00:00', '--job-id', '6', '--raw', '--subdir', 'DAGS_FOLDER/distributed_minio_deployment.py', '--cfg-path', '/tmp/tmpf0il6xbf']
+[2026-03-17T23:57:25.514+0530] {standard_task_runner.py:88} INFO - Job 6: Subtask deploy_minio_worker2
+[2026-03-17T23:57:25.571+0530] {task_command.py:423} INFO - Running <TaskInstance: distributed_minio_deployment.deploy_minio_worker2 manual__2026-03-17T18:27:09.797950+00:00 [running]> on host tejasvi-Vostro-15-3515
+[2026-03-17T23:57:25.656+0530] {taskinstance.py:2510} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='distributed_minio_deployment' AIRFLOW_CTX_TASK_ID='deploy_minio_worker2' AIRFLOW_CTX_EXECUTION_DATE='2026-03-17T18:27:09.797950+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-17T18:27:09.797950+00:00'
+[2026-03-17T23:57:25.657+0530] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-17T23:57:25.658+0530] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-17T23:57:25.665+0530] {base.py:83} INFO - Using connection ID 'worker2' for task execution.
+[2026-03-17T23:57:25.668+0530] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-17T23:57:25.692+0530] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-03-17T23:57:26.001+0530] {transport.py:1909} INFO - Authentication (publickey) successful!
+[2026-03-17T23:57:26.003+0530] {ssh.py:480} INFO - Running command: 
+docker rm -f minio_worker2 || true
+docker run -d \
+--name minio_worker2 \
+-p 9200:9000 \
+-p 9201:9001 \
+-e MINIO_ROOT_USER=admin \
+-e MINIO_ROOT_PASSWORD=password123 \
+-v /tmp/minio-data-worker2:/data \
+minio/minio server /data --console-address ":9001"
+        
+[2026-03-17T23:57:26.373+0530] {ssh.py:531} WARNING - Error response from daemon: No such container: minio_worker2
+[2026-03-17T23:57:26.656+0530] {ssh.py:526} INFO - 7bcda798d5cba871e7f6c73bb67759c27d94e03adf71a28008ad4fd5a825ffe8
+[2026-03-17T23:57:27.428+0530] {taskinstance.py:1149} INFO - Marking task as SUCCESS. dag_id=distributed_minio_deployment, task_id=deploy_minio_worker2, execution_date=20260317T182709, start_date=20260317T182725, end_date=20260317T182727
+[2026-03-17T23:57:27.527+0530] {local_task_job_runner.py:234} INFO - Task exited with return code 0
+[2026-03-17T23:57:27.547+0530] {taskinstance.py:3309} INFO - 1 downstream tasks scheduled from follow-on schedule check

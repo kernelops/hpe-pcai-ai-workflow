@@ -1,0 +1,35 @@
+[2026-03-20T18:09:39.669+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: distributed_minio_cleanup_error_injected.remove_storage_worker1 manual__2026-03-20T12:38:40.300729+00:00 [queued]>
+[2026-03-20T18:09:39.678+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: distributed_minio_cleanup_error_injected.remove_storage_worker1 manual__2026-03-20T12:38:40.300729+00:00 [queued]>
+[2026-03-20T18:09:39.678+0530] {taskinstance.py:2193} INFO - Starting attempt 1 of 2
+[2026-03-20T18:09:39.787+0530] {taskinstance.py:2214} INFO - Executing <Task(SSHOperator): remove_storage_worker1> on 2026-03-20 12:38:40.300729+00:00
+[2026-03-20T18:09:39.796+0530] {standard_task_runner.py:60} INFO - Started process 44406 to run task
+[2026-03-20T18:09:39.804+0530] {standard_task_runner.py:87} INFO - Running: ['airflow', 'tasks', 'run', 'distributed_minio_cleanup_error_injected', 'remove_storage_worker1', 'manual__2026-03-20T12:38:40.300729+00:00', '--job-id', '143', '--raw', '--subdir', 'DAGS_FOLDER/distributed_minio_cleanup_error_injected.py', '--cfg-path', '/tmp/tmpqgjbt8di']
+[2026-03-20T18:09:39.805+0530] {standard_task_runner.py:88} INFO - Job 143: Subtask remove_storage_worker1
+[2026-03-20T18:09:39.884+0530] {task_command.py:423} INFO - Running <TaskInstance: distributed_minio_cleanup_error_injected.remove_storage_worker1 manual__2026-03-20T12:38:40.300729+00:00 [running]> on host tejasvi-Vostro-15-3515
+[2026-03-20T18:09:40.068+0530] {taskinstance.py:2510} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='distributed_minio_cleanup_error_injected' AIRFLOW_CTX_TASK_ID='remove_storage_worker1' AIRFLOW_CTX_EXECUTION_DATE='2026-03-20T12:38:40.300729+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-20T12:38:40.300729+00:00'
+[2026-03-20T18:09:40.070+0530] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-20T18:09:40.071+0530] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-20T18:09:40.080+0530] {base.py:83} INFO - Using connection ID 'worker1' for task execution.
+[2026-03-20T18:09:40.083+0530] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-20T18:09:40.097+0530] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-03-20T18:09:40.307+0530] {transport.py:1909} INFO - Authentication (publickey) successful!
+[2026-03-20T18:09:40.308+0530] {ssh.py:480} INFO - Running command: rm -rf /tmp/minio-data-worker1 || true
+[2026-03-20T18:09:40.517+0530] {ssh.py:531} WARNING - rm: cannot remove '/tmp/minio-data-worker1/.minio.sys/pool.bin/xl.meta'
+[2026-03-20T18:09:40.519+0530] {ssh.py:531} WARNING - : Permission denied
+[2026-03-20T18:09:40.520+0530] {ssh.py:531} WARNING - rm: cannot remove '/tmp/minio-data-worker1/.minio.sys/config/config.json/xl.meta': Permission denied
+[2026-03-20T18:09:40.520+0530] {ssh.py:531} WARNING - rm: cannot remove '/tmp/minio-data-worker1/.minio.sys/config/iam/format.json/xl.meta': Permission denied
+[2026-03-20T18:09:40.521+0530] {ssh.py:531} WARNING - rm: cannot remove '/tmp/minio-data-worker1/.minio.sys/buckets/.heal/mrf/list.bin': Permission denied
+[2026-03-20T18:09:40.523+0530] {ssh.py:531} WARNING - rm: cannot remove '/tmp/minio-data-worker1/.minio.sys/buckets/.usage.json/xl.meta': Permission denied
+[2026-03-20T18:09:40.525+0530] {ssh.py:531} WARNING - rm: cannot remove '/tmp/minio-data-worker1/.minio.sys/buckets/.bloomcycle.bin/xl.meta': Permission denied
+[2026-03-20T18:09:40.525+0530] {ssh.py:531} WARNING - rm: cannot remove '/tmp/minio-data-worker1/.minio.sys/tmp/.trash/6a6ee878-ac5d-42b4-b295-ed8b3b110c99/xl.meta.bkp': Permission denied
+[2026-03-20T18:09:40.526+0530] {ssh.py:531} WARNING - rm: cannot remove '/tmp/minio-data-worker1/.minio.sys/tmp/.trash/d78e594d-cc59-42e6-b5da-891f5f50d017/xl.meta.bkp': Permission denied
+[2026-03-20T18:09:40.526+0530] {ssh.py:531} WARNING - rm: cannot remove '/tmp/minio-data-worker1/.minio.sys/tmp/.trash/45687469-ad4c-496f-af92-e50f9175939d/xl.meta.bkp': Permission denied
+[2026-03-20T18:09:40.527+0530] {ssh.py:531} WARNING - rm: cannot remove '/tmp/minio-data-worker1/.minio.sys/tmp/.trash/d26c3b3d-787a-4920-b2a8-51c5e2295dca/xl.meta.bkp': Permission denied
+[2026-03-20T18:09:40.527+0530] {ssh.py:531} WARNING - rm: cannot remove '/tmp/minio-data-worker1/.minio.sys/tmp/.trash/571347f3-e72d-4d45-bb9a-f925ae6c6c6f/xl.meta.bkp': Permission denied
+[2026-03-20T18:09:40.527+0530] {ssh.py:531} WARNING - rm: cannot remove '/tmp/minio-data-worker1/.minio.sys/tmp/.trash/09f07d6c-696c-41b7-88e6-fed3053d12d4/xl.meta.bkp': Permission denied
+[2026-03-20T18:09:40.528+0530] {ssh.py:531} WARNING - rm: cannot remove '/tmp/minio-data-worker1/.minio.sys/tmp/70657c55-b0c7-4fbb-b4b5-32e4f317107c': Permission denied
+[2026-03-20T18:09:40.528+0530] {ssh.py:531} WARNING - rm: cannot remove '/tmp/minio-data-worker1/.minio.sys/format.json': Permission denied
+[2026-03-20T18:09:40.529+0530] {ssh.py:531} WARNING - rm: cannot remove '/tmp/minio-data-worker1/.minio.sys/multipart': Permission denied
+[2026-03-20T18:09:40.684+0530] {taskinstance.py:1149} INFO - Marking task as SUCCESS. dag_id=distributed_minio_cleanup_error_injected, task_id=remove_storage_worker1, execution_date=20260320T123840, start_date=20260320T123939, end_date=20260320T123940
+[2026-03-20T18:09:40.778+0530] {local_task_job_runner.py:234} INFO - Task exited with return code 0
+[2026-03-20T18:09:40.805+0530] {taskinstance.py:3309} INFO - 0 downstream tasks scheduled from follow-on schedule check

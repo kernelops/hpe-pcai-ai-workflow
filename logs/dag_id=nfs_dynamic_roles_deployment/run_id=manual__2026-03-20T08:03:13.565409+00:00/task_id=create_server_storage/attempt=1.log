@@ -1,0 +1,19 @@
+[2026-03-20T13:33:22.817+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment.create_server_storage manual__2026-03-20T08:03:13.565409+00:00 [queued]>
+[2026-03-20T13:33:22.824+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment.create_server_storage manual__2026-03-20T08:03:13.565409+00:00 [queued]>
+[2026-03-20T13:33:22.824+0530] {taskinstance.py:2193} INFO - Starting attempt 1 of 2
+[2026-03-20T13:33:22.871+0530] {taskinstance.py:2214} INFO - Executing <Task(DynamicSSHOperator): create_server_storage> on 2026-03-20 08:03:13.565409+00:00
+[2026-03-20T13:33:22.881+0530] {standard_task_runner.py:60} INFO - Started process 28370 to run task
+[2026-03-20T13:33:22.888+0530] {standard_task_runner.py:87} INFO - Running: ['airflow', 'tasks', 'run', 'nfs_dynamic_roles_deployment', 'create_server_storage', 'manual__2026-03-20T08:03:13.565409+00:00', '--job-id', '104', '--raw', '--subdir', 'DAGS_FOLDER/NFS.py', '--cfg-path', '/tmp/tmpp2c7ccmy']
+[2026-03-20T13:33:22.889+0530] {standard_task_runner.py:88} INFO - Job 104: Subtask create_server_storage
+[2026-03-20T13:33:22.965+0530] {task_command.py:423} INFO - Running <TaskInstance: nfs_dynamic_roles_deployment.create_server_storage manual__2026-03-20T08:03:13.565409+00:00 [running]> on host tejasvi-Vostro-15-3515
+[2026-03-20T13:33:23.085+0530] {taskinstance.py:2510} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='nfs_dynamic_roles_deployment' AIRFLOW_CTX_TASK_ID='create_server_storage' AIRFLOW_CTX_EXECUTION_DATE='2026-03-20T08:03:13.565409+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-20T08:03:13.565409+00:00'
+[2026-03-20T13:33:23.086+0530] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-20T13:33:23.087+0530] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-20T13:33:23.095+0530] {base.py:83} INFO - Using connection ID 'worker1' for task execution.
+[2026-03-20T13:33:23.100+0530] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-20T13:33:23.156+0530] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-03-20T13:33:23.807+0530] {transport.py:1909} INFO - Authentication (publickey) successful!
+[2026-03-20T13:33:23.808+0530] {ssh.py:480} INFO - Running command: mkdir -p /tmp/nfs-server-data && chmod 0777 /tmp/nfs-server-data
+[2026-03-20T13:33:24.313+0530] {taskinstance.py:1149} INFO - Marking task as SUCCESS. dag_id=nfs_dynamic_roles_deployment, task_id=create_server_storage, execution_date=20260320T080313, start_date=20260320T080322, end_date=20260320T080324
+[2026-03-20T13:33:24.384+0530] {local_task_job_runner.py:234} INFO - Task exited with return code 0
+[2026-03-20T13:33:24.412+0530] {taskinstance.py:3309} INFO - 1 downstream tasks scheduled from follow-on schedule check

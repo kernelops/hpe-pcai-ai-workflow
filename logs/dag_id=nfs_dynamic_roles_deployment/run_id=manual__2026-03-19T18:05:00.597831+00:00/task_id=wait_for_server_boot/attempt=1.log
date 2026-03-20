@@ -1,0 +1,33 @@
+[2026-03-19T23:35:19.710+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment.wait_for_server_boot manual__2026-03-19T18:05:00.597831+00:00 [queued]>
+[2026-03-19T23:35:19.716+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment.wait_for_server_boot manual__2026-03-19T18:05:00.597831+00:00 [queued]>
+[2026-03-19T23:35:19.717+0530] {taskinstance.py:2193} INFO - Starting attempt 1 of 2
+[2026-03-19T23:35:19.752+0530] {taskinstance.py:2214} INFO - Executing <Task(DynamicSSHOperator): wait_for_server_boot> on 2026-03-19 18:05:00.597831+00:00
+[2026-03-19T23:35:19.759+0530] {standard_task_runner.py:60} INFO - Started process 7122 to run task
+[2026-03-19T23:35:19.764+0530] {standard_task_runner.py:87} INFO - Running: ['airflow', 'tasks', 'run', 'nfs_dynamic_roles_deployment', 'wait_for_server_boot', 'manual__2026-03-19T18:05:00.597831+00:00', '--job-id', '29', '--raw', '--subdir', 'DAGS_FOLDER/NFS.py', '--cfg-path', '/tmp/tmpsvzcsx7e']
+[2026-03-19T23:35:19.765+0530] {standard_task_runner.py:88} INFO - Job 29: Subtask wait_for_server_boot
+[2026-03-19T23:35:19.835+0530] {task_command.py:423} INFO - Running <TaskInstance: nfs_dynamic_roles_deployment.wait_for_server_boot manual__2026-03-19T18:05:00.597831+00:00 [running]> on host tejasvi-Vostro-15-3515
+[2026-03-19T23:35:19.954+0530] {taskinstance.py:2510} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='nfs_dynamic_roles_deployment' AIRFLOW_CTX_TASK_ID='wait_for_server_boot' AIRFLOW_CTX_EXECUTION_DATE='2026-03-19T18:05:00.597831+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-19T18:05:00.597831+00:00'
+[2026-03-19T23:35:19.955+0530] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-19T23:35:19.957+0530] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-19T23:35:19.965+0530] {base.py:83} INFO - Using connection ID 'worker2' for task execution.
+[2026-03-19T23:35:19.967+0530] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-19T23:35:19.985+0530] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-03-19T23:35:20.302+0530] {transport.py:1909} INFO - Authentication (publickey) successful!
+[2026-03-19T23:35:20.303+0530] {ssh.py:480} INFO - Running command: sleep 10
+[2026-03-19T23:35:30.544+0530] {taskinstance.py:2728} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/models/taskinstance.py", line 444, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/models/taskinstance.py", line 414, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/providers/ssh/operators/ssh.py", line 191, in execute
+    result = self.run_ssh_client_command(ssh_client, self.command, context=context)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/providers/ssh/operators/ssh.py", line 176, in run_ssh_client_command
+    exit_status, agg_stdout, agg_stderr = self.hook.exec_ssh_client_command(
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/providers/ssh/hooks/ssh.py", line 551, in exec_ssh_client_command
+    raise AirflowException("SSH command timed out")
+airflow.exceptions.AirflowException: SSH command timed out
+[2026-03-19T23:35:30.553+0530] {taskinstance.py:1149} INFO - Marking task as UP_FOR_RETRY. dag_id=nfs_dynamic_roles_deployment, task_id=wait_for_server_boot, execution_date=20260319T180500, start_date=20260319T180519, end_date=20260319T180530
+[2026-03-19T23:35:30.677+0530] {standard_task_runner.py:107} ERROR - Failed to execute job 29 for task wait_for_server_boot (SSH command timed out; 7122)
+[2026-03-19T23:35:30.695+0530] {local_task_job_runner.py:234} INFO - Task exited with return code 1
+[2026-03-19T23:35:30.722+0530] {taskinstance.py:3309} INFO - 0 downstream tasks scheduled from follow-on schedule check

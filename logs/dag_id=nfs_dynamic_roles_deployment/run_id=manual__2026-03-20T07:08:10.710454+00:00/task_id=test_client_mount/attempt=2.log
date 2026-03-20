@@ -1,0 +1,39 @@
+[2026-03-20T12:41:46.254+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment.test_client_mount manual__2026-03-20T07:08:10.710454+00:00 [queued]>
+[2026-03-20T12:41:46.262+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment.test_client_mount manual__2026-03-20T07:08:10.710454+00:00 [queued]>
+[2026-03-20T12:41:46.262+0530] {taskinstance.py:2193} INFO - Starting attempt 2 of 2
+[2026-03-20T12:41:46.307+0530] {taskinstance.py:2214} INFO - Executing <Task(DynamicSSHOperator): test_client_mount> on 2026-03-20 07:08:10.710454+00:00
+[2026-03-20T12:41:46.317+0530] {standard_task_runner.py:60} INFO - Started process 14421 to run task
+[2026-03-20T12:41:46.324+0530] {standard_task_runner.py:87} INFO - Running: ['airflow', 'tasks', 'run', 'nfs_dynamic_roles_deployment', 'test_client_mount', 'manual__2026-03-20T07:08:10.710454+00:00', '--job-id', '88', '--raw', '--subdir', 'DAGS_FOLDER/NFS.py', '--cfg-path', '/tmp/tmplhv5k1i3']
+[2026-03-20T12:41:46.325+0530] {standard_task_runner.py:88} INFO - Job 88: Subtask test_client_mount
+[2026-03-20T12:41:46.403+0530] {task_command.py:423} INFO - Running <TaskInstance: nfs_dynamic_roles_deployment.test_client_mount manual__2026-03-20T07:08:10.710454+00:00 [running]> on host tejasvi-Vostro-15-3515
+[2026-03-20T12:41:46.484+0530] {taskinstance.py:2510} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='nfs_dynamic_roles_deployment' AIRFLOW_CTX_TASK_ID='test_client_mount' AIRFLOW_CTX_EXECUTION_DATE='2026-03-20T07:08:10.710454+00:00' AIRFLOW_CTX_TRY_NUMBER='2' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-20T07:08:10.710454+00:00'
+[2026-03-20T12:41:46.485+0530] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-20T12:41:46.485+0530] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-20T12:41:46.494+0530] {base.py:83} INFO - Using connection ID 'worker2' for task execution.
+[2026-03-20T12:41:46.497+0530] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-20T12:41:46.513+0530] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-03-20T12:41:46.721+0530] {transport.py:1909} INFO - Authentication (publickey) successful!
+[2026-03-20T12:41:46.723+0530] {ssh.py:480} INFO - Running command: 
+docker rm -f nfs_client_test || true
+docker run -d \
+--name nfs_client_test \
+-v nfs_client_vol:/mnt/nfs \
+alpine sleep 3600
+        
+[2026-03-20T12:42:46.931+0530] {taskinstance.py:2728} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/models/taskinstance.py", line 444, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/models/taskinstance.py", line 414, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/providers/ssh/operators/ssh.py", line 191, in execute
+    result = self.run_ssh_client_command(ssh_client, self.command, context=context)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/providers/ssh/operators/ssh.py", line 176, in run_ssh_client_command
+    exit_status, agg_stdout, agg_stderr = self.hook.exec_ssh_client_command(
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/providers/ssh/hooks/ssh.py", line 551, in exec_ssh_client_command
+    raise AirflowException("SSH command timed out")
+airflow.exceptions.AirflowException: SSH command timed out
+[2026-03-20T12:42:46.937+0530] {taskinstance.py:1149} INFO - Marking task as FAILED. dag_id=nfs_dynamic_roles_deployment, task_id=test_client_mount, execution_date=20260320T070810, start_date=20260320T071146, end_date=20260320T071246
+[2026-03-20T12:42:46.988+0530] {standard_task_runner.py:107} ERROR - Failed to execute job 88 for task test_client_mount (SSH command timed out; 14421)
+[2026-03-20T12:42:47.028+0530] {local_task_job_runner.py:234} INFO - Task exited with return code 1
+[2026-03-20T12:42:47.050+0530] {taskinstance.py:3309} INFO - 0 downstream tasks scheduled from follow-on schedule check

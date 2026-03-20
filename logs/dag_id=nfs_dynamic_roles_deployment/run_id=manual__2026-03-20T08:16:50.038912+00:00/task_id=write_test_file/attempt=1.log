@@ -1,0 +1,19 @@
+[2026-03-20T13:47:16.489+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment.write_test_file manual__2026-03-20T08:16:50.038912+00:00 [queued]>
+[2026-03-20T13:47:16.502+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment.write_test_file manual__2026-03-20T08:16:50.038912+00:00 [queued]>
+[2026-03-20T13:47:16.503+0530] {taskinstance.py:2193} INFO - Starting attempt 1 of 2
+[2026-03-20T13:47:16.574+0530] {taskinstance.py:2214} INFO - Executing <Task(DynamicSSHOperator): write_test_file> on 2026-03-20 08:16:50.038912+00:00
+[2026-03-20T13:47:16.587+0530] {standard_task_runner.py:60} INFO - Started process 32621 to run task
+[2026-03-20T13:47:16.594+0530] {standard_task_runner.py:87} INFO - Running: ['airflow', 'tasks', 'run', 'nfs_dynamic_roles_deployment', 'write_test_file', 'manual__2026-03-20T08:16:50.038912+00:00', '--job-id', '116', '--raw', '--subdir', 'DAGS_FOLDER/NFS.py', '--cfg-path', '/tmp/tmpphlu3s3w']
+[2026-03-20T13:47:16.595+0530] {standard_task_runner.py:88} INFO - Job 116: Subtask write_test_file
+[2026-03-20T13:47:16.697+0530] {task_command.py:423} INFO - Running <TaskInstance: nfs_dynamic_roles_deployment.write_test_file manual__2026-03-20T08:16:50.038912+00:00 [running]> on host tejasvi-Vostro-15-3515
+[2026-03-20T13:47:16.821+0530] {taskinstance.py:2510} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='nfs_dynamic_roles_deployment' AIRFLOW_CTX_TASK_ID='write_test_file' AIRFLOW_CTX_EXECUTION_DATE='2026-03-20T08:16:50.038912+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-20T08:16:50.038912+00:00'
+[2026-03-20T13:47:16.822+0530] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-20T13:47:16.823+0530] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-20T13:47:16.831+0530] {base.py:83} INFO - Using connection ID 'worker2' for task execution.
+[2026-03-20T13:47:16.834+0530] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-20T13:47:16.850+0530] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-03-20T13:47:17.054+0530] {transport.py:1909} INFO - Authentication (publickey) successful!
+[2026-03-20T13:47:17.055+0530] {ssh.py:480} INFO - Running command: docker exec nfs_client_test sh -c "echo \"Hello from the dynamically allocated client node!\" > /mnt/nfs/test_file.txt"
+[2026-03-20T13:47:17.389+0530] {taskinstance.py:1149} INFO - Marking task as SUCCESS. dag_id=nfs_dynamic_roles_deployment, task_id=write_test_file, execution_date=20260320T081650, start_date=20260320T081716, end_date=20260320T081717
+[2026-03-20T13:47:17.489+0530] {local_task_job_runner.py:234} INFO - Task exited with return code 0
+[2026-03-20T13:47:17.508+0530] {taskinstance.py:3309} INFO - 0 downstream tasks scheduled from follow-on schedule check

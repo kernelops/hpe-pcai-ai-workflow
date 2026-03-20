@@ -1,0 +1,34 @@
+[2026-03-20T12:33:39.887+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment.deploy_server manual__2026-03-20T07:03:28.631754+00:00 [queued]>
+[2026-03-20T12:33:39.894+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment.deploy_server manual__2026-03-20T07:03:28.631754+00:00 [queued]>
+[2026-03-20T12:33:39.894+0530] {taskinstance.py:2193} INFO - Starting attempt 1 of 2
+[2026-03-20T12:33:39.941+0530] {taskinstance.py:2214} INFO - Executing <Task(DynamicSSHOperator): deploy_server> on 2026-03-20 07:03:28.631754+00:00
+[2026-03-20T12:33:39.952+0530] {standard_task_runner.py:60} INFO - Started process 12574 to run task
+[2026-03-20T12:33:39.960+0530] {standard_task_runner.py:87} INFO - Running: ['airflow', 'tasks', 'run', 'nfs_dynamic_roles_deployment', 'deploy_server', 'manual__2026-03-20T07:03:28.631754+00:00', '--job-id', '76', '--raw', '--subdir', 'DAGS_FOLDER/NFS.py', '--cfg-path', '/tmp/tmp7h69fv70']
+[2026-03-20T12:33:39.961+0530] {standard_task_runner.py:88} INFO - Job 76: Subtask deploy_server
+[2026-03-20T12:33:40.095+0530] {task_command.py:423} INFO - Running <TaskInstance: nfs_dynamic_roles_deployment.deploy_server manual__2026-03-20T07:03:28.631754+00:00 [running]> on host tejasvi-Vostro-15-3515
+[2026-03-20T12:33:40.221+0530] {taskinstance.py:2510} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='nfs_dynamic_roles_deployment' AIRFLOW_CTX_TASK_ID='deploy_server' AIRFLOW_CTX_EXECUTION_DATE='2026-03-20T07:03:28.631754+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-20T07:03:28.631754+00:00'
+[2026-03-20T12:33:40.223+0530] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-20T12:33:40.224+0530] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-20T12:33:40.234+0530] {base.py:83} INFO - Using connection ID 'worker2' for task execution.
+[2026-03-20T12:33:40.237+0530] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-20T12:33:40.256+0530] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-03-20T12:33:40.472+0530] {transport.py:1909} INFO - Authentication (publickey) successful!
+[2026-03-20T12:33:40.473+0530] {ssh.py:480} INFO - Running command: 
+# Attempt to load the required kernel module (will fail silently if not root, but might already be loaded)
+sudo modprobe nfsd || true
+docker rm -f nfs_server || true
+docker run -d \
+--name nfs_server \
+--privileged \
+--network host \
+-v /tmp/nfs-server-data:/data \
+-e NFS_EXPORT_0='/data *(rw,sync,no_subtree_check,no_root_squash)' \
+erichough/nfs-server
+        
+[2026-03-20T12:33:40.672+0530] {ssh.py:531} WARNING - sudo: a terminal is required to read the password; either use the -S option to read from standard input or configure an askpass helper
+[2026-03-20T12:33:40.672+0530] {ssh.py:531} WARNING - sudo: a password is required
+[2026-03-20T12:33:41.221+0530] {ssh.py:526} INFO - nfs_server
+[2026-03-20T12:33:41.516+0530] {ssh.py:526} INFO - f27b008877c12e5b2ae71f408e3624339cdfc49f43d3d2615b374d9bc1217bbd
+[2026-03-20T12:33:42.559+0530] {taskinstance.py:1149} INFO - Marking task as SUCCESS. dag_id=nfs_dynamic_roles_deployment, task_id=deploy_server, execution_date=20260320T070328, start_date=20260320T070339, end_date=20260320T070342
+[2026-03-20T12:33:42.619+0530] {local_task_job_runner.py:234} INFO - Task exited with return code 0
+[2026-03-20T12:33:42.645+0530] {taskinstance.py:3309} INFO - 1 downstream tasks scheduled from follow-on schedule check

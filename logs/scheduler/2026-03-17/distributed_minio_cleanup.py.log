@@ -1,0 +1,494 @@
+[2026-03-17T22:31:20.038+0530] {processor.py:161} INFO - Started process (PID=156519) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:31:20.040+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:31:20.044+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:31:20.043+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:31:20.163+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:31:20.272+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:31:20.271+0530] {override.py:1769} INFO - Created Permission View: can read on DAG:distributed_minio_cleanup
+[2026-03-17T22:31:20.295+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:31:20.294+0530] {override.py:1769} INFO - Created Permission View: can delete on DAG:distributed_minio_cleanup
+[2026-03-17T22:31:20.315+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:31:20.315+0530] {override.py:1769} INFO - Created Permission View: can edit on DAG:distributed_minio_cleanup
+[2026-03-17T22:31:20.317+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:31:20.316+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:31:20.336+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:31:20.336+0530] {dag.py:3069} INFO - Creating ORM DAG for distributed_minio_cleanup
+[2026-03-17T22:31:20.338+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:31:20.337+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:31:20.370+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.339 seconds
+[2026-03-17T22:32:12.298+0530] {processor.py:161} INFO - Started process (PID=156588) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:32:12.299+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:32:12.301+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:32:12.301+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:32:12.309+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:32:12.325+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:32:12.325+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:32:12.338+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:32:12.337+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:32:12.371+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.078 seconds
+[2026-03-17T22:33:34.647+0530] {processor.py:161} INFO - Started process (PID=156760) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:33:34.723+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:33:34.726+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:33:34.726+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:33:34.741+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:33:34.773+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:33:34.772+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:33:34.786+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:33:34.786+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:33:34.921+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.281 seconds
+[2026-03-17T22:34:34.682+0530] {processor.py:161} INFO - Started process (PID=156849) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:34:34.787+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:34:34.791+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:34:34.790+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:34:34.806+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:34:34.839+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:34:34.839+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:34:34.852+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:34:34.852+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:34:34.927+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.252 seconds
+[2026-03-17T22:35:37.933+0530] {processor.py:161} INFO - Started process (PID=158132) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:35:38.014+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:35:38.017+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:35:38.016+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:35:38.025+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:35:38.040+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:35:38.040+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:35:38.051+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:35:38.051+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:35:38.141+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.214 seconds
+[2026-03-17T22:36:38.860+0530] {processor.py:161} INFO - Started process (PID=158258) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:36:38.906+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:36:38.910+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:36:38.909+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:36:38.926+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:36:38.951+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:36:38.951+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:36:38.965+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:36:38.964+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:36:39.050+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.197 seconds
+[2026-03-17T22:37:45.854+0530] {processor.py:161} INFO - Started process (PID=158491) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:37:46.012+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:37:46.016+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:37:46.015+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:37:46.030+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:37:46.063+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:37:46.063+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:37:46.074+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:37:46.074+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:37:46.348+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.501 seconds
+[2026-03-17T22:38:48.235+0530] {processor.py:161} INFO - Started process (PID=158588) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:38:48.289+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:38:48.291+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:38:48.291+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:38:48.299+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:38:48.317+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:38:48.317+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:38:48.330+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:38:48.330+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:38:48.437+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.209 seconds
+[2026-03-17T22:39:51.103+0530] {processor.py:161} INFO - Started process (PID=158676) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:39:51.156+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:39:51.159+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:39:51.159+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:39:51.168+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:39:51.185+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:39:51.185+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:39:51.198+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:39:51.198+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:39:51.290+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.195 seconds
+[2026-03-17T22:40:50.729+0530] {processor.py:161} INFO - Started process (PID=158752) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:40:50.762+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:40:50.766+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:40:50.765+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:40:50.780+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:40:50.805+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:40:50.804+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:40:50.819+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:40:50.819+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:40:50.911+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.189 seconds
+[2026-03-17T22:41:51.289+0530] {processor.py:161} INFO - Started process (PID=158873) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:41:51.324+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:41:51.327+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:41:51.327+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:41:51.341+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:41:51.365+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:41:51.365+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:41:51.378+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:41:51.378+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:41:51.462+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.180 seconds
+[2026-03-17T22:42:51.918+0530] {processor.py:161} INFO - Started process (PID=158948) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:42:51.926+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:42:51.928+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:42:51.928+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:42:51.935+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:42:51.952+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:42:51.951+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:42:51.965+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:42:51.965+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:42:52.057+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.146 seconds
+[2026-03-17T22:43:50.243+0530] {processor.py:161} INFO - Started process (PID=159033) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:43:50.303+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:43:50.307+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:43:50.306+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:43:50.322+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:43:50.351+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:43:50.350+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:43:50.364+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:43:50.364+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:43:50.417+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.181 seconds
+[2026-03-17T22:45:18.284+0530] {processor.py:161} INFO - Started process (PID=159157) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:45:18.327+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:45:18.330+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:45:18.330+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:45:18.340+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:45:18.357+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:45:18.357+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:45:18.371+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:45:18.370+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:45:18.472+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.196 seconds
+[2026-03-17T22:46:18.743+0530] {processor.py:161} INFO - Started process (PID=159272) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:46:18.810+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:46:18.814+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:46:18.813+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:46:18.829+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:46:18.858+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:46:18.858+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:46:18.870+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:46:18.870+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:46:18.947+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.211 seconds
+[2026-03-17T22:47:22.742+0530] {processor.py:161} INFO - Started process (PID=159451) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:47:23.210+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:47:23.213+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:47:23.212+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:47:23.222+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:47:23.239+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:47:23.238+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:47:23.251+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:47:23.251+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:47:23.361+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.626 seconds
+[2026-03-17T22:48:28.270+0530] {processor.py:161} INFO - Started process (PID=159551) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:48:28.327+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:48:28.332+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:48:28.330+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:48:28.342+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:48:28.364+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:48:28.364+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:48:28.380+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:48:28.380+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:48:28.452+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.190 seconds
+[2026-03-17T22:49:28.601+0530] {processor.py:161} INFO - Started process (PID=159629) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:49:28.621+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:49:28.623+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:49:28.623+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:49:28.631+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:49:28.647+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:49:28.646+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:49:28.660+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:49:28.660+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:49:28.755+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.160 seconds
+[2026-03-17T22:50:38.177+0530] {processor.py:161} INFO - Started process (PID=159847) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:50:38.800+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:50:38.804+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:50:38.803+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:50:38.903+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:50:38.940+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:50:38.939+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:50:38.957+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:50:38.957+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:50:39.033+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.864 seconds
+[2026-03-17T22:51:42.565+0530] {processor.py:161} INFO - Started process (PID=160252) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:51:42.567+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:51:42.569+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:51:42.568+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:51:42.576+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:51:42.591+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:51:42.591+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:51:42.602+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:51:42.602+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:51:42.698+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.137 seconds
+[2026-03-17T22:52:50.032+0530] {processor.py:161} INFO - Started process (PID=160546) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:52:50.043+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:52:50.046+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:52:50.045+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:52:50.053+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:52:50.070+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:52:50.070+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:52:50.084+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:52:50.083+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:52:50.169+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.144 seconds
+[2026-03-17T22:53:50.784+0530] {processor.py:161} INFO - Started process (PID=160781) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:53:50.851+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:53:50.854+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:53:50.854+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:53:50.863+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:53:50.880+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:53:50.880+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:53:50.893+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:53:50.893+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:53:51.003+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.227 seconds
+[2026-03-17T22:55:12.317+0530] {processor.py:161} INFO - Started process (PID=161219) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:55:12.325+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:55:12.327+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:55:12.327+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:55:12.335+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:55:12.354+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:55:12.353+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:55:12.368+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:55:12.367+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:55:12.409+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.098 seconds
+[2026-03-17T22:56:13.557+0530] {processor.py:161} INFO - Started process (PID=161318) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:56:13.649+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:56:13.652+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:56:13.651+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:56:13.667+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:56:13.699+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:56:13.698+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:56:13.710+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:56:13.710+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:56:13.814+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.263 seconds
+[2026-03-17T22:57:13.273+0530] {processor.py:161} INFO - Started process (PID=161447) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:57:13.330+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:57:13.335+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:57:13.334+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:57:13.350+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:57:13.378+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:57:13.378+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:57:13.391+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:57:13.391+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:57:13.451+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.184 seconds
+[2026-03-17T22:58:10.522+0530] {processor.py:161} INFO - Started process (PID=161534) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:58:10.525+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T22:58:10.527+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:58:10.526+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:58:10.536+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T22:58:10.553+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:58:10.553+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T22:58:10.567+0530] {logging_mixin.py:188} INFO - [2026-03-17T22:58:10.567+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T22:58:10.608+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.093 seconds
+[2026-03-17T23:17:07.168+0530] {processor.py:161} INFO - Started process (PID=162831) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:17:07.222+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:17:07.226+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:17:07.226+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:17:07.241+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:17:07.344+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:17:07.344+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:17:07.354+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:17:07.354+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:17:07.456+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.295 seconds
+[2026-03-17T23:18:22.006+0530] {processor.py:161} INFO - Started process (PID=162922) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:18:23.529+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:18:23.533+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:18:23.532+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:18:23.548+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:18:23.583+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:18:23.583+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:18:23.596+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:18:23.596+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:18:23.631+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 1.632 seconds
+[2026-03-17T23:19:24.635+0530] {processor.py:161} INFO - Started process (PID=162997) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:19:24.663+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:19:24.665+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:19:24.665+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:19:24.672+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:19:24.688+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:19:24.687+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:19:24.700+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:19:24.699+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:19:24.792+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.161 seconds
+[2026-03-17T23:20:23.858+0530] {processor.py:161} INFO - Started process (PID=163071) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:20:23.912+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:20:23.915+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:20:23.915+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:20:23.924+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:20:23.942+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:20:23.941+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:20:23.954+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:20:23.954+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:20:24.028+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.178 seconds
+[2026-03-17T23:21:24.360+0530] {processor.py:161} INFO - Started process (PID=163167) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:21:24.409+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:21:24.413+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:21:24.412+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:21:24.428+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:21:24.455+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:21:24.455+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:21:24.468+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:21:24.467+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:21:24.556+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.203 seconds
+[2026-03-17T23:22:33.022+0530] {processor.py:161} INFO - Started process (PID=163260) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:22:33.110+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:22:33.112+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:22:33.112+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:22:33.120+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:22:33.137+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:22:33.137+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:22:33.150+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:22:33.150+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:22:33.369+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.353 seconds
+[2026-03-17T23:23:43.101+0530] {processor.py:161} INFO - Started process (PID=163337) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:23:43.136+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:23:43.139+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:23:43.138+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:23:43.148+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:23:43.165+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:23:43.164+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:23:43.177+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:23:43.177+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:23:43.262+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.169 seconds
+[2026-03-17T23:25:01.378+0530] {processor.py:161} INFO - Started process (PID=163427) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:25:01.420+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:25:01.423+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:25:01.423+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:25:01.432+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:25:01.450+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:25:01.450+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:25:01.463+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:25:01.462+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:25:01.543+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.172 seconds
+[2026-03-17T23:26:13.590+0530] {processor.py:161} INFO - Started process (PID=163543) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:26:13.633+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:26:13.638+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:26:13.636+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:26:13.654+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:26:13.678+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:26:13.677+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:26:13.692+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:26:13.691+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:26:13.746+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.163 seconds
+[2026-03-17T23:27:15.799+0530] {processor.py:161} INFO - Started process (PID=163774) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:27:15.946+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:27:15.950+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:27:15.949+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:27:15.964+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:27:15.995+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:27:15.995+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:27:16.007+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:27:16.007+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:27:16.253+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.460 seconds
+[2026-03-17T23:28:21.042+0530] {processor.py:161} INFO - Started process (PID=164019) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:28:21.063+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:28:21.067+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:28:21.066+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:28:21.081+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:28:21.098+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:28:21.098+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:28:21.109+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:28:21.109+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:28:21.181+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.145 seconds
+[2026-03-17T23:29:30.231+0530] {processor.py:161} INFO - Started process (PID=164145) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:29:30.279+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:29:30.283+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:29:30.282+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:29:30.299+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:29:30.328+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:29:30.327+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:29:30.340+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:29:30.340+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:29:30.403+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.179 seconds
+[2026-03-17T23:30:59.248+0530] {processor.py:161} INFO - Started process (PID=164294) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:30:59.315+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:30:59.319+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:30:59.318+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:30:59.334+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:30:59.364+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:30:59.363+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:30:59.376+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:30:59.375+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:30:59.502+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.259 seconds
+[2026-03-17T23:32:11.677+0530] {processor.py:161} INFO - Started process (PID=164395) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:32:11.753+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:32:11.756+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:32:11.755+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:32:11.770+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:32:11.799+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:32:11.799+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:32:11.811+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:32:11.811+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:32:11.861+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.191 seconds
+[2026-03-17T23:33:39.467+0530] {processor.py:161} INFO - Started process (PID=164486) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:33:39.474+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:33:39.476+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:33:39.476+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:33:39.483+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:33:39.498+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:33:39.498+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:33:39.509+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:33:39.509+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:33:39.624+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.161 seconds
+[2026-03-17T23:34:52.951+0530] {processor.py:161} INFO - Started process (PID=164542) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:34:53.059+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:34:53.063+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:34:53.062+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:34:53.073+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:34:53.089+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:34:53.089+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:34:53.101+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:34:53.101+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:34:53.250+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.302 seconds
+[2026-03-17T23:36:12.438+0530] {processor.py:161} INFO - Started process (PID=164641) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:36:12.451+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:36:12.454+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:36:12.453+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:36:12.463+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:36:12.480+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:36:12.479+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:36:12.492+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:36:12.492+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:36:12.558+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.126 seconds
+[2026-03-17T23:37:14.574+0530] {processor.py:161} INFO - Started process (PID=164822) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:37:14.593+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:37:14.596+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:37:14.595+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:37:14.606+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:37:14.623+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:37:14.623+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:37:14.635+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:37:14.635+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:37:14.707+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.141 seconds
+[2026-03-17T23:38:18.809+0530] {processor.py:161} INFO - Started process (PID=164927) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:38:18.815+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:38:18.818+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:38:18.817+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:38:18.824+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:38:18.840+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:38:18.839+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:38:18.852+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:38:18.852+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:38:19.065+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.263 seconds
+[2026-03-17T23:39:33.428+0530] {processor.py:161} INFO - Started process (PID=165022) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:39:33.445+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:39:33.449+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:39:33.448+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:39:33.460+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:39:33.477+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:39:33.476+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:39:33.489+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:39:33.488+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:39:33.552+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.132 seconds
+[2026-03-17T23:40:47.281+0530] {processor.py:161} INFO - Started process (PID=165121) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:40:47.292+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:40:47.295+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:40:47.294+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:40:47.302+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:40:47.318+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:40:47.318+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:40:47.330+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:40:47.330+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:40:47.428+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.154 seconds
+[2026-03-17T23:42:06.283+0530] {processor.py:161} INFO - Started process (PID=165285) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:42:06.410+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:42:06.415+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:42:06.414+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:42:06.431+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:42:06.468+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:42:06.467+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:42:06.489+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:42:06.489+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:42:06.813+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.537 seconds
+[2026-03-17T23:43:08.615+0530] {processor.py:161} INFO - Started process (PID=165387) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:43:08.726+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:43:08.729+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:43:08.729+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:43:08.739+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:43:08.757+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:43:08.756+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:43:08.769+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:43:08.769+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:43:08.839+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.231 seconds
+[2026-03-17T23:44:10.149+0530] {processor.py:161} INFO - Started process (PID=165464) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:44:10.281+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:44:10.283+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:44:10.283+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:44:10.291+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:44:10.307+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:44:10.306+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:44:10.317+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:44:10.317+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:44:10.351+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.209 seconds
+[2026-03-17T23:45:14.536+0530] {processor.py:161} INFO - Started process (PID=165545) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:45:14.735+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:45:14.737+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:45:14.737+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:45:14.746+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:45:14.763+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:45:14.762+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:45:14.775+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:45:14.775+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:45:14.825+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.296 seconds
+[2026-03-17T23:46:34.414+0530] {processor.py:161} INFO - Started process (PID=165680) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:46:34.416+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:46:34.418+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:46:34.417+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:46:34.424+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:46:34.439+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:46:34.439+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:46:34.450+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:46:34.449+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:46:34.482+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.072 seconds
+[2026-03-17T23:47:36.202+0530] {processor.py:161} INFO - Started process (PID=165766) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:47:36.204+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:47:36.206+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:47:36.206+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:47:36.212+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:47:36.227+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:47:36.227+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:47:36.238+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:47:36.238+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:47:36.270+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.076 seconds
+[2026-03-17T23:48:39.231+0530] {processor.py:161} INFO - Started process (PID=165873) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:48:39.234+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:48:39.237+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:48:39.236+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:48:39.243+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:48:39.258+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:48:39.258+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:48:39.269+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:48:39.269+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:48:39.306+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.081 seconds
+[2026-03-17T23:49:41.532+0530] {processor.py:161} INFO - Started process (PID=165969) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:49:41.546+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:49:41.549+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:49:41.548+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:49:41.556+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:49:41.572+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:49:41.572+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:49:41.583+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:49:41.583+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:49:41.619+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.093 seconds
+[2026-03-17T23:50:47.371+0530] {processor.py:161} INFO - Started process (PID=166057) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:50:47.373+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:50:47.375+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:50:47.375+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:50:47.381+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:50:47.396+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:50:47.396+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:50:47.407+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:50:47.407+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:50:47.440+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.076 seconds
+[2026-03-17T23:51:52.402+0530] {processor.py:161} INFO - Started process (PID=166175) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:51:52.404+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:51:52.406+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:51:52.406+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:51:52.413+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:51:52.430+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:51:52.429+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:51:52.442+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:51:52.441+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:51:52.475+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.079 seconds
+[2026-03-17T23:52:59.602+0530] {processor.py:161} INFO - Started process (PID=166262) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:52:59.605+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:52:59.607+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:52:59.607+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:52:59.614+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:52:59.629+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:52:59.628+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:52:59.640+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:52:59.639+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:52:59.674+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.079 seconds
+[2026-03-17T23:54:02.709+0530] {processor.py:161} INFO - Started process (PID=166349) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:54:02.711+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:54:02.713+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:54:02.713+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:54:02.720+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:54:02.736+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:54:02.736+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:54:02.748+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:54:02.748+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:54:02.781+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.079 seconds
+[2026-03-17T23:55:03.545+0530] {processor.py:161} INFO - Started process (PID=166435) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:55:03.548+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:55:03.550+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:55:03.550+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:55:03.557+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:55:03.572+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:55:03.571+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:55:03.583+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:55:03.582+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:55:03.615+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.076 seconds
+[2026-03-17T23:56:14.307+0530] {processor.py:161} INFO - Started process (PID=166584) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:56:14.309+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:56:14.313+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:56:14.312+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:56:14.320+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:56:14.336+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:56:14.336+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:56:14.348+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:56:14.348+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:56:14.387+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.087 seconds
+[2026-03-17T23:57:51.891+0530] {processor.py:161} INFO - Started process (PID=167493) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:57:51.894+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:57:51.897+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:57:51.896+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:57:51.904+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:57:51.922+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:57:51.921+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:57:51.934+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:57:51.934+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:57:51.969+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.085 seconds
+[2026-03-17T23:58:58.876+0530] {processor.py:161} INFO - Started process (PID=167775) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:58:58.879+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-17T23:58:58.881+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:58:58.880+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:58:58.888+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-17T23:58:58.904+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:58:58.904+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-17T23:58:58.917+0530] {logging_mixin.py:188} INFO - [2026-03-17T23:58:58.916+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-17T23:58:58.952+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.083 seconds
+[2026-03-18T00:00:36.736+0530] {processor.py:161} INFO - Started process (PID=168346) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:00:36.739+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-18T00:00:36.741+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:00:36.740+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:00:36.747+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:00:36.763+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:00:36.762+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T00:00:36.774+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:00:36.774+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-18T00:00:36.812+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.082 seconds
+[2026-03-18T00:01:48.195+0530] {processor.py:161} INFO - Started process (PID=168467) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:01:48.198+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-18T00:01:48.200+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:01:48.200+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:01:48.207+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:01:48.223+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:01:48.222+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T00:01:48.234+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:01:48.233+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-18T00:01:48.268+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.080 seconds
+[2026-03-18T00:02:53.458+0530] {processor.py:161} INFO - Started process (PID=168555) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:02:53.459+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-18T00:02:53.461+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:02:53.461+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:02:53.469+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:02:53.485+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:02:53.485+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T00:02:53.498+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:02:53.497+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-18T00:02:53.532+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.083 seconds
+[2026-03-18T00:04:02.831+0530] {processor.py:161} INFO - Started process (PID=168651) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:04:02.833+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-18T00:04:02.834+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:04:02.834+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:04:02.841+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:04:02.856+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:04:02.856+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T00:04:02.867+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:04:02.867+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-18T00:04:02.900+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.074 seconds
+[2026-03-18T00:05:04.764+0530] {processor.py:161} INFO - Started process (PID=168744) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:05:04.767+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-18T00:05:04.769+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:05:04.769+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:05:04.776+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:05:04.791+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:05:04.791+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T00:05:04.803+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:05:04.802+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-18T00:05:04.835+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.078 seconds
+[2026-03-18T00:06:12.259+0530] {processor.py:161} INFO - Started process (PID=168866) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:06:12.261+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-18T00:06:12.263+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:06:12.263+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:06:12.270+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:06:12.285+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:06:12.285+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T00:06:12.296+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:06:12.296+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-18T00:06:12.330+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.078 seconds
+[2026-03-18T00:07:17.699+0530] {processor.py:161} INFO - Started process (PID=168955) to work on /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:07:17.838+0530] {processor.py:830} INFO - Processing file /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py for tasks to queue
+[2026-03-18T00:07:17.843+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:07:17.842+0530] {dagbag.py:540} INFO - Filling up the DagBag from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:07:17.858+0530] {processor.py:840} INFO - DAG(s) 'distributed_minio_cleanup' retrieved from /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py
+[2026-03-18T00:07:17.890+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:07:17.889+0530] {dag.py:3047} INFO - Sync 1 DAGs
+[2026-03-18T00:07:17.901+0530] {logging_mixin.py:188} INFO - [2026-03-18T00:07:17.901+0530] {dag.py:3834} INFO - Setting next_dagrun for distributed_minio_cleanup to None, run_after=None
+[2026-03-18T00:07:17.979+0530] {processor.py:183} INFO - Processing /home/tejasvi/Desktop/airflow_ssh_simulation/dags/distributed_minio_cleanup.py took 0.284 seconds

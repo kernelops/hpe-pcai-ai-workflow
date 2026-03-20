@@ -1,0 +1,27 @@
+[2026-03-20T13:47:12.486+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment.test_client_mount manual__2026-03-20T08:16:50.038912+00:00 [queued]>
+[2026-03-20T13:47:12.494+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment.test_client_mount manual__2026-03-20T08:16:50.038912+00:00 [queued]>
+[2026-03-20T13:47:12.494+0530] {taskinstance.py:2193} INFO - Starting attempt 1 of 2
+[2026-03-20T13:47:12.538+0530] {taskinstance.py:2214} INFO - Executing <Task(DynamicSSHOperator): test_client_mount> on 2026-03-20 08:16:50.038912+00:00
+[2026-03-20T13:47:12.544+0530] {standard_task_runner.py:60} INFO - Started process 32462 to run task
+[2026-03-20T13:47:12.550+0530] {standard_task_runner.py:87} INFO - Running: ['airflow', 'tasks', 'run', 'nfs_dynamic_roles_deployment', 'test_client_mount', 'manual__2026-03-20T08:16:50.038912+00:00', '--job-id', '115', '--raw', '--subdir', 'DAGS_FOLDER/NFS.py', '--cfg-path', '/tmp/tmpdbwxesfi']
+[2026-03-20T13:47:12.550+0530] {standard_task_runner.py:88} INFO - Job 115: Subtask test_client_mount
+[2026-03-20T13:47:12.630+0530] {task_command.py:423} INFO - Running <TaskInstance: nfs_dynamic_roles_deployment.test_client_mount manual__2026-03-20T08:16:50.038912+00:00 [running]> on host tejasvi-Vostro-15-3515
+[2026-03-20T13:47:12.744+0530] {taskinstance.py:2510} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='nfs_dynamic_roles_deployment' AIRFLOW_CTX_TASK_ID='test_client_mount' AIRFLOW_CTX_EXECUTION_DATE='2026-03-20T08:16:50.038912+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-20T08:16:50.038912+00:00'
+[2026-03-20T13:47:12.746+0530] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-20T13:47:12.746+0530] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-20T13:47:12.753+0530] {base.py:83} INFO - Using connection ID 'worker2' for task execution.
+[2026-03-20T13:47:12.755+0530] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-20T13:47:12.772+0530] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-03-20T13:47:12.985+0530] {transport.py:1909} INFO - Authentication (publickey) successful!
+[2026-03-20T13:47:12.986+0530] {ssh.py:480} INFO - Running command: 
+docker rm -f nfs_client_test || true
+docker run -d \
+--name nfs_client_test \
+-v nfs_client_vol:/mnt/nfs \
+alpine sleep 3600
+        
+[2026-03-20T13:47:13.155+0530] {ssh.py:531} WARNING - Error response from daemon: No such container: nfs_client_test
+[2026-03-20T13:47:13.351+0530] {ssh.py:526} INFO - 0ad99d99f428974ef5c50a6bf74c579bfdba7c36eef1d10fd914f5f7cb42bb17
+[2026-03-20T13:47:13.773+0530] {taskinstance.py:1149} INFO - Marking task as SUCCESS. dag_id=nfs_dynamic_roles_deployment, task_id=test_client_mount, execution_date=20260320T081650, start_date=20260320T081712, end_date=20260320T081713
+[2026-03-20T13:47:13.849+0530] {local_task_job_runner.py:234} INFO - Task exited with return code 0
+[2026-03-20T13:47:13.868+0530] {taskinstance.py:3309} INFO - 1 downstream tasks scheduled from follow-on schedule check

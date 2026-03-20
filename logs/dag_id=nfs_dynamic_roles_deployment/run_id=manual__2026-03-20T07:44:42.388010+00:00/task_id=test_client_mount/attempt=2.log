@@ -1,0 +1,44 @@
+[2026-03-20T13:15:50.239+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment.test_client_mount manual__2026-03-20T07:44:42.388010+00:00 [queued]>
+[2026-03-20T13:15:50.247+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment.test_client_mount manual__2026-03-20T07:44:42.388010+00:00 [queued]>
+[2026-03-20T13:15:50.247+0530] {taskinstance.py:2193} INFO - Starting attempt 2 of 2
+[2026-03-20T13:15:50.284+0530] {taskinstance.py:2214} INFO - Executing <Task(DynamicSSHOperator): test_client_mount> on 2026-03-20 07:44:42.388010+00:00
+[2026-03-20T13:15:50.290+0530] {standard_task_runner.py:60} INFO - Started process 20480 to run task
+[2026-03-20T13:15:50.299+0530] {standard_task_runner.py:87} INFO - Running: ['airflow', 'tasks', 'run', 'nfs_dynamic_roles_deployment', 'test_client_mount', 'manual__2026-03-20T07:44:42.388010+00:00', '--job-id', '102', '--raw', '--subdir', 'DAGS_FOLDER/NFS.py', '--cfg-path', '/tmp/tmp2a09lheg']
+[2026-03-20T13:15:50.300+0530] {standard_task_runner.py:88} INFO - Job 102: Subtask test_client_mount
+[2026-03-20T13:15:50.379+0530] {task_command.py:423} INFO - Running <TaskInstance: nfs_dynamic_roles_deployment.test_client_mount manual__2026-03-20T07:44:42.388010+00:00 [running]> on host tejasvi-Vostro-15-3515
+[2026-03-20T13:15:50.491+0530] {taskinstance.py:2510} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='nfs_dynamic_roles_deployment' AIRFLOW_CTX_TASK_ID='test_client_mount' AIRFLOW_CTX_EXECUTION_DATE='2026-03-20T07:44:42.388010+00:00' AIRFLOW_CTX_TRY_NUMBER='2' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-20T07:44:42.388010+00:00'
+[2026-03-20T13:15:50.493+0530] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-20T13:15:50.493+0530] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-20T13:15:50.500+0530] {base.py:83} INFO - Using connection ID 'worker1' for task execution.
+[2026-03-20T13:15:50.503+0530] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-20T13:15:50.519+0530] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-03-20T13:15:50.732+0530] {transport.py:1909} INFO - Authentication (publickey) successful!
+[2026-03-20T13:15:50.734+0530] {ssh.py:480} INFO - Running command: 
+docker rm -f nfs_client_test || true
+docker run -d \
+--name nfs_client_test \
+-v nfs_client_vol:/mnt/nfs \
+alpine sleep 3600
+        
+[2026-03-20T13:15:50.913+0530] {ssh.py:526} INFO - nfs_client_test
+[2026-03-20T13:15:51.091+0530] {ssh.py:526} INFO - 94a9fe89541bbcdfd63382f2fce561422a5a5f3d55ddfafd6a28b19e28263d8a
+[2026-03-20T13:15:51.156+0530] {ssh.py:531} WARNING - docker: Error response from daemon: error while mounting volume '/var/lib/docker/volumes/nfs_client_vol/_data': failed to mount local volume: mount :/data:/var/lib/docker/volumes/nfs_client_vol/_data, data: addr=127.0.0.1,nolock,nfsvers=3: operation not supported
+[2026-03-20T13:15:51.157+0530] {ssh.py:531} WARNING - 
+[2026-03-20T13:15:51.158+0530] {ssh.py:531} WARNING - Run 'docker run --help' for more information
+[2026-03-20T13:15:51.212+0530] {taskinstance.py:2728} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/models/taskinstance.py", line 444, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/models/taskinstance.py", line 414, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/providers/ssh/operators/ssh.py", line 191, in execute
+    result = self.run_ssh_client_command(ssh_client, self.command, context=context)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/providers/ssh/operators/ssh.py", line 179, in run_ssh_client_command
+    self.raise_for_status(exit_status, agg_stderr, context=context)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/providers/ssh/operators/ssh.py", line 173, in raise_for_status
+    raise AirflowException(f"SSH operator error: exit status = {exit_status}")
+airflow.exceptions.AirflowException: SSH operator error: exit status = 125
+[2026-03-20T13:15:51.215+0530] {taskinstance.py:1149} INFO - Marking task as FAILED. dag_id=nfs_dynamic_roles_deployment, task_id=test_client_mount, execution_date=20260320T074442, start_date=20260320T074550, end_date=20260320T074551
+[2026-03-20T13:15:51.260+0530] {standard_task_runner.py:107} ERROR - Failed to execute job 102 for task test_client_mount (SSH operator error: exit status = 125; 20480)
+[2026-03-20T13:15:51.310+0530] {local_task_job_runner.py:234} INFO - Task exited with return code 1
+[2026-03-20T13:15:51.345+0530] {taskinstance.py:3309} INFO - 0 downstream tasks scheduled from follow-on schedule check

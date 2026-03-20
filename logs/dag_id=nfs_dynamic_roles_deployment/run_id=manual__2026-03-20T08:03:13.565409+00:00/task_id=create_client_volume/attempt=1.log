@@ -1,0 +1,32 @@
+[2026-03-20T13:33:36.712+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment.create_client_volume manual__2026-03-20T08:03:13.565409+00:00 [queued]>
+[2026-03-20T13:33:36.720+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment.create_client_volume manual__2026-03-20T08:03:13.565409+00:00 [queued]>
+[2026-03-20T13:33:36.721+0530] {taskinstance.py:2193} INFO - Starting attempt 1 of 2
+[2026-03-20T13:33:36.763+0530] {taskinstance.py:2214} INFO - Executing <Task(DynamicSSHOperator): create_client_volume> on 2026-03-20 08:03:13.565409+00:00
+[2026-03-20T13:33:36.770+0530] {standard_task_runner.py:60} INFO - Started process 28670 to run task
+[2026-03-20T13:33:36.775+0530] {standard_task_runner.py:87} INFO - Running: ['airflow', 'tasks', 'run', 'nfs_dynamic_roles_deployment', 'create_client_volume', 'manual__2026-03-20T08:03:13.565409+00:00', '--job-id', '107', '--raw', '--subdir', 'DAGS_FOLDER/NFS.py', '--cfg-path', '/tmp/tmpehkrpog5']
+[2026-03-20T13:33:36.776+0530] {standard_task_runner.py:88} INFO - Job 107: Subtask create_client_volume
+[2026-03-20T13:33:36.864+0530] {task_command.py:423} INFO - Running <TaskInstance: nfs_dynamic_roles_deployment.create_client_volume manual__2026-03-20T08:03:13.565409+00:00 [running]> on host tejasvi-Vostro-15-3515
+[2026-03-20T13:33:36.981+0530] {taskinstance.py:2510} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='nfs_dynamic_roles_deployment' AIRFLOW_CTX_TASK_ID='create_client_volume' AIRFLOW_CTX_EXECUTION_DATE='2026-03-20T08:03:13.565409+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-20T08:03:13.565409+00:00'
+[2026-03-20T13:33:36.984+0530] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-20T13:33:36.985+0530] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-20T13:33:36.998+0530] {base.py:83} INFO - Using connection ID 'worker2' for task execution.
+[2026-03-20T13:33:37.003+0530] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-20T13:33:37.027+0530] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-03-20T13:33:37.243+0530] {transport.py:1909} INFO - Authentication (publickey) successful!
+[2026-03-20T13:33:37.244+0530] {ssh.py:480} INFO - Running command: 
+# Crucial: Destroy the old client container first so the volume is unlocked and can be deleted!
+docker rm -f nfs_client_test || true
+docker volume rm nfs_client_vol || true
+
+docker volume create --driver local \
+  --opt type=nfs \
+  --opt o=addr=127.0.0.1,rw,nolock,nfsvers=3 \
+  --opt device=:/data \
+  nfs_client_vol
+        
+[2026-03-20T13:33:37.428+0530] {ssh.py:531} WARNING - Error response from daemon: No such container: nfs_client_test
+[2026-03-20T13:33:37.454+0530] {ssh.py:531} WARNING - Error response from daemon: get nfs_client_vol: no such volume
+[2026-03-20T13:33:37.505+0530] {ssh.py:526} INFO - nfs_client_vol
+[2026-03-20T13:33:37.591+0530] {taskinstance.py:1149} INFO - Marking task as SUCCESS. dag_id=nfs_dynamic_roles_deployment, task_id=create_client_volume, execution_date=20260320T080313, start_date=20260320T080336, end_date=20260320T080337
+[2026-03-20T13:33:37.670+0530] {local_task_job_runner.py:234} INFO - Task exited with return code 0
+[2026-03-20T13:33:37.710+0530] {taskinstance.py:3309} INFO - 1 downstream tasks scheduled from follow-on schedule check

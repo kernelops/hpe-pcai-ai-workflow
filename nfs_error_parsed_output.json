@@ -1,0 +1,73 @@
+{
+  "dag_id": "nfs_dynamic_roles_deployment_error_injected",
+  "run_id": "manual__2026-03-20T12:36:07.276741+00:00",
+  "successful_tasks": [
+    {
+      "task_id": "assign_roles",
+      "step_number": 1,
+      "description": "Task execution for assign_roles",
+      "summary": "Running <TaskInstance: nfs_dynamic_roles_deployment_error_injected.assign_roles manual__2026-03-20T12:36:07.276741+00:00 [running]> on host tejasvi-Vostro-15-3515",
+      "key_events": [
+        "Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment_error_injected.assign_roles manual__2026-03-20T12:36:07.276741+00:00 [queued]>",
+        "Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment_error_injected.assign_roles manual__2026-03-20T12:36:07.276741+00:00 [queued]>",
+        "Starting attempt 1 of 2",
+        "Executing <Task(PythonOperator): assign_roles> on 2026-03-20 12:36:07.276741+00:00",
+        "Started process 41948 to run task",
+        "Running: ['airflow', 'tasks', 'run', 'nfs_dynamic_roles_deployment_error_injected', 'assign_roles', 'manual__2026-03-20T12:36:07.276741+00:00', '--job-id', '132', '--raw', '--subdir', 'DAGS_FOLDER/nfs_dynamic_roles_deployment_error_injected.py', '--cfg-path', '/tmp/tmpr_edlle0']",
+        "Job 132: Subtask assign_roles",
+        "Running <TaskInstance: nfs_dynamic_roles_deployment_error_injected.assign_roles manual__2026-03-20T12:36:07.276741+00:00 [running]> on host tejasvi-Vostro-15-3515"
+      ]
+    },
+    {
+      "task_id": "create_server_storage",
+      "step_number": 2,
+      "description": "Task execution for create_server_storage",
+      "summary": "Running <TaskInstance: nfs_dynamic_roles_deployment_error_injected.create_server_storage manual__2026-03-20T12:36:07.276741+00:00 [running]> on host tejasvi-Vostro-15-3515",
+      "key_events": [
+        "Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment_error_injected.create_server_storage manual__2026-03-20T12:36:07.276741+00:00 [queued]>",
+        "Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment_error_injected.create_server_storage manual__2026-03-20T12:36:07.276741+00:00 [queued]>",
+        "Starting attempt 1 of 2",
+        "Executing <Task(DynamicSSHOperator): create_server_storage> on 2026-03-20 12:36:07.276741+00:00",
+        "Started process 41978 to run task",
+        "Running: ['airflow', 'tasks', 'run', 'nfs_dynamic_roles_deployment_error_injected', 'create_server_storage', 'manual__2026-03-20T12:36:07.276741+00:00', '--job-id', '133', '--raw', '--subdir', 'DAGS_FOLDER/nfs_dynamic_roles_deployment_error_injected.py', '--cfg-path', '/tmp/tmpjztbejqa']",
+        "Job 133: Subtask create_server_storage",
+        "Running <TaskInstance: nfs_dynamic_roles_deployment_error_injected.create_server_storage manual__2026-03-20T12:36:07.276741+00:00 [running]> on host tejasvi-Vostro-15-3515"
+      ]
+    },
+    {
+      "task_id": "deploy_server",
+      "step_number": 3,
+      "description": "Task execution for deploy_server",
+      "summary": "Running <TaskInstance: nfs_dynamic_roles_deployment_error_injected.deploy_server manual__2026-03-20T12:36:07.276741+00:00 [running]> on host tejasvi-Vostro-15-3515",
+      "key_events": [
+        "Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment_error_injected.deploy_server manual__2026-03-20T12:36:07.276741+00:00 [queued]>",
+        "Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: nfs_dynamic_roles_deployment_error_injected.deploy_server manual__2026-03-20T12:36:07.276741+00:00 [queued]>",
+        "Starting attempt 1 of 2",
+        "Executing <Task(DynamicSSHOperator): deploy_server> on 2026-03-20 12:36:07.276741+00:00",
+        "Started process 42049 to run task",
+        "Running: ['airflow', 'tasks', 'run', 'nfs_dynamic_roles_deployment_error_injected', 'deploy_server', 'manual__2026-03-20T12:36:07.276741+00:00', '--job-id', '134', '--raw', '--subdir', 'DAGS_FOLDER/nfs_dynamic_roles_deployment_error_injected.py', '--cfg-path', '/tmp/tmprr0sarb8']",
+        "Job 134: Subtask deploy_server",
+        "Running <TaskInstance: nfs_dynamic_roles_deployment_error_injected.deploy_server manual__2026-03-20T12:36:07.276741+00:00 [running]> on host tejasvi-Vostro-15-3515"
+      ]
+    }
+  ],
+  "failed_task": {
+    "task_id": "wait_for_server_boot",
+    "step_number": 4,
+    "description": "Task execution for wait_for_server_boot",
+    "error_type": "airflow.exceptions.AirflowException",
+    "error_message": "SSH operator error: exit status = 1",
+    "traceback": "Traceback (most recent call last):\n  File \"/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/models/taskinstance.py\", line 444, in _execute_task\n    result = _execute_callable(context=context, **execute_callable_kwargs)\n  File \"/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/models/taskinstance.py\", line 414, in _execute_callable\n    return execute_callable(context=context, **execute_callable_kwargs)\n  File \"/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/providers/ssh/operators/ssh.py\", line 191, in execute\n    result = self.run_ssh_client_command(ssh_client, self.command, context=context)\n  File \"/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/providers/ssh/operators/ssh.py\", line 179, in run_ssh_client_command\n    self.raise_for_status(exit_status, agg_stderr, context=context)\n  File \"/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/providers/ssh/operators/ssh.py\", line 173, in raise_for_status\n    raise AirflowException(f\"SSH operator error: exit status = {exit_status}\")\nairflow.exceptions.AirflowException: SSH operator error: exit status = 1",
+    "logs": [
+      "echo \"ERROR: NFS server failed to start. Logs:\"",
+      "[2026-03-20T18:08:07.684+0530] {ssh.py:526} INFO - ERROR: NFS server failed to start. Logs:",
+      "[2026-03-20T18:08:07.771+0530] {ssh.py:526} INFO - ----> ERROR: nfs module is not loaded in the Docker host's kernel (try: modprobe nfs)",
+      "[2026-03-20T18:08:07.919+0530] {taskinstance.py:2728} ERROR - Task failed with exception",
+      "Traceback (most recent call last):",
+      "raise AirflowException(f\"SSH operator error: exit status = {exit_status}\")",
+      "airflow.exceptions.AirflowException: SSH operator error: exit status = 1",
+      "[2026-03-20T18:08:07.926+0530] {taskinstance.py:1149} INFO - Marking task as FAILED. dag_id=nfs_dynamic_roles_deployment_error_injected, task_id=wait_for_server_boot, execution_date=20260320T123607, start_date=20260320T123736, end_date=20260320T123807",
+      "[2026-03-20T18:08:07.975+0530] {standard_task_runner.py:107} ERROR - Failed to execute job 136 for task wait_for_server_boot (SSH operator error: exit status = 1; 42913)"
+    ]
+  }
+}

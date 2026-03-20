@@ -82,7 +82,7 @@ MOCK_PAST_ERRORS = [
                 "Fix Applied: Enabled iLO dedicated network port via physical server access, re-ran configure_ilo task successfully.",
         "source": "Past Error Log #001"
     },
-    #---Actual error logs---
+    #---Actual error logs for installation of MinIO---
     {
         "id": "err_002",
         "text":"wget: unable to resolve host address",
@@ -159,6 +159,18 @@ MOCK_PAST_ERRORS = [
                 "Error_type: File System Error "
                 "Severity: Medium - prevents file access, but fix is typically straightforward and does not indicate deeper system issues."
                 "Retrieved_sources: "
+    },
+    # ---Actual error logs for configuration of MinIO---
+    {
+        "id": "err_009",
+        "text": "mc: <Error> Deprecated command. Please use 'mc admin policy attach'",
+                
+        "source": "Diagnosis: The mc admin policy set command is deprecated and has been replaced with mc policy admin attach in newer versions of the MinIO client."
+                "Solution: Replace the deprecated command with the new syntax: {MC_BINARY} admin policy attach local (readwrite|readonly|writeonly) --user={MINIO_USER}. Replaces mc admin policy (set|unset|update) commands with mc admin policy (attach|detach)."
+                "Prevention: Always check the MinIO client version and review changelogs when upgrading, or use mc --help to verify current command syntax before scripting."
+                "Error_type:  Configuration Error - using incorrect command syntax due to version mismatch or outdated script. "
+                "Severity: Low - easily fixable by updating to the current command syntax."
+                "Retrieved_sources: https://github.com/minio/mc/issues/4513, https://docs.min.io/enterprise/aistor-object-store/reference/cli/admin/mc-admin-policy/mc-admin-policy-attach/"
     },
 ]
 

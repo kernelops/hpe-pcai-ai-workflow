@@ -163,7 +163,7 @@ MOCK_PAST_ERRORS = [
     # ---Actual error logs for configuration of MinIO---
     {
         "id": "err_009",
-        "text": "mc: <Error> Deprecated command. Please use 'mc admin policy attach'",
+        "text": "mc: <ERROR> Deprecated command. Please use 'mc admin policy attach'",
                 
         "source": "Diagnosis: The mc admin policy set command is deprecated and has been replaced with mc policy admin attach in newer versions of the MinIO client."
                 "Solution: Replace the deprecated command with the new syntax: {MC_BINARY} admin policy attach local (readwrite|readonly|writeonly) --user={MINIO_USER}. Replaces mc admin policy (set|unset|update) commands with mc admin policy (attach|detach)."
@@ -172,6 +172,29 @@ MOCK_PAST_ERRORS = [
                 "Severity: Low - easily fixable by updating to the current command syntax."
                 "Retrieved_sources: https://github.com/minio/mc/issues/4513, https://docs.min.io/enterprise/aistor-object-store/reference/cli/admin/mc-admin-policy/mc-admin-policy-attach/"
     },
+    {
+        "id": "err_010",
+        "text": "mc: <ERROR> Unable to initialize new alias from the provided credentials. Get \"http://<IP_ADDRESS>:<PORT_NUMBER>/probe-bsign-<RANDOM_STRING>/?location=\": dial tcp 127.0.0.1:<PORT_NUMBER>:connect: connection refused",
+                
+        "source": "Diagnosis: MinIO client (mc) is unable to connect to the MinIO server at <IP_ADDRESS>:<PORT_NUMBER>. The connection is being actively refused, meaning no service is listening on that port. This could mean that the MinIO server is not running, or it is running on a different port, or MinIO crashed or failed to start."
+                "Solution: Check if MinIO server is running: (ps aux | grep minio). Start MinIO if not running: (minio server /data --console-address ":9000"). Verify the correct port: (netstat -tuln | grep 9000). Port 9000 is the default port. Update mc alias with the correct endpoint."
+                "Prevention: Always verify the correct MinIO API port (default 9000) before configuring aliases, and check that the server is actually running on that port."
+                "Error_type:  Connection Error "
+                "Severity: Mediun - blocks all downstream MinIO operations."
+                "Retrieved_sources: https://github.com/minio/minio/issues/13639#issuecomment-966244704"
+    },
+    {
+        "id": "err_011",
+        "text": "Command exited with return code 1",
+                
+        "source": "Diagnosis: This is a generic failure message. The exact cause can be found in earlier logs. "
+                "Solution: Check earlier logs for ERRORS/Exception. Find the root cause and fix the underlying issue."
+                "Prevention: Log detailed command output (stdout + stderr). Add explicit error messages in scripts."
+                "Error_type: Execution Error"
+                "Severity: Medium - Task failed, but reason is not present in the error message itself"
+                "Retrieved_sources: https://stackoverflow.com/questions/20965762/meaning-of-exit-status-1-returned-by-linux-command"
+    },
+    
 ]
 
 

@@ -1,0 +1,29 @@
+[2026-03-18T12:32:04.152+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-18T12:32:04.301+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: deployment_workflow.validate_nfs_export manual__2026-03-18T12:30:42.617782 map_index=0 [queued]>
+[2026-03-18T12:32:04.364+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: deployment_workflow.validate_nfs_export manual__2026-03-18T12:30:42.617782 map_index=0 [queued]>
+[2026-03-18T12:32:04.376+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-03-18T12:32:04.463+0000] {taskinstance.py:2330} INFO - Executing <Mapped(SSHOperator): validate_nfs_export> on 2026-03-18 12:30:43.765785+00:00
+[2026-03-18T12:32:04.489+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'deployment_workflow', 'validate_nfs_export', 'manual__2026-03-18T12:30:42.617782', '--job-id', '229', '--raw', '--subdir', 'DAGS_FOLDER/deployment_workflow.py', '--cfg-path', '/tmp/tmpi7_n8caq', '--map-index', '0']
+[2026-03-18T12:32:04.507+0000] {standard_task_runner.py:91} INFO - Job 229: Subtask validate_nfs_export
+[2026-03-18T12:32:04.496+0000] {warnings.py:110} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61: DeprecationWarning: This process (pid=119) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+
+[2026-03-18T12:32:04.533+0000] {standard_task_runner.py:63} INFO - Started process 121 to run task
+[2026-03-18T12:32:04.724+0000] {task_command.py:426} INFO - Running <TaskInstance: deployment_workflow.validate_nfs_export manual__2026-03-18T12:30:42.617782 map_index=0 [running]> on host 7ee527dcce31
+[2026-03-18T12:32:05.142+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='deployment_workflow' AIRFLOW_CTX_TASK_ID='validate_nfs_export' AIRFLOW_CTX_EXECUTION_DATE='2026-03-18T12:30:43.765785+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-18T12:30:42.617782'
+[2026-03-18T12:32:05.146+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-03-18T12:32:05.146+0000] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-18T12:32:05.147+0000] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-18T12:32:05.167+0000] {base.py:84} INFO - Using connection ID 'worker_node_192_168_1_2' for task execution.
+[2026-03-18T12:32:05.169+0000] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-18T12:32:05.628+0000] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-03-18T12:32:06.136+0000] {transport.py:1909} INFO - Authentication (password) successful!
+[2026-03-18T12:32:06.138+0000] {ssh.py:480} INFO - Running command: set -e; sudo exportfs -v; showmount -e localhost || sudo exportfs -v
+[2026-03-18T12:32:07.908+0000] {ssh.py:526} INFO - /srv/nfs/share	<world>(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,no_root_squash,no_all_squash)
+[2026-03-18T12:32:07.936+0000] {ssh.py:526} INFO - Export list for localhost:
+[2026-03-18T12:32:07.938+0000] {ssh.py:526} INFO - /srv/nfs/share *
+[2026-03-18T12:32:08.012+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-03-18T12:32:08.075+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=deployment_workflow, task_id=validate_nfs_export, run_id=manual__2026-03-18T12:30:42.617782, map_index=0, execution_date=20260318T123043, start_date=20260318T123204, end_date=20260318T123208
+[2026-03-18T12:32:08.144+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2026-03-18T12:32:08.200+0000] {taskinstance.py:3498} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-03-18T12:32:08.205+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

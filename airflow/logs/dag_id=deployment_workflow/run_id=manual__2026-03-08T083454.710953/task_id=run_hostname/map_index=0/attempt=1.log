@@ -1,0 +1,32 @@
+[2026-03-08T08:35:20.904+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-08T08:35:20.955+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: deployment_workflow.run_hostname manual__2026-03-08T08:34:54.710953 map_index=0 [queued]>
+[2026-03-08T08:35:20.986+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: deployment_workflow.run_hostname manual__2026-03-08T08:34:54.710953 map_index=0 [queued]>
+[2026-03-08T08:35:20.988+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-03-08T08:35:21.036+0000] {taskinstance.py:2330} INFO - Executing <Mapped(SSHOperator): run_hostname> on 2026-03-08 08:34:55.698831+00:00
+[2026-03-08T08:35:21.059+0000] {warnings.py:110} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61: DeprecationWarning: This process (pid=219) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+
+[2026-03-08T08:35:21.062+0000] {standard_task_runner.py:63} INFO - Started process 221 to run task
+[2026-03-08T08:35:21.065+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'deployment_workflow', 'run_hostname', 'manual__2026-03-08T08:34:54.710953', '--job-id', '178', '--raw', '--subdir', 'DAGS_FOLDER/deployment_workflow.py', '--cfg-path', '/tmp/tmpvwv74v2v', '--map-index', '0']
+[2026-03-08T08:35:21.071+0000] {standard_task_runner.py:91} INFO - Job 178: Subtask run_hostname
+[2026-03-08T08:35:21.285+0000] {task_command.py:426} INFO - Running <TaskInstance: deployment_workflow.run_hostname manual__2026-03-08T08:34:54.710953 map_index=0 [running]> on host 7ee527dcce31
+[2026-03-08T08:35:21.870+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='deployment_workflow' AIRFLOW_CTX_TASK_ID='run_hostname' AIRFLOW_CTX_EXECUTION_DATE='2026-03-08T08:34:55.698831+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-08T08:34:54.710953'
+[2026-03-08T08:35:21.891+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-03-08T08:35:21.907+0000] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-08T08:35:21.909+0000] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-08T08:35:21.947+0000] {base.py:84} INFO - Using connection ID 'worker_node_192_168_1_5' for task execution.
+[2026-03-08T08:35:21.960+0000] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-08T08:35:22.435+0000] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_for_Windows_9.5)
+[2026-03-08T08:35:23.345+0000] {transport.py:1909} INFO - Authentication (password) successful!
+[2026-03-08T08:35:23.348+0000] {ssh.py:480} INFO - Running command: hostname && whoami && powershell -command Get-Date
+[2026-03-08T08:35:24.749+0000] {ssh.py:526} INFO - [2J[m[HL]0;C:\windows\system32\conhost.exe[?25h
+[2026-03-08T08:35:24.767+0000] {ssh.py:526} INFO - APTOP-9CCR53BI
+[2026-03-08T08:35:24.788+0000] {ssh.py:526} INFO - laptop-9ccr53bi\sshuser
+[2026-03-08T08:35:24.817+0000] {ssh.py:526} INFO - 
+[2026-03-08T08:35:25.655+0000] {ssh.py:526} INFO - 
+[2026-03-08T08:35:25.679+0000] {ssh.py:526} INFO - [25l08 March 2026 14:05:33[7;1H[?25h
+[2026-03-08T08:35:25.794+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-03-08T08:35:25.828+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=deployment_workflow, task_id=run_hostname, run_id=manual__2026-03-08T08:34:54.710953, map_index=0, execution_date=20260308T083455, start_date=20260308T083520, end_date=20260308T083525
+[2026-03-08T08:35:25.891+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2026-03-08T08:35:25.925+0000] {taskinstance.py:3498} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-03-08T08:35:25.932+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

@@ -1,0 +1,56 @@
+[2026-03-20T12:27:58.996+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-20T12:27:59.061+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: deployment_workflow.simulate_postcheck_error manual__2026-03-20T12:27:42.252367 map_index=0 [queued]>
+[2026-03-20T12:27:59.094+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: deployment_workflow.simulate_postcheck_error manual__2026-03-20T12:27:42.252367 map_index=0 [queued]>
+[2026-03-20T12:27:59.099+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-03-20T12:27:59.142+0000] {taskinstance.py:2330} INFO - Executing <Mapped(SSHOperator): simulate_postcheck_error> on 2026-03-20 12:27:42.944851+00:00
+[2026-03-20T12:27:59.182+0000] {warnings.py:110} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61: DeprecationWarning: This process (pid=70) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+
+[2026-03-20T12:27:59.200+0000] {standard_task_runner.py:63} INFO - Started process 78 to run task
+[2026-03-20T12:27:59.209+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'deployment_workflow', 'simulate_postcheck_error', 'manual__2026-03-20T12:27:42.252367', '--job-id', '268', '--raw', '--subdir', 'DAGS_FOLDER/deployment_workflow.py', '--cfg-path', '/tmp/tmp84lwnmbw', '--map-index', '0']
+[2026-03-20T12:27:59.249+0000] {standard_task_runner.py:91} INFO - Job 268: Subtask simulate_postcheck_error
+[2026-03-20T12:27:59.543+0000] {task_command.py:426} INFO - Running <TaskInstance: deployment_workflow.simulate_postcheck_error manual__2026-03-20T12:27:42.252367 map_index=0 [running]> on host 7ee527dcce31
+[2026-03-20T12:27:59.990+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='deployment_workflow' AIRFLOW_CTX_TASK_ID='simulate_postcheck_error' AIRFLOW_CTX_EXECUTION_DATE='2026-03-20T12:27:42.944851+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-20T12:27:42.252367'
+[2026-03-20T12:27:59.996+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-03-20T12:27:59.998+0000] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-20T12:28:00.003+0000] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-20T12:28:00.064+0000] {base.py:84} INFO - Using connection ID 'worker_node_192_168_1_2' for task execution.
+[2026-03-20T12:28:00.065+0000] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-20T12:28:00.267+0000] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-03-20T12:28:00.358+0000] {transport.py:1909} INFO - Authentication (password) successful!
+[2026-03-20T12:28:00.360+0000] {ssh.py:480} INFO - Running command: set -e; echo 'Simulating realistic post-deployment validation failure...'; curl -fsS http://127.0.0.1:9005/minio/health/live
+[2026-03-20T12:28:03.699+0000] {ssh.py:526} INFO - Simulating realistic post-deployment validation failure...
+[2026-03-20T12:28:03.728+0000] {ssh.py:526} INFO - curl: 
+[2026-03-20T12:28:03.729+0000] {ssh.py:526} INFO - (
+[2026-03-20T12:28:03.731+0000] {ssh.py:526} INFO - 7) 
+[2026-03-20T12:28:03.733+0000] {ssh.py:526} INFO - Faile
+[2026-03-20T12:28:03.734+0000] {ssh.py:526} INFO - d t
+[2026-03-20T12:28:03.735+0000] {ssh.py:526} INFO - o co
+[2026-03-20T12:28:03.739+0000] {ssh.py:526} INFO - nn
+[2026-03-20T12:28:03.745+0000] {ssh.py:526} INFO - ect to 127.0.0.1 port 9
+[2026-03-20T12:28:03.746+0000] {ssh.py:526} INFO - 005 after 0 ms: Connection refused
+[2026-03-20T12:28:03.786+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-03-20T12:28:03.800+0000] {taskinstance.py:2905} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 465, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 432, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py", line 400, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 191, in execute
+    result = self.run_ssh_client_command(ssh_client, self.command, context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 179, in run_ssh_client_command
+    self.raise_for_status(exit_status, agg_stderr, context=context)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 173, in raise_for_status
+    raise AirflowException(f"SSH operator error: exit status = {exit_status}")
+airflow.exceptions.AirflowException: SSH operator error: exit status = 7
+[2026-03-20T12:28:03.807+0000] {taskinstance.py:1206} INFO - Marking task as FAILED. dag_id=deployment_workflow, task_id=simulate_postcheck_error, run_id=manual__2026-03-20T12:27:42.252367, map_index=0, execution_date=20260320T122742, start_date=20260320T122759, end_date=20260320T122803
+[2026-03-20T12:28:03.828+0000] {standard_task_runner.py:110} ERROR - Failed to execute job 268 for task simulate_postcheck_error (SSH operator error: exit status = 7; 78)
+[2026-03-20T12:28:03.874+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 1
+[2026-03-20T12:28:03.944+0000] {taskinstance.py:3498} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-03-20T12:28:03.950+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

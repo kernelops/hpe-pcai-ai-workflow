@@ -1,0 +1,224 @@
+[2026-03-18T12:43:35.404+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-18T12:43:35.459+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: deployment_workflow.install_nfs_packages manual__2026-03-18T12:42:53.528791 map_index=0 [queued]>
+[2026-03-18T12:43:35.475+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: deployment_workflow.install_nfs_packages manual__2026-03-18T12:42:53.528791 map_index=0 [queued]>
+[2026-03-18T12:43:35.478+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-03-18T12:43:35.501+0000] {taskinstance.py:2330} INFO - Executing <Mapped(SSHOperator): install_nfs_packages> on 2026-03-18 12:42:55.045696+00:00
+[2026-03-18T12:43:35.515+0000] {warnings.py:110} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61: DeprecationWarning: This process (pid=277) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+
+[2026-03-18T12:43:35.520+0000] {standard_task_runner.py:63} INFO - Started process 279 to run task
+[2026-03-18T12:43:35.518+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'deployment_workflow', 'install_nfs_packages', 'manual__2026-03-18T12:42:53.528791', '--job-id', '233', '--raw', '--subdir', 'DAGS_FOLDER/deployment_workflow.py', '--cfg-path', '/tmp/tmph2sgf0q1', '--map-index', '0']
+[2026-03-18T12:43:35.522+0000] {standard_task_runner.py:91} INFO - Job 233: Subtask install_nfs_packages
+[2026-03-18T12:43:35.618+0000] {task_command.py:426} INFO - Running <TaskInstance: deployment_workflow.install_nfs_packages manual__2026-03-18T12:42:53.528791 map_index=0 [running]> on host 7ee527dcce31
+[2026-03-18T12:43:35.934+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='deployment_workflow' AIRFLOW_CTX_TASK_ID='install_nfs_packages' AIRFLOW_CTX_EXECUTION_DATE='2026-03-18T12:42:55.045696+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-18T12:42:53.528791'
+[2026-03-18T12:43:35.938+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-03-18T12:43:35.939+0000] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-18T12:43:35.940+0000] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-18T12:43:35.956+0000] {base.py:84} INFO - Using connection ID 'worker_node_192_168_1_2' for task execution.
+[2026-03-18T12:43:35.960+0000] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-18T12:43:36.015+0000] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-03-18T12:43:36.132+0000] {transport.py:1909} INFO - Authentication (password) successful!
+[2026-03-18T12:43:36.133+0000] {ssh.py:480} INFO - Running command: set -e; export DEBIAN_FRONTEND=noninteractive; sudo apt-get update; sudo apt-get install -y nfs-kernel-server nfs-common
+[2026-03-18T12:43:36.582+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:36.582+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-03-18T12:43:37.084+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:37.086+0000] {ssh.py:526} INFO - 0% [Waiting for headers] [Waiting for headers]
+[2026-03-18T12:43:37.264+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:37.268+0000] {ssh.py:526} INFO -                                               
+[2026-03-18T12:43:37.269+0000] {ssh.py:526} INFO - Hit:1 http://security.ubuntu.com/ubuntu jammy-security InRelease
+[2026-03-18T12:43:37.271+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:37.272+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:37.273+0000] {ssh.py:526} INFO -                                               
+[2026-03-18T12:43:37.275+0000] {ssh.py:526} INFO - 0% [Waiting for headers]
+[2026-03-18T12:43:37.275+0000] {ssh.py:526} INFO -                         
+[2026-03-18T12:43:37.276+0000] {ssh.py:526} INFO - Hit:2 http://in.archive.ubuntu.com/ubuntu jammy InRelease
+[2026-03-18T12:43:37.277+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:37.278+0000] {ssh.py:526} INFO - 0% [Waiting for headers]
+[2026-03-18T12:43:37.437+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:37.439+0000] {ssh.py:526} INFO -                         
+[2026-03-18T12:43:37.441+0000] {ssh.py:526} INFO - Hit:3 http://in.archive.ubuntu.com/ubuntu jammy-updates InRelease
+[2026-03-18T12:43:37.442+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:37.442+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:37.443+0000] {ssh.py:526} INFO - 0% [Waiting for headers]
+[2026-03-18T12:43:37.498+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:37.499+0000] {ssh.py:526} INFO - 0% [Waiting for headers]
+[2026-03-18T12:43:37.624+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:37.627+0000] {ssh.py:526} INFO -                         
+[2026-03-18T12:43:37.628+0000] {ssh.py:526} INFO - Hit:4 http://in.archive.ubuntu.com/ubuntu jammy-backports InRelease
+[2026-03-18T12:43:37.630+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:37.631+0000] {ssh.py:526} INFO -                         
+[2026-03-18T12:43:37.632+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-03-18T12:43:37.738+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:37.739+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-03-18T12:43:37.924+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:37.925+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-03-18T12:43:38.124+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:38.126+0000] {ssh.py:526} INFO - 20% [Working]
+[2026-03-18T12:43:38.128+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:38.129+0000] {ssh.py:526} INFO -              
+[2026-03-18T12:43:38.433+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:38.437+0000] {ssh.py:526} INFO - Reading package lists... 0%
+[2026-03-18T12:43:38.456+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:38.464+0000] {ssh.py:526} INFO - Reading package lists... 0%
+[2026-03-18T12:43:38.492+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:38.495+0000] {ssh.py:526} INFO - Reading package lists... 0%
+[2026-03-18T12:43:38.553+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:38.555+0000] {ssh.py:526} INFO - Reading package lists... 2%
+[2026-03-18T12:43:38.556+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:38.557+0000] {ssh.py:526} INFO - Reading package lists... 2%
+[2026-03-18T12:43:38.561+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:38.563+0000] {ssh.py:526} INFO - Reading package lists... 3%
+[2026-03-18T12:43:38.564+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:38.564+0000] {ssh.py:526} INFO - Reading package lists... 3%
+[2026-03-18T12:43:38.571+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:38.572+0000] {ssh.py:526} INFO - Reading package lists... 3%
+[2026-03-18T12:43:38.573+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:38.573+0000] {ssh.py:526} INFO - Reading package lists... 3%
+[2026-03-18T12:43:38.575+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:38.576+0000] {ssh.py:526} INFO - Reading package lists... 3%
+[2026-03-18T12:43:38.577+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:38.577+0000] {ssh.py:526} INFO - Reading package lists... 3%
+[2026-03-18T12:43:39.178+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:39.179+0000] {ssh.py:526} INFO - Reading package lists... 11%
+[2026-03-18T12:43:39.902+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:39.902+0000] {ssh.py:526} INFO - Reading package lists... 22%
+[2026-03-18T12:43:40.062+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:40.063+0000] {ssh.py:526} INFO - Reading package lists... 25%
+[2026-03-18T12:43:40.063+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:40.064+0000] {ssh.py:526} INFO - Reading package lists... 25%
+[2026-03-18T12:43:40.189+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:40.190+0000] {ssh.py:526} INFO - Reading package lists... 35%
+[2026-03-18T12:43:40.190+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:40.192+0000] {ssh.py:526} INFO - Reading package lists... 35%
+[2026-03-18T12:43:40.208+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:40.209+0000] {ssh.py:526} INFO - Reading package lists... 35%
+[2026-03-18T12:43:40.210+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:40.210+0000] {ssh.py:526} INFO - Reading package lists... 35%
+[2026-03-18T12:43:40.212+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:40.213+0000] {ssh.py:526} INFO - Reading package lists... 35%
+[2026-03-18T12:43:40.214+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:40.215+0000] {ssh.py:526} INFO - Reading package lists... 35%
+[2026-03-18T12:43:40.486+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:40.486+0000] {ssh.py:526} INFO - Reading package lists... 42%
+[2026-03-18T12:43:40.487+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:40.488+0000] {ssh.py:526} INFO - Reading package lists... 42%
+[2026-03-18T12:43:40.556+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:40.557+0000] {ssh.py:526} INFO - Reading package lists... 46%
+[2026-03-18T12:43:40.558+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:40.559+0000] {ssh.py:526} INFO - Reading package lists... 46%
+[2026-03-18T12:43:40.632+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:40.633+0000] {ssh.py:526} INFO - Reading package lists... 48%
+[2026-03-18T12:43:40.959+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:40.960+0000] {ssh.py:526} INFO - Reading package lists... 58%
+[2026-03-18T12:43:40.961+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:40.961+0000] {ssh.py:526} INFO - Reading package lists... 58%
+[2026-03-18T12:43:41.041+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.042+0000] {ssh.py:526} INFO - Reading package lists... 65%
+[2026-03-18T12:43:41.043+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.043+0000] {ssh.py:526} INFO - Reading package lists... 65%
+[2026-03-18T12:43:41.150+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.152+0000] {ssh.py:526} INFO - Reading package lists... 67%
+[2026-03-18T12:43:41.152+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.153+0000] {ssh.py:526} INFO - Reading package lists... 67%
+[2026-03-18T12:43:41.167+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.167+0000] {ssh.py:526} INFO - Reading package lists... 68%
+[2026-03-18T12:43:41.168+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.169+0000] {ssh.py:526} INFO - Reading package lists... 68%
+[2026-03-18T12:43:41.171+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.172+0000] {ssh.py:526} INFO - Reading package lists... 68%
+[2026-03-18T12:43:41.173+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.174+0000] {ssh.py:526} INFO - Reading package lists... 68%
+[2026-03-18T12:43:41.175+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.176+0000] {ssh.py:526} INFO - Reading package lists... 68%
+[2026-03-18T12:43:41.177+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.177+0000] {ssh.py:526} INFO - Reading package lists... 68%
+[2026-03-18T12:43:41.186+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.187+0000] {ssh.py:526} INFO - Reading package lists... 68%
+[2026-03-18T12:43:41.188+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.188+0000] {ssh.py:526} INFO - Reading package lists... 68%
+[2026-03-18T12:43:41.190+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.191+0000] {ssh.py:526} INFO - Reading package lists... 68%
+[2026-03-18T12:43:41.191+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.192+0000] {ssh.py:526} INFO - Reading package lists... 68%
+[2026-03-18T12:43:41.192+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.193+0000] {ssh.py:526} INFO - Reading package lists... 68%
+[2026-03-18T12:43:41.193+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.194+0000] {ssh.py:526} INFO - Reading package lists... 68%
+[2026-03-18T12:43:41.194+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.195+0000] {ssh.py:526} INFO - Reading package lists... 68%
+[2026-03-18T12:43:41.195+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.196+0000] {ssh.py:526} INFO - Reading package lists... 68%
+[2026-03-18T12:43:41.275+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.276+0000] {ssh.py:526} INFO - Reading package lists... 74%
+[2026-03-18T12:43:41.277+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.281+0000] {ssh.py:526} INFO - Reading package lists... 74%
+[2026-03-18T12:43:41.336+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.338+0000] {ssh.py:526} INFO - Reading package lists... 79%
+[2026-03-18T12:43:41.339+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.340+0000] {ssh.py:526} INFO - Reading package lists... 79%
+[2026-03-18T12:43:41.346+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.347+0000] {ssh.py:526} INFO - Reading package lists... 79%
+[2026-03-18T12:43:41.521+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.522+0000] {ssh.py:526} INFO - Reading package lists... 89%
+[2026-03-18T12:43:41.523+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.523+0000] {ssh.py:526} INFO - Reading package lists... 89%
+[2026-03-18T12:43:41.592+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.594+0000] {ssh.py:526} INFO - Reading package lists... 96%
+[2026-03-18T12:43:41.600+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.606+0000] {ssh.py:526} INFO - Reading package lists... 96%
+[2026-03-18T12:43:41.627+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.635+0000] {ssh.py:526} INFO - Reading package lists... 98%
+[2026-03-18T12:43:41.640+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.642+0000] {ssh.py:526} INFO - Reading package lists... 98%
+[2026-03-18T12:43:41.645+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.647+0000] {ssh.py:526} INFO - Reading package lists... 99%
+[2026-03-18T12:43:41.648+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.651+0000] {ssh.py:526} INFO - Reading package lists... 99%
+[2026-03-18T12:43:41.659+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.661+0000] {ssh.py:526} INFO - Reading package lists... 99%
+[2026-03-18T12:43:41.667+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.670+0000] {ssh.py:526} INFO - Reading package lists... 99%
+[2026-03-18T12:43:41.795+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.796+0000] {ssh.py:526} INFO - Reading package lists... 99%
+[2026-03-18T12:43:41.797+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.797+0000] {ssh.py:526} INFO - Reading package lists... 99%
+[2026-03-18T12:43:41.989+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:41.992+0000] {ssh.py:526} INFO - Reading package lists... Done
+[2026-03-18T12:43:42.001+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:42.130+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:42.131+0000] {ssh.py:526} INFO - Reading package lists... 0%
+[2026-03-18T12:43:42.161+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:42.163+0000] {ssh.py:526} INFO - Reading package lists... 100%
+[2026-03-18T12:43:42.163+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:42.164+0000] {ssh.py:526} INFO - Reading package lists... Done
+[2026-03-18T12:43:42.165+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:42.180+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:42.183+0000] {ssh.py:526} INFO - Building dependency tree... 0%
+[2026-03-18T12:43:42.184+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:42.185+0000] {ssh.py:526} INFO - Building dependency tree... 0%
+[2026-03-18T12:43:42.381+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:42.383+0000] {ssh.py:526} INFO - Building dependency tree... 50%
+[2026-03-18T12:43:42.384+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:42.385+0000] {ssh.py:526} INFO - Building dependency tree... 50%
+[2026-03-18T12:43:42.871+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:42.872+0000] {ssh.py:526} INFO - Building dependency tree... 89%
+[2026-03-18T12:43:43.000+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:43.001+0000] {ssh.py:526} INFO - Building dependency tree... Done
+[2026-03-18T12:43:43.002+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:43.002+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:43.003+0000] {ssh.py:526} INFO - Reading state information... 0% 
+[2026-03-18T12:43:43.004+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:43.005+0000] {ssh.py:526} INFO - Reading state information... 0%
+[2026-03-18T12:43:43.015+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:43.016+0000] {ssh.py:526} INFO - Reading state information... Done
+[2026-03-18T12:43:43.017+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:43.085+0000] {ssh.py:526} INFO - nfs-common is already the newest version (1:2.6.1-1ubuntu1.2).
+[2026-03-18T12:43:43.087+0000] {ssh.py:526} INFO - nfs-kernel-server is already the newest version (1:2.6.1-1ubuntu1.2).
+[2026-03-18T12:43:43.088+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:44.113+0000] {ssh.py:526} INFO - 0 upgraded, 0 newly installed, 0 to remove and 74 not upgraded.
+[2026-03-18T12:43:44.114+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:44.168+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-03-18T12:43:44.195+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=deployment_workflow, task_id=install_nfs_packages, run_id=manual__2026-03-18T12:42:53.528791, map_index=0, execution_date=20260318T124255, start_date=20260318T124335, end_date=20260318T124344
+[2026-03-18T12:43:44.240+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2026-03-18T12:43:44.341+0000] {taskinstance.py:3498} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2026-03-18T12:43:44.347+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Infrastructure Deployment Platform</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-logo">AI</span>
+        <div>
+          <h1>AI Infrastructure Deployment Platform</h1>
+          <p>Orchestrate and monitor your infrastructure workflows in real time.</p>
+        </div>
+      </div>
+      <div class="header-status">
+        <span id="global-status-pill" class="status-pill status-idle">Idle</span>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <span class="sidebar-title">SecureInfra</span>
+        </div>
+        <nav class="sidebar-nav">
+          <button class="nav-item nav-item-active" data-view-target="overview">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Dashboard</span>
+          </button>
+          <button class="nav-item" data-view-target="nodes">
+            <span class="nav-icon">🖥</span>
+            <span class="nav-label">Worker Nodes</span>
+          </button>
+          <button class="nav-item" data-view-target="health">
+            <span class="nav-icon">🔐</span>
+            <span class="nav-label">SSH Validation</span>
+          </button>
+          <button class="nav-item" data-view-target="deployment">
+            <span class="nav-icon">⚙️</span>
+            <span class="nav-label">Deployment</span>
+          </button>
+        </nav>
+      </aside>
+
+      <main class="app-main">
+        <section id="view-overview" class="view-panel view-active">
+          <section class="panel">
+            <div class="panel-header">
+              <h2>Platform Overview</h2>
+            </div>
+            <div class="overview-grid">
+              <div class="metric">
+                <span class="label">Total Nodes</span>
+                <span id="overview-total-nodes" class="value">0</span>
+              </div>
+              <div class="metric">
+                <span class="label">Connected Nodes</span>
+                <span id="overview-connected-nodes" class="value">0</span>
+              </div>
+              <div class="metric">
+                <span class="label">Last Deployment Run ID</span>
+                <span id="overview-last-run-id" class="value">—</span>
+              </div>
+              <div class="metric">
+                <span class="label">Last Deployment Status</span>
+                <span id="overview-last-status" class="value">Idle</span>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section id="view-nodes" class="view-panel">
+          <section class="panel infrastructure-nodes">
+            <div class="panel-header">
+              <h2>Infrastructure Nodes</h2>
+            </div>
+            <form id="add-node-form" class="node-form">
+              <div class="field">
+                <label for="node-ip">IP Address</label>
+                <input id="node-ip" name="ip" type="text" placeholder="128.168.1.5" required />
+              </div>
+              <div class="field">
+                <label for="node-username">Username</label>
+                <input id="node-username" name="username" type="text" placeholder="root" required />
+              </div>
+              <div class="field">
+                <label for="node-password">Password</label>
+                <input id="node-password" name="password" type="password" placeholder="••••••••" required />
+              </div>
+              <button type="submit" class="secondary-btn">Add Worker Node</button>
+            </form>
+            <div class="table-wrapper">
+              <table class="nodes-table">
+                <thead>
+                  <tr>
+                    <th>IP</th>
+                    <th>Username</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="nodes-table-body">
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="view-health" class="view-panel">
+          <section class="panel node-health">
+            <div class="panel-header">
+              <h2>SSH Validation</h2>
+              <button id="refresh-status-btn" class="ghost-btn">Run SSH Health Check</button>
+            </div>
+            <div class="node-health-metrics">
+              <div class="metric">
+                <span class="label">Total Nodes</span>
+                <span id="total-nodes-count" class="value">0</span>
+              </div>
+              <div class="metric">
+                <span class="label">Connected</span>
+                <span id="connected-nodes-count" class="value">0</span>
+              </div>
+              <div class="metric">
+                <span class="label">Unreachable</span>
+                <span id="unreachable-nodes-count" class="value">0</span>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section id="view-deployment" class="view-panel">
+          <section class="panel deployment-status">
+            <div class="panel-header">
+              <h2>Deployment Status</h2>
+              <button id="start-deployment-btn" class="primary-btn">Start Infrastructure Deployment</button>
+            </div>
+            <div class="deployment-meta">
+              <div>
+                <span class="label">Current Run ID</span>
+                <span id="current-run-id" class="value">—</span>
+              </div>
+              <div>
+                <span class="label">DAG</span>
+                <span id="current-dag-id" class="value">deployment_workflow</span>
+              </div>
+              <div>
+                <span class="label">Last Updated</span>
+                <span id="last-updated" class="value">—</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel workflow-monitor">
+            <div class="panel-header">
+              <h2>Workflow Monitor</h2>
+            </div>
+            <div class="log-toolbar">
+              <span class="label">Logs for task</span>
+              <select id="task-selector">
+                <option value="get_worker_nodes">get_worker_nodes</option>
+                <option value="create_airflow_connections">create_airflow_connections</option>
+                <option value="run_hostname">run_hostname</option>
+              </select>
+              <button id="clear-logs-btn" class="ghost-btn">Clear</button>
+            </div>
+            <pre id="log-output" class="log-output"></pre>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
+

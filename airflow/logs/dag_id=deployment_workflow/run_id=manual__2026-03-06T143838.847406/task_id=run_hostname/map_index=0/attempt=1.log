@@ -1,0 +1,31 @@
+[2026-03-06T14:39:28.569+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-06T14:39:28.637+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: deployment_workflow.run_hostname manual__2026-03-06T14:38:38.847406 map_index=0 [queued]>
+[2026-03-06T14:39:28.683+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: deployment_workflow.run_hostname manual__2026-03-06T14:38:38.847406 map_index=0 [queued]>
+[2026-03-06T14:39:28.685+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-03-06T14:39:28.786+0000] {taskinstance.py:2330} INFO - Executing <Mapped(SSHOperator): run_hostname> on 2026-03-06 14:38:41.818630+00:00
+[2026-03-06T14:39:28.812+0000] {warnings.py:110} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61: DeprecationWarning: This process (pid=112) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+
+[2026-03-06T14:39:28.823+0000] {standard_task_runner.py:63} INFO - Started process 120 to run task
+[2026-03-06T14:39:28.830+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'deployment_workflow', 'run_hostname', 'manual__2026-03-06T14:38:38.847406', '--job-id', '134', '--raw', '--subdir', 'DAGS_FOLDER/deployment_workflow.py', '--cfg-path', '/tmp/tmpf1npfmqm', '--map-index', '0']
+[2026-03-06T14:39:28.838+0000] {standard_task_runner.py:91} INFO - Job 134: Subtask run_hostname
+[2026-03-06T14:39:29.106+0000] {task_command.py:426} INFO - Running <TaskInstance: deployment_workflow.run_hostname manual__2026-03-06T14:38:38.847406 map_index=0 [running]> on host 0ad8c9765a82
+[2026-03-06T14:39:29.534+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='deployment_workflow' AIRFLOW_CTX_TASK_ID='run_hostname' AIRFLOW_CTX_EXECUTION_DATE='2026-03-06T14:38:41.818630+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-06T14:38:38.847406'
+[2026-03-06T14:39:29.544+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-03-06T14:39:29.547+0000] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-06T14:39:29.548+0000] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-06T14:39:29.576+0000] {base.py:84} INFO - Using connection ID 'worker_node_192_168_1_5' for task execution.
+[2026-03-06T14:39:29.579+0000] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-06T14:39:30.133+0000] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_for_Windows_9.5)
+[2026-03-06T14:39:31.316+0000] {transport.py:1909} INFO - Authentication (password) successful!
+[2026-03-06T14:39:31.322+0000] {ssh.py:480} INFO - Running command: hostname && whoami && powershell -command Get-Date
+[2026-03-06T14:39:32.494+0000] {ssh.py:526} INFO - [2J[m[HL]0;C:\windows\system32\conhost.exe[?25h
+[2026-03-06T14:39:32.507+0000] {ssh.py:526} INFO - APTOP-9CCR53BI
+[2026-03-06T14:39:32.550+0000] {ssh.py:526} INFO - laptop-9ccr53bi\sshuser
+[2026-03-06T14:39:32.573+0000] {ssh.py:526} INFO - 
+[2026-03-06T14:39:33.464+0000] {ssh.py:526} INFO - 
+[2026-03-06T14:39:33.498+0000] {ssh.py:526} INFO - [25l06 March 2026 20:09:41[7;1H[?25h
+[2026-03-06T14:39:33.672+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-03-06T14:39:33.811+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=deployment_workflow, task_id=run_hostname, run_id=manual__2026-03-06T14:38:38.847406, map_index=0, execution_date=20260306T143841, start_date=20260306T143928, end_date=20260306T143933
+[2026-03-06T14:39:34.210+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2026-03-06T14:39:34.339+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

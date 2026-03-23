@@ -1,0 +1,22 @@
+[2026-03-08T02:34:19.026+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-08T02:34:19.128+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: deployment_workflow.get_worker_nodes manual__2026-03-08T02:34:07.034499 [queued]>
+[2026-03-08T02:34:19.181+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: deployment_workflow.get_worker_nodes manual__2026-03-08T02:34:07.034499 [queued]>
+[2026-03-08T02:34:19.258+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-03-08T02:34:19.407+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): get_worker_nodes> on 2026-03-08 02:34:08.963268+00:00
+[2026-03-08T02:34:19.482+0000] {warnings.py:110} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61: DeprecationWarning: This process (pid=465) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+
+[2026-03-08T02:34:19.497+0000] {standard_task_runner.py:63} INFO - Started process 467 to run task
+[2026-03-08T02:34:19.469+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'deployment_workflow', 'get_worker_nodes', 'manual__2026-03-08T02:34:07.034499', '--job-id', '152', '--raw', '--subdir', 'DAGS_FOLDER/deployment_workflow.py', '--cfg-path', '/tmp/tmpk_ge7yrz']
+[2026-03-08T02:34:19.510+0000] {standard_task_runner.py:91} INFO - Job 152: Subtask get_worker_nodes
+[2026-03-08T02:34:19.727+0000] {task_command.py:426} INFO - Running <TaskInstance: deployment_workflow.get_worker_nodes manual__2026-03-08T02:34:07.034499 [running]> on host 0ad8c9765a82
+[2026-03-08T02:34:20.140+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='deployment_workflow' AIRFLOW_CTX_TASK_ID='get_worker_nodes' AIRFLOW_CTX_EXECUTION_DATE='2026-03-08T02:34:08.963268+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-08T02:34:07.034499'
+[2026-03-08T02:34:20.144+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-03-08T02:34:20.216+0000] {logging_mixin.py:188} INFO - Found 1 reachable nodes
+[2026-03-08T02:34:20.217+0000] {logging_mixin.py:188} INFO -  - 192.168.1.5 (sshuser)
+[2026-03-08T02:34:20.218+0000] {python.py:237} INFO - Done. Returned value was: [{'ip': '192.168.1.5', 'username': 'sshuser', 'password': '***', 'status': 'reachable', 'last_checked': '2026-03-08T02:32:13.872912'}]
+[2026-03-08T02:34:20.220+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-03-08T02:34:20.324+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=deployment_workflow, task_id=get_worker_nodes, run_id=manual__2026-03-08T02:34:07.034499, execution_date=20260308T023408, start_date=20260308T023419, end_date=20260308T023420
+[2026-03-08T02:34:20.466+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2026-03-08T02:34:20.671+0000] {taskinstance.py:3498} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2026-03-08T02:34:20.688+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

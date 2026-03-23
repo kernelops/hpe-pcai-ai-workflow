@@ -1,0 +1,647 @@
+[2026-03-05T19:32:05.558+0000] {processor.py:161} INFO - Started process (PID=27467) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:32:05.561+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:32:05.568+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:32:05.567+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:32:05.777+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:32:06.230+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:32:06.229+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:32:06.277+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:32:06.276+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:32:06.397+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.872 seconds
+[2026-03-05T19:32:36.628+0000] {processor.py:161} INFO - Started process (PID=27527) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:32:36.630+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:32:36.634+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:32:36.634+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:32:36.659+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:32:36.694+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:32:36.694+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:32:36.721+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:32:36.721+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:32:36.764+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.147 seconds
+[2026-03-05T19:33:07.258+0000] {processor.py:161} INFO - Started process (PID=27585) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:33:07.261+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:33:07.265+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:33:07.265+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:33:07.311+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:33:07.341+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:33:07.340+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:33:07.383+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:33:07.382+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:33:07.481+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.246 seconds
+[2026-03-05T19:33:38.001+0000] {processor.py:161} INFO - Started process (PID=27644) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:33:38.003+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:33:38.010+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:33:38.009+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:33:38.037+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:33:38.333+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:33:38.333+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:33:38.362+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:33:38.361+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:33:38.412+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.424 seconds
+[2026-03-05T19:34:08.544+0000] {processor.py:161} INFO - Started process (PID=27701) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:34:08.545+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:34:08.549+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:34:08.549+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:34:08.583+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:34:08.641+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:34:08.640+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:34:08.698+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:34:08.693+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:34:08.774+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.245 seconds
+[2026-03-05T19:34:47.737+0000] {processor.py:161} INFO - Started process (PID=27761) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:34:48.134+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:34:48.139+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:34:48.139+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:34:48.558+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:34:49.017+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:34:49.017+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:34:49.129+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:34:49.128+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:34:56.268+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 8.551 seconds
+[2026-03-05T19:35:31.618+0000] {processor.py:161} INFO - Started process (PID=27815) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:35:31.621+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:35:31.625+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:35:31.624+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:35:31.655+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:35:32.361+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:35:32.349+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:35:32.544+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:35:32.544+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:35:32.751+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 1.155 seconds
+[2026-03-05T19:36:03.239+0000] {processor.py:161} INFO - Started process (PID=27881) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:36:03.243+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:36:03.256+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:36:03.255+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:36:03.304+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:36:03.417+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:36:03.417+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:36:03.478+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:36:03.477+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:36:03.533+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.316 seconds
+[2026-03-05T19:36:33.663+0000] {processor.py:161} INFO - Started process (PID=27941) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:36:33.666+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:36:33.669+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:36:33.669+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:36:33.699+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:36:33.721+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:36:33.720+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:36:33.770+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:36:33.770+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:36:33.832+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.189 seconds
+[2026-03-05T19:37:04.656+0000] {processor.py:161} INFO - Started process (PID=27999) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:37:04.660+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:37:04.664+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:37:04.663+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:37:04.697+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:37:05.069+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:37:05.068+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:37:05.121+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:37:05.121+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:37:05.211+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.577 seconds
+[2026-03-05T19:37:35.643+0000] {processor.py:161} INFO - Started process (PID=28061) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:37:35.645+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:37:35.649+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:37:35.648+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:37:35.674+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:37:35.712+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:37:35.712+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:37:35.751+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:37:35.750+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:37:35.812+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.181 seconds
+[2026-03-05T19:38:06.436+0000] {processor.py:161} INFO - Started process (PID=28117) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:38:06.439+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:38:06.458+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:38:06.458+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:38:06.724+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:38:06.816+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:38:06.815+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:38:06.894+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:38:06.893+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:38:07.070+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.675 seconds
+[2026-03-05T19:38:38.934+0000] {processor.py:161} INFO - Started process (PID=28176) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:38:38.958+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:38:38.970+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:38:38.969+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:38:39.076+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:38:39.728+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:38:39.728+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:38:39.815+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:38:39.815+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:38:39.945+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 1.034 seconds
+[2026-03-05T19:39:10.624+0000] {processor.py:161} INFO - Started process (PID=28234) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:39:10.626+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:39:10.634+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:39:10.633+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:39:10.675+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:39:10.743+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:39:10.740+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:39:10.789+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:39:10.788+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:39:10.844+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.234 seconds
+[2026-03-05T19:39:43.595+0000] {processor.py:161} INFO - Started process (PID=28294) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:39:43.608+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:39:43.617+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:39:43.616+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:39:43.862+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:39:43.892+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:39:43.892+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:39:43.963+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:39:43.962+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:39:44.167+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.592 seconds
+[2026-03-05T19:40:16.641+0000] {processor.py:161} INFO - Started process (PID=28325) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:40:16.693+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:40:16.775+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:40:16.774+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:40:18.533+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:40:19.528+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:40:19.527+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:40:19.636+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:40:19.635+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:40:19.943+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 3.324 seconds
+[2026-03-05T19:40:51.853+0000] {processor.py:161} INFO - Started process (PID=28385) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:40:51.864+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:40:51.878+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:40:51.877+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:40:53.054+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:40:53.165+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:40:53.165+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:40:53.215+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:40:53.214+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:40:54.255+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 2.411 seconds
+[2026-03-05T19:41:24.490+0000] {processor.py:161} INFO - Started process (PID=28445) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:41:24.492+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:41:24.495+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:41:24.495+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:41:24.907+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:41:24.944+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:41:24.944+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:41:25.002+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:41:25.001+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:41:26.048+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 1.569 seconds
+[2026-03-05T19:41:57.202+0000] {processor.py:161} INFO - Started process (PID=28504) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:41:57.215+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:41:57.233+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:41:57.231+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:41:57.288+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:41:57.981+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:41:57.981+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:41:58.037+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:41:58.036+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:41:58.144+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.962 seconds
+[2026-03-05T19:42:28.359+0000] {processor.py:161} INFO - Started process (PID=28564) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:42:28.377+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:42:28.381+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:42:28.380+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:42:28.503+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:42:28.603+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:42:28.602+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:42:28.681+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:42:28.680+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:42:28.766+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.428 seconds
+[2026-03-05T19:42:59.585+0000] {processor.py:161} INFO - Started process (PID=28624) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:42:59.600+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:42:59.620+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:42:59.619+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:42:59.985+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:43:00.068+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:43:00.067+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:43:00.171+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:43:00.171+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:43:00.316+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.780 seconds
+[2026-03-05T19:43:31.320+0000] {processor.py:161} INFO - Started process (PID=28682) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:43:31.334+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:43:31.351+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:43:31.350+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:43:31.473+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:43:32.027+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:43:32.027+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:43:32.069+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:43:32.068+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:43:32.204+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.967 seconds
+[2026-03-05T19:44:03.313+0000] {processor.py:161} INFO - Started process (PID=28742) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:44:03.315+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:44:03.332+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:44:03.320+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:44:03.484+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:44:03.599+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:44:03.599+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:44:03.659+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:44:03.658+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:44:03.740+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.463 seconds
+[2026-03-05T19:44:36.594+0000] {processor.py:161} INFO - Started process (PID=28789) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:44:36.609+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:44:36.625+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:44:36.624+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:44:36.684+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:44:36.744+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:44:36.733+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:44:36.827+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:44:36.827+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:44:36.964+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.415 seconds
+[2026-03-05T19:45:09.222+0000] {processor.py:161} INFO - Started process (PID=28849) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:45:09.451+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:45:09.470+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:45:09.469+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:45:10.399+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:45:11.084+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:45:11.083+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:45:11.192+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:45:11.181+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:45:11.356+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 2.157 seconds
+[2026-03-05T19:45:41.683+0000] {processor.py:161} INFO - Started process (PID=28911) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:45:41.699+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:45:41.734+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:45:41.719+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:45:41.778+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:45:41.856+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:45:41.853+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:45:41.917+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:45:41.916+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:45:42.035+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.382 seconds
+[2026-03-05T19:46:12.340+0000] {processor.py:161} INFO - Started process (PID=28970) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:46:12.379+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:46:12.449+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:46:12.448+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:46:12.530+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:46:12.581+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:46:12.580+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:46:12.657+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:46:12.657+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:46:12.764+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.445 seconds
+[2026-03-05T19:46:43.485+0000] {processor.py:161} INFO - Started process (PID=29030) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:46:43.487+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:46:43.491+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:46:43.490+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:46:43.535+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:46:43.900+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:46:43.900+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:46:43.925+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:46:43.925+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:46:43.969+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.505 seconds
+[2026-03-05T19:47:14.584+0000] {processor.py:161} INFO - Started process (PID=29089) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:47:14.586+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:47:14.590+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:47:14.589+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:47:14.637+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:47:14.712+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:47:14.711+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:47:14.774+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:47:14.762+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:47:14.884+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.330 seconds
+[2026-03-05T19:47:45.462+0000] {processor.py:161} INFO - Started process (PID=29149) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:47:45.465+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:47:45.477+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:47:45.476+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:47:45.513+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:47:45.545+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:47:45.544+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:47:45.594+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:47:45.593+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:47:45.678+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.230 seconds
+[2026-03-05T19:48:16.888+0000] {processor.py:161} INFO - Started process (PID=29202) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:48:16.890+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:48:16.893+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:48:16.893+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:48:17.085+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:48:17.646+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:48:17.645+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:48:17.716+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:48:17.715+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:48:17.887+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 1.008 seconds
+[2026-03-05T19:48:49.076+0000] {processor.py:161} INFO - Started process (PID=29261) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:48:49.089+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:48:49.204+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:48:49.203+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:48:49.420+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:48:49.505+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:48:49.504+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:48:49.589+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:48:49.589+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:48:49.735+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.680 seconds
+[2026-03-05T19:49:19.914+0000] {processor.py:161} INFO - Started process (PID=29321) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:49:19.916+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:49:19.919+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:49:19.919+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:49:19.961+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:49:20.010+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:49:20.009+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:49:20.055+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:49:20.055+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:49:20.149+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.255 seconds
+[2026-03-05T19:49:51.002+0000] {processor.py:161} INFO - Started process (PID=29381) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:49:51.004+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:49:51.008+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:49:51.008+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:49:51.083+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:49:51.439+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:49:51.439+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:49:51.483+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:49:51.482+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:49:51.610+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.649 seconds
+[2026-03-05T19:50:22.219+0000] {processor.py:161} INFO - Started process (PID=29441) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:50:22.222+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:50:22.241+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:50:22.240+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:50:22.296+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:50:22.397+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:50:22.396+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:50:22.478+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:50:22.478+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:50:22.610+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.415 seconds
+[2026-03-05T19:50:53.432+0000] {processor.py:161} INFO - Started process (PID=29501) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:50:53.435+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:50:53.444+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:50:53.443+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:50:53.473+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:50:53.521+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:50:53.521+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:50:53.599+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:50:53.594+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:50:53.726+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.308 seconds
+[2026-03-05T19:51:24.784+0000] {processor.py:161} INFO - Started process (PID=29562) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:51:24.787+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:51:24.791+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:51:24.790+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:51:24.842+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:51:25.342+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:51:25.338+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:51:25.704+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:51:25.704+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:51:25.783+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 1.017 seconds
+[2026-03-05T19:51:55.999+0000] {processor.py:161} INFO - Started process (PID=29622) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:51:56.010+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:51:56.016+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:51:56.016+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:51:56.082+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:51:56.174+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:51:56.173+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:51:56.253+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:51:56.253+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:51:56.379+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.405 seconds
+[2026-03-05T19:52:26.856+0000] {processor.py:161} INFO - Started process (PID=29682) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:52:26.871+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:52:26.890+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:52:26.890+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:52:26.926+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:52:26.981+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:52:26.980+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:52:27.051+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:52:27.051+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:52:27.182+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.354 seconds
+[2026-03-05T19:52:31.161+0000] {processor.py:161} INFO - Started process (PID=29697) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:52:31.172+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:52:31.175+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:52:31.175+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:52:31.268+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:52:31.308+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:52:31.300+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:52:31.358+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:52:31.357+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:52:31.474+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.335 seconds
+[2026-03-05T19:52:33.860+0000] {processor.py:161} INFO - Started process (PID=29706) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:52:33.873+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:52:33.887+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:52:33.877+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:52:34.007+0000] {processor.py:840} INFO - DAG(s) 'deployment_workflow' retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:52:34.068+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:52:34.059+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2026-03-05T19:52:34.152+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:52:34.152+0000] {dag.py:3954} INFO - Setting next_dagrun for deployment_workflow to None, run_after=None
+[2026-03-05T19:52:34.313+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.475 seconds
+[2026-03-05T19:52:43.024+0000] {processor.py:161} INFO - Started process (PID=29720) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:52:43.027+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:52:43.077+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:52:43.076+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:52:43.561+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:52:43.538+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T19:52:43.584+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T19:52:43.590+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:52:43.734+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.741 seconds
+[2026-03-05T19:53:15.207+0000] {processor.py:161} INFO - Started process (PID=29779) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:53:15.220+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:53:15.235+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:53:15.223+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:53:15.286+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:53:15.271+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T19:53:15.299+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T19:53:15.300+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:53:15.358+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.179 seconds
+[2026-03-05T19:53:45.996+0000] {processor.py:161} INFO - Started process (PID=29834) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:53:45.998+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:53:46.003+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:53:46.002+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:53:46.036+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:53:46.029+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T19:53:46.049+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T19:53:46.050+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:53:46.112+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.129 seconds
+[2026-03-05T19:54:29.351+0000] {processor.py:161} INFO - Started process (PID=29874) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:54:29.408+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:54:29.957+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:54:29.843+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:54:32.388+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:54:31.954+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T19:54:33.273+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T19:54:33.291+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:54:34.336+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 5.034 seconds
+[2026-03-05T19:55:13.396+0000] {processor.py:161} INFO - Started process (PID=29923) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:55:13.426+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:55:13.442+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:55:13.441+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:55:14.548+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:55:14.374+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T19:55:14.656+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T19:55:14.788+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:55:15.384+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 2.041 seconds
+[2026-03-05T19:56:19.323+0000] {processor.py:161} INFO - Started process (PID=29961) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:56:19.386+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:56:19.449+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:56:19.448+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:56:22.321+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:56:21.605+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T19:56:22.428+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T19:56:22.475+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:56:23.293+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 4.079 seconds
+[2026-03-05T19:58:40.174+0000] {processor.py:161} INFO - Started process (PID=30025) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:58:40.219+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:58:40.281+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:58:40.266+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:58:41.681+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:58:41.463+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T19:58:41.713+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T19:58:41.739+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:58:41.882+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 1.770 seconds
+[2026-03-05T19:59:26.602+0000] {processor.py:161} INFO - Started process (PID=30075) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:59:26.837+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T19:59:26.919+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:59:26.918+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:59:27.156+0000] {logging_mixin.py:188} INFO - [2026-03-05T19:59:27.123+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T19:59:27.220+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T19:59:27.280+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T19:59:28.235+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 1.661 seconds
+[2026-03-05T20:00:29.066+0000] {processor.py:161} INFO - Started process (PID=30138) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:00:29.069+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T20:00:29.095+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:00:29.072+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:00:29.268+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:00:29.241+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T20:00:29.319+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T20:00:29.321+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:00:30.159+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 1.114 seconds
+[2026-03-05T20:01:00.411+0000] {processor.py:161} INFO - Started process (PID=30199) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:01:00.413+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T20:01:00.415+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:01:00.414+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:01:00.737+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:01:00.441+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T20:01:00.754+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T20:01:00.764+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:01:00.847+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.451 seconds
+[2026-03-05T20:01:31.033+0000] {processor.py:161} INFO - Started process (PID=30259) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:01:31.036+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T20:01:31.038+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:01:31.038+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:01:31.066+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:01:31.060+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T20:01:31.077+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T20:01:31.078+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:01:31.120+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.098 seconds
+[2026-03-05T20:02:01.860+0000] {processor.py:161} INFO - Started process (PID=30319) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:02:01.862+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T20:02:01.864+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:02:01.863+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:02:01.896+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:02:01.889+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T20:02:01.906+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T20:02:01.908+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:02:01.944+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.095 seconds
+[2026-03-05T20:02:34.663+0000] {processor.py:161} INFO - Started process (PID=30379) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:02:34.674+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T20:02:34.676+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:02:34.675+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:02:34.845+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:02:34.709+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T20:02:34.885+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T20:02:34.887+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:02:35.005+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.365 seconds
+[2026-03-05T20:03:06.396+0000] {processor.py:161} INFO - Started process (PID=30424) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:03:06.401+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T20:03:06.403+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:03:06.402+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:03:06.500+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:03:06.470+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T20:03:06.535+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T20:03:06.545+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:03:06.664+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.309 seconds
+[2026-03-05T20:03:36.942+0000] {processor.py:161} INFO - Started process (PID=30481) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:03:36.944+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T20:03:36.946+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:03:36.945+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:03:37.008+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:03:36.982+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T20:03:37.040+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T20:03:37.041+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:03:37.136+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.227 seconds
+[2026-03-05T20:04:08.057+0000] {processor.py:161} INFO - Started process (PID=30541) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:04:08.059+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T20:04:08.061+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:04:08.060+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:04:08.110+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:04:08.097+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T20:04:08.126+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T20:04:08.128+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:04:08.181+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.143 seconds
+[2026-03-05T20:04:39.125+0000] {processor.py:161} INFO - Started process (PID=30601) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:04:39.126+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T20:04:39.128+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:04:39.128+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:04:39.159+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:04:39.153+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T20:04:39.170+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T20:04:39.171+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:04:39.206+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.091 seconds
+[2026-03-05T20:05:10.040+0000] {processor.py:161} INFO - Started process (PID=30661) to work on /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:05:10.041+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/deployment_workflow_clean.py for tasks to queue
+[2026-03-05T20:05:10.043+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:05:10.043+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:05:10.070+0000] {logging_mixin.py:188} INFO - [2026-03-05T20:05:10.064+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/deployment_workflow_clean.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/deployment_workflow_clean.py", line 104, in <module>
+    ).expand(
+      ^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 178, in expand
+    validate_mapping_kwargs(self.operator_class, "expand", mapped_kwargs)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py", line 112, in validate_mapping_kwargs
+    raise ValueError(error)
+ValueError: SSHOperator.expand() got an unexpected type 'str' for keyword argument ssh_conn_id
+[2026-03-05T20:05:10.080+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/mappedoperator.py:173 UserWarning: Task 'run_hostname' was never mapped!
+[2026-03-05T20:05:10.081+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/deployment_workflow_clean.py
+[2026-03-05T20:05:10.114+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/deployment_workflow_clean.py took 0.084 seconds

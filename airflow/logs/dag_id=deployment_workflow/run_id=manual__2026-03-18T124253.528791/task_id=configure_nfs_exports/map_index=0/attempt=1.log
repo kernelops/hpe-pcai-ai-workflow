@@ -1,0 +1,32 @@
+[2026-03-18T12:43:53.076+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-18T12:43:53.124+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: deployment_workflow.configure_nfs_exports manual__2026-03-18T12:42:53.528791 map_index=0 [queued]>
+[2026-03-18T12:43:53.148+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: deployment_workflow.configure_nfs_exports manual__2026-03-18T12:42:53.528791 map_index=0 [queued]>
+[2026-03-18T12:43:53.154+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-03-18T12:43:53.196+0000] {taskinstance.py:2330} INFO - Executing <Mapped(SSHOperator): configure_nfs_exports> on 2026-03-18 12:42:55.045696+00:00
+[2026-03-18T12:43:53.208+0000] {warnings.py:110} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61: DeprecationWarning: This process (pid=287) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+
+[2026-03-18T12:43:53.211+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'deployment_workflow', 'configure_nfs_exports', 'manual__2026-03-18T12:42:53.528791', '--job-id', '235', '--raw', '--subdir', 'DAGS_FOLDER/deployment_workflow.py', '--cfg-path', '/tmp/tmp4dgnbafr', '--map-index', '0']
+[2026-03-18T12:43:53.215+0000] {standard_task_runner.py:63} INFO - Started process 296 to run task
+[2026-03-18T12:43:53.219+0000] {standard_task_runner.py:91} INFO - Job 235: Subtask configure_nfs_exports
+[2026-03-18T12:43:53.414+0000] {task_command.py:426} INFO - Running <TaskInstance: deployment_workflow.configure_nfs_exports manual__2026-03-18T12:42:53.528791 map_index=0 [running]> on host 7ee527dcce31
+[2026-03-18T12:43:54.068+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='deployment_workflow' AIRFLOW_CTX_TASK_ID='configure_nfs_exports' AIRFLOW_CTX_EXECUTION_DATE='2026-03-18T12:42:55.045696+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-18T12:42:53.528791'
+[2026-03-18T12:43:54.080+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-03-18T12:43:54.083+0000] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-18T12:43:54.089+0000] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-18T12:43:54.137+0000] {base.py:84} INFO - Using connection ID 'worker_node_192_168_1_2' for task execution.
+[2026-03-18T12:43:54.150+0000] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-03-18T12:43:54.212+0000] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-03-18T12:43:54.396+0000] {transport.py:1909} INFO - Authentication (password) successful!
+[2026-03-18T12:43:54.411+0000] {ssh.py:480} INFO - Running command: set -e; EXPORT_LINE='/srv/nfs/share *(rw,sync,no_subtree_check,no_root_squash)'; grep -qxF "$EXPORT_LINE" /etc/exports || echo "$EXPORT_LINE" | sudo tee -a /etc/exports; tail -n 5 /etc/exports
+[2026-03-18T12:43:54.581+0000] {ssh.py:526} INFO - # Example for NFSv4:
+[2026-03-18T12:43:54.605+0000] {ssh.py:526} INFO - # /srv/nfs4        gss/krb5i(rw,sync,fsid=0,crossmnt,no_subtree_check)
+[2026-03-18T12:43:54.613+0000] {ssh.py:526} INFO - # /srv/nfs4/homes  gss/krb5i(rw,sync,no_subtree_check)
+[2026-03-18T12:43:54.626+0000] {ssh.py:526} INFO - 
+[2026-03-18T12:43:54.635+0000] {ssh.py:526} INFO - #
+[2026-03-18T12:43:54.655+0000] {ssh.py:526} INFO - /srv/nfs/share *(rw,sync,no_subtree_check,no_root_squash)
+[2026-03-18T12:43:55.021+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-03-18T12:43:55.132+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=deployment_workflow, task_id=configure_nfs_exports, run_id=manual__2026-03-18T12:42:53.528791, map_index=0, execution_date=20260318T124255, start_date=20260318T124353, end_date=20260318T124355
+[2026-03-18T12:43:55.239+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2026-03-18T12:43:55.441+0000] {taskinstance.py:3498} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2026-03-18T12:43:55.449+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

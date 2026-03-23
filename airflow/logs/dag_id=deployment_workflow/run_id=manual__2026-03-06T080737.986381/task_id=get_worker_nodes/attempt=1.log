@@ -1,0 +1,21 @@
+[2026-03-06T08:07:48.037+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-06T08:07:48.097+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: deployment_workflow.get_worker_nodes manual__2026-03-06T08:07:37.986381 [queued]>
+[2026-03-06T08:07:48.154+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: deployment_workflow.get_worker_nodes manual__2026-03-06T08:07:37.986381 [queued]>
+[2026-03-06T08:07:48.172+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 2
+[2026-03-06T08:07:48.257+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): get_worker_nodes> on 2026-03-06 08:07:39.554520+00:00
+[2026-03-06T08:07:48.304+0000] {warnings.py:110} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61: DeprecationWarning: This process (pid=508) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+
+[2026-03-06T08:07:48.310+0000] {standard_task_runner.py:63} INFO - Started process 510 to run task
+[2026-03-06T08:07:48.307+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'deployment_workflow', 'get_worker_nodes', 'manual__2026-03-06T08:07:37.986381', '--job-id', '60', '--raw', '--subdir', 'DAGS_FOLDER/deployment_workflow.py', '--cfg-path', '/tmp/tmpjhh6rqi0']
+[2026-03-06T08:07:48.323+0000] {standard_task_runner.py:91} INFO - Job 60: Subtask get_worker_nodes
+[2026-03-06T08:07:48.480+0000] {task_command.py:426} INFO - Running <TaskInstance: deployment_workflow.get_worker_nodes manual__2026-03-06T08:07:37.986381 [running]> on host 7ab5aef854fa
+[2026-03-06T08:07:48.785+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='deployment_workflow' AIRFLOW_CTX_TASK_ID='get_worker_nodes' AIRFLOW_CTX_EXECUTION_DATE='2026-03-06T08:07:39.554520+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-06T08:07:37.986381'
+[2026-03-06T08:07:48.788+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-03-06T08:07:48.806+0000] {logging_mixin.py:188} INFO - Error fetching nodes: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /nodes (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x78b3d7d07ad0>: Failed to establish a new connection: [Errno 111] Connection refused'))
+[2026-03-06T08:07:48.807+0000] {python.py:237} INFO - Done. Returned value was: []
+[2026-03-06T08:07:48.807+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-03-06T08:07:48.885+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=deployment_workflow, task_id=get_worker_nodes, run_id=manual__2026-03-06T08:07:37.986381, execution_date=20260306T080739, start_date=20260306T080748, end_date=20260306T080748
+[2026-03-06T08:07:48.969+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2026-03-06T08:07:49.048+0000] {taskinstance.py:3498} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2026-03-06T08:07:49.054+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

@@ -1,0 +1,21 @@
+[2026-03-06T14:39:15.110+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-06T14:39:15.207+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: deployment_workflow.create_airflow_connections manual__2026-03-06T14:38:38.847406 [queued]>
+[2026-03-06T14:39:15.256+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: deployment_workflow.create_airflow_connections manual__2026-03-06T14:38:38.847406 [queued]>
+[2026-03-06T14:39:15.265+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-03-06T14:39:15.341+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): create_airflow_connections> on 2026-03-06 14:38:41.818630+00:00
+[2026-03-06T14:39:15.409+0000] {warnings.py:110} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61: DeprecationWarning: This process (pid=109) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+
+[2026-03-06T14:39:15.433+0000] {standard_task_runner.py:63} INFO - Started process 111 to run task
+[2026-03-06T14:39:15.422+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'deployment_workflow', 'create_***_connections', 'manual__2026-03-06T14:38:38.847406', '--job-id', '133', '--raw', '--subdir', 'DAGS_FOLDER/deployment_workflow.py', '--cfg-path', '/tmp/tmp7668jqme']
+[2026-03-06T14:39:15.445+0000] {standard_task_runner.py:91} INFO - Job 133: Subtask create_***_connections
+[2026-03-06T14:39:15.842+0000] {task_command.py:426} INFO - Running <TaskInstance: deployment_workflow.create_airflow_connections manual__2026-03-06T14:38:38.847406 [running]> on host 0ad8c9765a82
+[2026-03-06T14:39:16.804+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='deployment_workflow' AIRFLOW_CTX_TASK_ID='create_***_connections' AIRFLOW_CTX_EXECUTION_DATE='2026-03-06T14:38:41.818630+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-06T14:38:38.847406'
+[2026-03-06T14:39:16.833+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-03-06T14:39:17.152+0000] {logging_mixin.py:188} INFO - Connection already exists: worker_node_192_168_1_5
+[2026-03-06T14:39:17.154+0000] {python.py:237} INFO - Done. Returned value was: ['worker_node_192_168_1_5']
+[2026-03-06T14:39:17.171+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-03-06T14:39:17.353+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=deployment_workflow, task_id=create_***_connections, run_id=manual__2026-03-06T14:38:38.847406, execution_date=20260306T143841, start_date=20260306T143915, end_date=20260306T143917
+[2026-03-06T14:39:17.505+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2026-03-06T14:39:17.866+0000] {taskinstance.py:3498} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2026-03-06T14:39:17.895+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

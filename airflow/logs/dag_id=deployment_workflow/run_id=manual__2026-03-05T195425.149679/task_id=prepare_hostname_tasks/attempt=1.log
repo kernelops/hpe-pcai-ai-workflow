@@ -1,0 +1,21 @@
+[2026-03-05T19:59:39.878+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-05T19:59:39.916+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: deployment_workflow.prepare_hostname_tasks manual__2026-03-05T19:54:25.149679 [queued]>
+[2026-03-05T19:59:39.928+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: deployment_workflow.prepare_hostname_tasks manual__2026-03-05T19:54:25.149679 [queued]>
+[2026-03-05T19:59:40.090+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 2
+[2026-03-05T19:59:40.244+0000] {taskinstance.py:2330} INFO - Executing <Task(PythonOperator): prepare_hostname_tasks> on 2026-03-05 19:54:36.718095+00:00
+[2026-03-05T19:59:40.290+0000] {warnings.py:110} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61: DeprecationWarning: This process (pid=3371) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+
+[2026-03-05T19:59:40.307+0000] {standard_task_runner.py:63} INFO - Started process 3374 to run task
+[2026-03-05T19:59:40.320+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'deployment_workflow', 'prepare_hostname_tasks', 'manual__2026-03-05T19:54:25.149679', '--job-id', '40', '--raw', '--subdir', 'DAGS_FOLDER/deployment_workflow.py', '--cfg-path', '/tmp/tmp0rwy_4w6']
+[2026-03-05T19:59:40.386+0000] {standard_task_runner.py:91} INFO - Job 40: Subtask prepare_hostname_tasks
+[2026-03-05T19:59:40.896+0000] {task_command.py:426} INFO - Running <TaskInstance: deployment_workflow.prepare_hostname_tasks manual__2026-03-05T19:54:25.149679 [running]> on host 7ab5aef854fa
+[2026-03-05T19:59:41.557+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='deployment_workflow' AIRFLOW_CTX_TASK_ID='prepare_hostname_tasks' AIRFLOW_CTX_EXECUTION_DATE='2026-03-05T19:54:36.718095+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-05T19:54:25.149679'
+[2026-03-05T19:59:41.578+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-03-05T19:59:41.664+0000] {logging_mixin.py:188} INFO - No nodes available for hostname tasks
+[2026-03-05T19:59:41.679+0000] {python.py:237} INFO - Done. Returned value was: []
+[2026-03-05T19:59:41.690+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-03-05T19:59:41.869+0000] {taskinstance.py:1206} INFO - Marking task as SUCCESS. dag_id=deployment_workflow, task_id=prepare_hostname_tasks, run_id=manual__2026-03-05T19:54:25.149679, execution_date=20260305T195436, start_date=20260305T195939, end_date=20260305T195941
+[2026-03-05T19:59:42.035+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 0
+[2026-03-05T19:59:42.153+0000] {taskinstance.py:3498} INFO - 1 downstream tasks scheduled from follow-on schedule check
+[2026-03-05T19:59:42.244+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

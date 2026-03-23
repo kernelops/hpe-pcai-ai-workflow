@@ -1,0 +1,57 @@
+[2026-03-05T19:07:44.950+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-05T19:07:45.076+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: deployment_workflow.check_node_connectivity manual__2026-03-05T19:01:29.373690+00:00 [queued]>
+[2026-03-05T19:07:45.145+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: deployment_workflow.check_node_connectivity manual__2026-03-05T19:01:29.373690+00:00 [queued]>
+[2026-03-05T19:07:45.155+0000] {taskinstance.py:2306} INFO - Starting attempt 2 of 2
+[2026-03-05T19:07:45.260+0000] {taskinstance.py:2330} INFO - Executing <Task(SSHOperator): check_node_connectivity> on 2026-03-05 19:01:29.373690+00:00
+[2026-03-05T19:07:45.316+0000] {warnings.py:110} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61: DeprecationWarning: This process (pid=2792) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+
+[2026-03-05T19:07:45.318+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'deployment_workflow', 'check_node_connectivity', 'manual__2026-03-05T19:01:29.373690+00:00', '--job-id', '29', '--raw', '--subdir', 'DAGS_FOLDER/deployment_workflow.py', '--cfg-path', '/tmp/tmpsl_34bao']
+[2026-03-05T19:07:45.339+0000] {standard_task_runner.py:63} INFO - Started process 2794 to run task
+[2026-03-05T19:07:45.355+0000] {standard_task_runner.py:91} INFO - Job 29: Subtask check_node_connectivity
+[2026-03-05T19:07:45.762+0000] {task_command.py:426} INFO - Running <TaskInstance: deployment_workflow.check_node_connectivity manual__2026-03-05T19:01:29.373690+00:00 [running]> on host 7ab5aef854fa
+[2026-03-05T19:07:46.261+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='deployment_workflow' AIRFLOW_CTX_TASK_ID='check_node_connectivity' AIRFLOW_CTX_EXECUTION_DATE='2026-03-05T19:01:29.373690+00:00' AIRFLOW_CTX_TRY_NUMBER='2' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-05T19:01:29.373690+00:00'
+[2026-03-05T19:07:46.278+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-03-05T19:07:46.282+0000] {ssh.py:151} INFO - Creating ssh_client
+[2026-03-05T19:07:46.292+0000] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-03-05T19:07:46.332+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-03-05T19:07:46.392+0000] {taskinstance.py:2905} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 465, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 432, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py", line 400, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 190, in execute
+    with self.get_ssh_client() as ssh_client:
+         ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 152, in get_ssh_client
+    return self.hook.get_conn()
+           ^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 143, in hook
+    return self.ssh_hook
+           ^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/functools.py", line 995, in __get__
+    val = self.func(instance)
+          ^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 125, in ssh_hook
+    hook = SSHHook(
+           ^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/hooks/ssh.py", line 152, in __init__
+    conn = self.get_connection(self.ssh_conn_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/hooks/base.py", line 83, in get_connection
+    conn = Connection.get_connection_from_secrets(conn_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/connection.py", line 519, in get_connection_from_secrets
+    raise AirflowNotFoundException(f"The conn_id `{conn_id}` isn't defined")
+airflow.exceptions.AirflowNotFoundException: The conn_id `worker_node_default` isn't defined
+[2026-03-05T19:07:46.434+0000] {taskinstance.py:1206} INFO - Marking task as FAILED. dag_id=deployment_workflow, task_id=check_node_connectivity, run_id=manual__2026-03-05T19:01:29.373690+00:00, execution_date=20260305T190129, start_date=20260305T190745, end_date=20260305T190746
+[2026-03-05T19:07:46.486+0000] {standard_task_runner.py:110} ERROR - Failed to execute job 29 for task check_node_connectivity (The conn_id `worker_node_default` isn't defined; 2794)
+[2026-03-05T19:07:46.555+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 1
+[2026-03-05T19:07:46.647+0000] {taskinstance.py:3498} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-03-05T19:07:46.673+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

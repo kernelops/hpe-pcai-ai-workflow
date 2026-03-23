@@ -1,0 +1,67 @@
+{
+  "success": [
+    {
+      "file": "success/run_hostname_success.log",
+      "dag": "deployment_workflow",
+      "task": "run_hostname",
+      "type": "SSH command execution",
+      "source": "real — teammate's Airflow"
+    }
+  ],
+  "failed": [
+    {
+      "file": "failed/run_tests_failed.log",
+      "dag": "software_build_pipeline",
+      "task": "run_tests",
+      "error_type": "RuntimeError",
+      "error": "Flask async extra not installed",
+      "classification": "config",
+      "source": "real — teammate's Airflow"
+    },
+    {
+      "file": "failed/configure_storage_failed.log",
+      "dag": "pcai_deployment",
+      "task": "configure_storage",
+      "error_type": "S3Error",
+      "error": "Invalid credentials for MinIO bucket",
+      "classification": "config",
+      "source": "mock — RAG teammate"
+    },
+    {
+      "file": "failed/configure_nfs_failed.log",
+      "dag": "pcai_deployment",
+      "task": "configure_nfs",
+      "error_type": "NFSMountError",
+      "error": "NFS mount connection timed out",
+      "classification": "transient",
+      "source": "mock — RAG teammate"
+    },
+    {
+      "file": "failed/deploy_spp_failed.log",
+      "dag": "pcai_deployment",
+      "task": "deploy_spp",
+      "error_type": "CalledProcessError",
+      "error": "SPP version incompatible with Gen10Plus",
+      "classification": "version_mismatch",
+      "source": "mock — RAG teammate"
+    },
+    {
+      "file": "failed/configure_network_failed.log",
+      "dag": "pcai_deployment",
+      "task": "configure_network",
+      "error_type": "AnsibleConnectionError",
+      "error": "SSH no route to host 192.168.2.5",
+      "classification": "hardware",
+      "source": "mock — RAG teammate"
+    },
+    {
+      "file": "failed/deploy_os_failed.log",
+      "dag": "pcai_deployment",
+      "task": "deploy_os",
+      "error_type": "TimeoutError",
+      "error": "PXE boot timed out — no DHCP response",
+      "classification": "transient",
+      "source": "mock — RAG teammate"
+    }
+  ]
+}

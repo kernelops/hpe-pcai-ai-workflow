@@ -1,0 +1,55 @@
+[2026-03-26T22:00:56.166+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: os_validation_local_error_sim_memory_bad_flag.system_checks.check_memory manual__2026-03-26T16:29:44.470085+00:00 [queued]>
+[2026-03-26T22:00:56.172+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: os_validation_local_error_sim_memory_bad_flag.system_checks.check_memory manual__2026-03-26T16:29:44.470085+00:00 [queued]>
+[2026-03-26T22:00:56.172+0530] {taskinstance.py:2193} INFO - Starting attempt 1 of 2
+[2026-03-26T22:00:56.224+0530] {taskinstance.py:2214} INFO - Executing <Task(BashOperator): system_checks.check_memory> on 2026-03-26 16:29:44.470085+00:00
+[2026-03-26T22:00:56.233+0530] {standard_task_runner.py:60} INFO - Started process 7864 to run task
+[2026-03-26T22:00:56.243+0530] {standard_task_runner.py:87} INFO - Running: ['airflow', 'tasks', 'run', 'os_validation_local_error_sim_memory_bad_flag', 'system_checks.check_memory', 'manual__2026-03-26T16:29:44.470085+00:00', '--job-id', '427', '--raw', '--subdir', 'DAGS_FOLDER/os_validation_local_error_simulation_suite.py', '--cfg-path', '/tmp/tmpb6rg5nrx']
+[2026-03-26T22:00:56.244+0530] {standard_task_runner.py:88} INFO - Job 427: Subtask system_checks.check_memory
+[2026-03-26T22:00:56.397+0530] {task_command.py:423} INFO - Running <TaskInstance: os_validation_local_error_sim_memory_bad_flag.system_checks.check_memory manual__2026-03-26T16:29:44.470085+00:00 [running]> on host tejasvi-Vostro-15-3515
+[2026-03-26T22:00:56.632+0530] {taskinstance.py:2510} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='os_validation_local_error_sim_memory_bad_flag' AIRFLOW_CTX_TASK_ID='system_checks.check_memory' AIRFLOW_CTX_EXECUTION_DATE='2026-03-26T16:29:44.470085+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-26T16:29:44.470085+00:00'
+[2026-03-26T22:00:56.635+0530] {subprocess.py:63} INFO - Tmp dir root location: /tmp
+[2026-03-26T22:00:56.636+0530] {subprocess.py:75} INFO - Running command: ['/usr/bin/bash', '-c', 'free --this-flag-does-not-exist']
+[2026-03-26T22:00:56.655+0530] {subprocess.py:86} INFO - Output:
+[2026-03-26T22:00:56.661+0530] {subprocess.py:93} INFO - free: unrecognized option '--this-flag-does-not-exist'
+[2026-03-26T22:00:56.661+0530] {subprocess.py:93} INFO - 
+[2026-03-26T22:00:56.662+0530] {subprocess.py:93} INFO - Usage:
+[2026-03-26T22:00:56.662+0530] {subprocess.py:93} INFO -  free [options]
+[2026-03-26T22:00:56.662+0530] {subprocess.py:93} INFO - 
+[2026-03-26T22:00:56.663+0530] {subprocess.py:93} INFO - Options:
+[2026-03-26T22:00:56.663+0530] {subprocess.py:93} INFO -  -b, --bytes         show output in bytes
+[2026-03-26T22:00:56.663+0530] {subprocess.py:93} INFO -      --kilo          show output in kilobytes
+[2026-03-26T22:00:56.663+0530] {subprocess.py:93} INFO -      --mega          show output in megabytes
+[2026-03-26T22:00:56.664+0530] {subprocess.py:93} INFO -      --giga          show output in gigabytes
+[2026-03-26T22:00:56.664+0530] {subprocess.py:93} INFO -      --tera          show output in terabytes
+[2026-03-26T22:00:56.664+0530] {subprocess.py:93} INFO -      --peta          show output in petabytes
+[2026-03-26T22:00:56.664+0530] {subprocess.py:93} INFO -  -k, --kibi          show output in kibibytes
+[2026-03-26T22:00:56.665+0530] {subprocess.py:93} INFO -  -m, --mebi          show output in mebibytes
+[2026-03-26T22:00:56.665+0530] {subprocess.py:93} INFO -  -g, --gibi          show output in gibibytes
+[2026-03-26T22:00:56.665+0530] {subprocess.py:93} INFO -      --tebi          show output in tebibytes
+[2026-03-26T22:00:56.665+0530] {subprocess.py:93} INFO -      --pebi          show output in pebibytes
+[2026-03-26T22:00:56.666+0530] {subprocess.py:93} INFO -  -h, --human         show human-readable output
+[2026-03-26T22:00:56.666+0530] {subprocess.py:93} INFO -      --si            use powers of 1000 not 1024
+[2026-03-26T22:00:56.666+0530] {subprocess.py:93} INFO -  -l, --lohi          show detailed low and high memory statistics
+[2026-03-26T22:00:56.666+0530] {subprocess.py:93} INFO -  -t, --total         show total for RAM + swap
+[2026-03-26T22:00:56.667+0530] {subprocess.py:93} INFO -  -s N, --seconds N   repeat printing every N seconds
+[2026-03-26T22:00:56.667+0530] {subprocess.py:93} INFO -  -c N, --count N     repeat printing N times, then exit
+[2026-03-26T22:00:56.667+0530] {subprocess.py:93} INFO -  -w, --wide          wide output
+[2026-03-26T22:00:56.667+0530] {subprocess.py:93} INFO - 
+[2026-03-26T22:00:56.668+0530] {subprocess.py:93} INFO -      --help     display this help and exit
+[2026-03-26T22:00:56.668+0530] {subprocess.py:93} INFO -  -V, --version  output version information and exit
+[2026-03-26T22:00:56.668+0530] {subprocess.py:93} INFO - 
+[2026-03-26T22:00:56.668+0530] {subprocess.py:93} INFO - For more details see free(1).
+[2026-03-26T22:00:56.669+0530] {subprocess.py:97} INFO - Command exited with return code 1
+[2026-03-26T22:00:56.685+0530] {taskinstance.py:2728} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/models/taskinstance.py", line 444, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/models/taskinstance.py", line 414, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/operators/bash.py", line 212, in execute
+    raise AirflowException(
+airflow.exceptions.AirflowException: Bash command failed. The command returned a non-zero exit code 1.
+[2026-03-26T22:00:56.688+0530] {taskinstance.py:1149} INFO - Marking task as UP_FOR_RETRY. dag_id=os_validation_local_error_sim_memory_bad_flag, task_id=system_checks.check_memory, execution_date=20260326T162944, start_date=20260326T163056, end_date=20260326T163056
+[2026-03-26T22:00:56.757+0530] {standard_task_runner.py:107} ERROR - Failed to execute job 427 for task system_checks.check_memory (Bash command failed. The command returned a non-zero exit code 1.; 7864)
+[2026-03-26T22:00:56.773+0530] {local_task_job_runner.py:234} INFO - Task exited with return code 1
+[2026-03-26T22:00:56.818+0530] {taskinstance.py:3309} INFO - 0 downstream tasks scheduled from follow-on schedule check

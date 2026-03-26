@@ -1,0 +1,30 @@
+[2026-03-26T22:02:31.775+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: os_validation_local_error_sim_minio_health_wrong_port.integration_checks.check_minio_health manual__2026-03-26T16:30:27.021526+00:00 [queued]>
+[2026-03-26T22:02:31.782+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: os_validation_local_error_sim_minio_health_wrong_port.integration_checks.check_minio_health manual__2026-03-26T16:30:27.021526+00:00 [queued]>
+[2026-03-26T22:02:31.783+0530] {taskinstance.py:2193} INFO - Starting attempt 1 of 2
+[2026-03-26T22:02:31.868+0530] {taskinstance.py:2214} INFO - Executing <Task(BashOperator): integration_checks.check_minio_health> on 2026-03-26 16:30:27.021526+00:00
+[2026-03-26T22:02:31.877+0530] {standard_task_runner.py:60} INFO - Started process 8506 to run task
+[2026-03-26T22:02:31.883+0530] {standard_task_runner.py:87} INFO - Running: ['airflow', 'tasks', 'run', 'os_validation_local_error_sim_minio_health_wrong_port', 'integration_checks.check_minio_health', 'manual__2026-03-26T16:30:27.021526+00:00', '--job-id', '456', '--raw', '--subdir', 'DAGS_FOLDER/os_validation_local_error_simulation_suite.py', '--cfg-path', '/tmp/tmpnuwtm97w']
+[2026-03-26T22:02:31.884+0530] {standard_task_runner.py:88} INFO - Job 456: Subtask integration_checks.check_minio_health
+[2026-03-26T22:02:32.041+0530] {task_command.py:423} INFO - Running <TaskInstance: os_validation_local_error_sim_minio_health_wrong_port.integration_checks.check_minio_health manual__2026-03-26T16:30:27.021526+00:00 [running]> on host tejasvi-Vostro-15-3515
+[2026-03-26T22:02:32.237+0530] {taskinstance.py:2510} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='os_validation_local_error_sim_minio_health_wrong_port' AIRFLOW_CTX_TASK_ID='integration_checks.check_minio_health' AIRFLOW_CTX_EXECUTION_DATE='2026-03-26T16:30:27.021526+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-26T16:30:27.021526+00:00'
+[2026-03-26T22:02:32.240+0530] {subprocess.py:63} INFO - Tmp dir root location: /tmp
+[2026-03-26T22:02:32.241+0530] {subprocess.py:75} INFO - Running command: ['/usr/bin/bash', '-c', 'curl -f http://localhost:9199/minio/health/live']
+[2026-03-26T22:02:32.259+0530] {subprocess.py:86} INFO - Output:
+[2026-03-26T22:02:32.398+0530] {subprocess.py:93} INFO -   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+[2026-03-26T22:02:32.399+0530] {subprocess.py:93} INFO -                                  Dload  Upload   Total   Spent    Left  Speed
+[2026-03-26T22:02:32.399+0530] {subprocess.py:93} INFO -   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+[2026-03-26T22:02:32.399+0530] {subprocess.py:93} INFO - curl: (7) Failed to connect to localhost port 9199 after 0 ms: Connection refused
+[2026-03-26T22:02:32.401+0530] {subprocess.py:97} INFO - Command exited with return code 7
+[2026-03-26T22:02:32.416+0530] {taskinstance.py:2728} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/models/taskinstance.py", line 444, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/models/taskinstance.py", line 414, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/operators/bash.py", line 212, in execute
+    raise AirflowException(
+airflow.exceptions.AirflowException: Bash command failed. The command returned a non-zero exit code 7.
+[2026-03-26T22:02:32.421+0530] {taskinstance.py:1149} INFO - Marking task as UP_FOR_RETRY. dag_id=os_validation_local_error_sim_minio_health_wrong_port, task_id=integration_checks.check_minio_health, execution_date=20260326T163027, start_date=20260326T163231, end_date=20260326T163232
+[2026-03-26T22:02:32.542+0530] {standard_task_runner.py:107} ERROR - Failed to execute job 456 for task integration_checks.check_minio_health (Bash command failed. The command returned a non-zero exit code 7.; 8506)
+[2026-03-26T22:02:32.576+0530] {local_task_job_runner.py:234} INFO - Task exited with return code 1
+[2026-03-26T22:02:32.613+0530] {taskinstance.py:3309} INFO - 0 downstream tasks scheduled from follow-on schedule check

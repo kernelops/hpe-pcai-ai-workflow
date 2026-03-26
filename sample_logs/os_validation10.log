@@ -1,0 +1,73 @@
+[2026-03-26T22:05:30.912+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: os_validation_local_error_sim_mounts_forced_fail.storage_checks.check_mounts manual__2026-03-26T16:34:51.820803+00:00 [queued]>
+[2026-03-26T22:05:30.919+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: os_validation_local_error_sim_mounts_forced_fail.storage_checks.check_mounts manual__2026-03-26T16:34:51.820803+00:00 [queued]>
+[2026-03-26T22:05:30.920+0530] {taskinstance.py:2193} INFO - Starting attempt 1 of 2
+[2026-03-26T22:05:30.986+0530] {taskinstance.py:2214} INFO - Executing <Task(BashOperator): storage_checks.check_mounts> on 2026-03-26 16:34:51.820803+00:00
+[2026-03-26T22:05:30.996+0530] {standard_task_runner.py:60} INFO - Started process 9567 to run task
+[2026-03-26T22:05:31.003+0530] {standard_task_runner.py:87} INFO - Running: ['airflow', 'tasks', 'run', 'os_validation_local_error_sim_mounts_forced_fail', 'storage_checks.check_mounts', 'manual__2026-03-26T16:34:51.820803+00:00', '--job-id', '474', '--raw', '--subdir', 'DAGS_FOLDER/os_validation_local_error_simulation_suite.py', '--cfg-path', '/tmp/tmpv8a85kh3']
+[2026-03-26T22:05:31.004+0530] {standard_task_runner.py:88} INFO - Job 474: Subtask storage_checks.check_mounts
+[2026-03-26T22:05:31.149+0530] {task_command.py:423} INFO - Running <TaskInstance: os_validation_local_error_sim_mounts_forced_fail.storage_checks.check_mounts manual__2026-03-26T16:34:51.820803+00:00 [running]> on host tejasvi-Vostro-15-3515
+[2026-03-26T22:05:31.322+0530] {taskinstance.py:2510} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='os_validation_local_error_sim_mounts_forced_fail' AIRFLOW_CTX_TASK_ID='storage_checks.check_mounts' AIRFLOW_CTX_EXECUTION_DATE='2026-03-26T16:34:51.820803+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-26T16:34:51.820803+00:00'
+[2026-03-26T22:05:31.325+0530] {subprocess.py:63} INFO - Tmp dir root location: /tmp
+[2026-03-26T22:05:31.326+0530] {subprocess.py:75} INFO - Running command: ['/usr/bin/bash', '-c', "mount && echo 'INJECTED_ERROR: mount stage failed intentionally' >&2 && exit 31"]
+[2026-03-26T22:05:31.345+0530] {subprocess.py:86} INFO - Output:
+[2026-03-26T22:05:31.405+0530] {subprocess.py:93} INFO - sysfs on /sys type sysfs (rw,nosuid,nodev,noexec,relatime)
+[2026-03-26T22:05:31.405+0530] {subprocess.py:93} INFO - proc on /proc type proc (rw,nosuid,nodev,noexec,relatime)
+[2026-03-26T22:05:31.406+0530] {subprocess.py:93} INFO - udev on /dev type devtmpfs (rw,nosuid,relatime,size=2930488k,nr_inodes=732622,mode=755,inode64)
+[2026-03-26T22:05:31.406+0530] {subprocess.py:93} INFO - devpts on /dev/pts type devpts (rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000)
+[2026-03-26T22:05:31.406+0530] {subprocess.py:93} INFO - tmpfs on /run type tmpfs (rw,nosuid,nodev,noexec,relatime,size=594748k,mode=755,inode64)
+[2026-03-26T22:05:31.406+0530] {subprocess.py:93} INFO - /dev/sda6 on / type ext4 (rw,relatime,errors=remount-ro)
+[2026-03-26T22:05:31.407+0530] {subprocess.py:93} INFO - securityfs on /sys/kernel/security type securityfs (rw,nosuid,nodev,noexec,relatime)
+[2026-03-26T22:05:31.407+0530] {subprocess.py:93} INFO - tmpfs on /dev/shm type tmpfs (rw,nosuid,nodev,inode64)
+[2026-03-26T22:05:31.407+0530] {subprocess.py:93} INFO - tmpfs on /run/lock type tmpfs (rw,nosuid,nodev,noexec,relatime,size=5120k,inode64)
+[2026-03-26T22:05:31.408+0530] {subprocess.py:93} INFO - cgroup2 on /sys/fs/cgroup type cgroup2 (rw,nosuid,nodev,noexec,relatime)
+[2026-03-26T22:05:31.408+0530] {subprocess.py:93} INFO - pstore on /sys/fs/pstore type pstore (rw,nosuid,nodev,noexec,relatime)
+[2026-03-26T22:05:31.408+0530] {subprocess.py:93} INFO - efivarfs on /sys/firmware/efi/efivars type efivarfs (rw,nosuid,nodev,noexec,relatime)
+[2026-03-26T22:05:31.408+0530] {subprocess.py:93} INFO - bpf on /sys/fs/bpf type bpf (rw,nosuid,nodev,noexec,relatime,mode=700)
+[2026-03-26T22:05:31.409+0530] {subprocess.py:93} INFO - systemd-1 on /proc/sys/fs/binfmt_misc type autofs (rw,relatime,fd=29,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=9767)
+[2026-03-26T22:05:31.409+0530] {subprocess.py:93} INFO - mqueue on /dev/mqueue type mqueue (rw,nosuid,nodev,noexec,relatime)
+[2026-03-26T22:05:31.409+0530] {subprocess.py:93} INFO - hugetlbfs on /dev/hugepages type hugetlbfs (rw,relatime,pagesize=2M)
+[2026-03-26T22:05:31.410+0530] {subprocess.py:93} INFO - tracefs on /sys/kernel/tracing type tracefs (rw,nosuid,nodev,noexec,relatime)
+[2026-03-26T22:05:31.410+0530] {subprocess.py:93} INFO - debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
+[2026-03-26T22:05:31.410+0530] {subprocess.py:93} INFO - fusectl on /sys/fs/fuse/connections type fusectl (rw,nosuid,nodev,noexec,relatime)
+[2026-03-26T22:05:31.411+0530] {subprocess.py:93} INFO - configfs on /sys/kernel/config type configfs (rw,nosuid,nodev,noexec,relatime)
+[2026-03-26T22:05:31.411+0530] {subprocess.py:93} INFO - ramfs on /run/credentials/systemd-sysusers.service type ramfs (ro,nosuid,nodev,noexec,relatime,mode=700)
+[2026-03-26T22:05:31.411+0530] {subprocess.py:93} INFO - tmpfs on /run/qemu type tmpfs (rw,nosuid,nodev,relatime,mode=755,inode64)
+[2026-03-26T22:05:31.411+0530] {subprocess.py:93} INFO - /var/lib/snapd/snaps/bare_5.snap on /snap/bare/5 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide)
+[2026-03-26T22:05:31.412+0530] {subprocess.py:93} INFO - /var/lib/snapd/snaps/core22_2339.snap on /snap/core22/2339 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide)
+[2026-03-26T22:05:31.412+0530] {subprocess.py:93} INFO - /var/lib/snapd/snaps/core22_2411.snap on /snap/core22/2411 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide)
+[2026-03-26T22:05:31.412+0530] {subprocess.py:93} INFO - /var/lib/snapd/snaps/firefox_7901.snap on /snap/firefox/7901 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide)
+[2026-03-26T22:05:31.412+0530] {subprocess.py:93} INFO - /var/lib/snapd/snaps/firefox_7967.snap on /snap/firefox/7967 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide)
+[2026-03-26T22:05:31.413+0530] {subprocess.py:93} INFO - /var/lib/snapd/snaps/gnome-42-2204_226.snap on /snap/gnome-42-2204/226 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide)
+[2026-03-26T22:05:31.413+0530] {subprocess.py:93} INFO - /var/lib/snapd/snaps/gnome-42-2204_247.snap on /snap/gnome-42-2204/247 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide)
+[2026-03-26T22:05:31.413+0530] {subprocess.py:93} INFO - /var/lib/snapd/snaps/gtk-common-themes_1535.snap on /snap/gtk-common-themes/1535 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide)
+[2026-03-26T22:05:31.413+0530] {subprocess.py:93} INFO - /var/lib/snapd/snaps/snap-store_1113.snap on /snap/snap-store/1113 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide)
+[2026-03-26T22:05:31.414+0530] {subprocess.py:93} INFO - /var/lib/snapd/snaps/snap-store_1216.snap on /snap/snap-store/1216 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide)
+[2026-03-26T22:05:31.414+0530] {subprocess.py:93} INFO - /var/lib/snapd/snaps/snapd_25935.snap on /snap/snapd/25935 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide)
+[2026-03-26T22:05:31.414+0530] {subprocess.py:93} INFO - /var/lib/snapd/snaps/snapd_26382.snap on /snap/snapd/26382 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide)
+[2026-03-26T22:05:31.414+0530] {subprocess.py:93} INFO - /var/lib/snapd/snaps/snapd-desktop-integration_315.snap on /snap/snapd-desktop-integration/315 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide)
+[2026-03-26T22:05:31.415+0530] {subprocess.py:93} INFO - /var/lib/snapd/snaps/snapd-desktop-integration_343.snap on /snap/snapd-desktop-integration/343 type squashfs (ro,nodev,relatime,errors=continue,threads=single,x-gdu.hide)
+[2026-03-26T22:05:31.415+0530] {subprocess.py:93} INFO - /dev/sda1 on /boot/efi type vfat (rw,relatime,fmask=0077,dmask=0077,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro)
+[2026-03-26T22:05:31.415+0530] {subprocess.py:93} INFO - binfmt_misc on /proc/sys/fs/binfmt_misc type binfmt_misc (rw,nosuid,nodev,noexec,relatime)
+[2026-03-26T22:05:31.415+0530] {subprocess.py:93} INFO - sunrpc on /run/rpc_pipefs type rpc_pipefs (rw,relatime)
+[2026-03-26T22:05:31.416+0530] {subprocess.py:93} INFO - lxcfs on /var/lib/lxcfs type fuse.lxcfs (rw,nosuid,nodev,relatime,user_id=0,group_id=0,allow_other)
+[2026-03-26T22:05:31.416+0530] {subprocess.py:93} INFO - tmpfs on /run/user/1000 type tmpfs (rw,nosuid,nodev,relatime,size=594744k,nr_inodes=148686,mode=700,uid=1000,gid=1000,inode64)
+[2026-03-26T22:05:31.416+0530] {subprocess.py:93} INFO - portal on /run/user/1000/doc type fuse.portal (rw,nosuid,nodev,relatime,user_id=1000,group_id=1000)
+[2026-03-26T22:05:31.416+0530] {subprocess.py:93} INFO - tmpfs on /run/snapd/ns type tmpfs (rw,nosuid,nodev,noexec,relatime,size=594748k,mode=755,inode64)
+[2026-03-26T22:05:31.416+0530] {subprocess.py:93} INFO - nsfs on /run/snapd/ns/snapd-desktop-integration.mnt type nsfs (rw)
+[2026-03-26T22:05:31.417+0530] {subprocess.py:93} INFO - gvfsd-fuse on /run/user/1000/gvfs type fuse.gvfsd-fuse (rw,nosuid,nodev,relatime,user_id=1000,group_id=1000)
+[2026-03-26T22:05:31.417+0530] {subprocess.py:93} INFO - nsfs on /run/snapd/ns/snap-store.mnt type nsfs (rw)
+[2026-03-26T22:05:31.417+0530] {subprocess.py:93} INFO - INJECTED_ERROR: mount stage failed intentionally
+[2026-03-26T22:05:31.417+0530] {subprocess.py:97} INFO - Command exited with return code 31
+[2026-03-26T22:05:31.432+0530] {taskinstance.py:2728} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/models/taskinstance.py", line 444, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/models/taskinstance.py", line 414, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/operators/bash.py", line 212, in execute
+    raise AirflowException(
+airflow.exceptions.AirflowException: Bash command failed. The command returned a non-zero exit code 31.
+[2026-03-26T22:05:31.437+0530] {taskinstance.py:1149} INFO - Marking task as UP_FOR_RETRY. dag_id=os_validation_local_error_sim_mounts_forced_fail, task_id=storage_checks.check_mounts, execution_date=20260326T163451, start_date=20260326T163530, end_date=20260326T163531
+[2026-03-26T22:05:31.522+0530] {standard_task_runner.py:107} ERROR - Failed to execute job 474 for task storage_checks.check_mounts (Bash command failed. The command returned a non-zero exit code 31.; 9567)
+[2026-03-26T22:05:31.576+0530] {local_task_job_runner.py:234} INFO - Task exited with return code 1
+[2026-03-26T22:05:31.623+0530] {taskinstance.py:3309} INFO - 0 downstream tasks scheduled from follow-on schedule check

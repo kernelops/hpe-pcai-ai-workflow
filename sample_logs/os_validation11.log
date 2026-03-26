@@ -1,0 +1,27 @@
+[2026-03-26T22:08:05.742+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: os_validation_local_error_sim_nfs_write_readonly.integration_checks.check_nfs_write manual__2026-03-26T16:35:14.678833+00:00 [queued]>
+[2026-03-26T22:08:05.750+0530] {taskinstance.py:1979} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: os_validation_local_error_sim_nfs_write_readonly.integration_checks.check_nfs_write manual__2026-03-26T16:35:14.678833+00:00 [queued]>
+[2026-03-26T22:08:05.750+0530] {taskinstance.py:2193} INFO - Starting attempt 1 of 2
+[2026-03-26T22:08:05.866+0530] {taskinstance.py:2214} INFO - Executing <Task(BashOperator): integration_checks.check_nfs_write> on 2026-03-26 16:35:14.678833+00:00
+[2026-03-26T22:08:05.875+0530] {standard_task_runner.py:60} INFO - Started process 10551 to run task
+[2026-03-26T22:08:05.882+0530] {standard_task_runner.py:87} INFO - Running: ['airflow', 'tasks', 'run', 'os_validation_local_error_sim_nfs_write_readonly', 'integration_checks.check_nfs_write', 'manual__2026-03-26T16:35:14.678833+00:00', '--job-id', '515', '--raw', '--subdir', 'DAGS_FOLDER/os_validation_local_error_simulation_suite.py', '--cfg-path', '/tmp/tmp_c4muil6']
+[2026-03-26T22:08:05.884+0530] {standard_task_runner.py:88} INFO - Job 515: Subtask integration_checks.check_nfs_write
+[2026-03-26T22:08:06.029+0530] {task_command.py:423} INFO - Running <TaskInstance: os_validation_local_error_sim_nfs_write_readonly.integration_checks.check_nfs_write manual__2026-03-26T16:35:14.678833+00:00 [running]> on host tejasvi-Vostro-15-3515
+[2026-03-26T22:08:06.231+0530] {taskinstance.py:2510} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='airflow' AIRFLOW_CTX_DAG_ID='os_validation_local_error_sim_nfs_write_readonly' AIRFLOW_CTX_TASK_ID='integration_checks.check_nfs_write' AIRFLOW_CTX_EXECUTION_DATE='2026-03-26T16:35:14.678833+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-03-26T16:35:14.678833+00:00'
+[2026-03-26T22:08:06.234+0530] {subprocess.py:63} INFO - Tmp dir root location: /tmp
+[2026-03-26T22:08:06.235+0530] {subprocess.py:75} INFO - Running command: ['/usr/bin/bash', '-c', 'touch /sys/os_validation_testfile && rm /sys/os_validation_testfile']
+[2026-03-26T22:08:06.256+0530] {subprocess.py:86} INFO - Output:
+[2026-03-26T22:08:06.260+0530] {subprocess.py:93} INFO - touch: cannot touch '/sys/os_validation_testfile': Permission denied
+[2026-03-26T22:08:06.261+0530] {subprocess.py:97} INFO - Command exited with return code 1
+[2026-03-26T22:08:06.277+0530] {taskinstance.py:2728} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/models/taskinstance.py", line 444, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/models/taskinstance.py", line 414, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/tejasvi/Desktop/airflow_ssh_simulation/venv/lib/python3.10/site-packages/airflow/operators/bash.py", line 212, in execute
+    raise AirflowException(
+airflow.exceptions.AirflowException: Bash command failed. The command returned a non-zero exit code 1.
+[2026-03-26T22:08:06.282+0530] {taskinstance.py:1149} INFO - Marking task as UP_FOR_RETRY. dag_id=os_validation_local_error_sim_nfs_write_readonly, task_id=integration_checks.check_nfs_write, execution_date=20260326T163514, start_date=20260326T163805, end_date=20260326T163806
+[2026-03-26T22:08:06.342+0530] {standard_task_runner.py:107} ERROR - Failed to execute job 515 for task integration_checks.check_nfs_write (Bash command failed. The command returned a non-zero exit code 1.; 10551)
+[2026-03-26T22:08:06.375+0530] {local_task_job_runner.py:234} INFO - Task exited with return code 1
+[2026-03-26T22:08:06.415+0530] {taskinstance.py:3309} INFO - 0 downstream tasks scheduled from follow-on schedule check

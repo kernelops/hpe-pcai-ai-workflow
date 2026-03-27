@@ -129,7 +129,7 @@ MOCK_PAST_ERRORS = [
     },
     {
         "id": "err_006",
-        "text": "<command>: command not found",
+        "text": "<COMMAND>: command not found",
                 
         "source": "Diagnosis: Occurs when the script or file that the system is trying to execute doesn't exist in the location specified by the PATH variable."
                 "Solution: Execute the file directly using its absolute or relative path (e.g., ~/script or ./script), or add a new directory containing the command to the PATH variable (export PATH=$PATH:/path/to/directory). Also, make sure to install the missing package containing the command. Make sure there are no typos in the command using which command (which <command>)."
@@ -140,7 +140,7 @@ MOCK_PAST_ERRORS = [
     },
     {
         "id": "err_007",
-        "text": "Command exited with return code 127",
+        "text": "SSH operator: exit status = 127",
                 
         "source": "Diagnosis: Indicates that the command was not found. This occurs when the system cannot locate the executable file in any of the paths defined by the PATH variable for the attempted command. "
                 "Solution: Check that the command is typed correctly using the which command (which <command>). Check if the directory containing the command is included in the PATH variable (echo $PATH). If not, add it to PATH (export PATH=$PATH:/path/to/directory). Ensure that the required package providing the command is installed. Specify the full path to the command."
@@ -179,7 +179,7 @@ MOCK_PAST_ERRORS = [
         "source": "Diagnosis: The mc admin policy set command is deprecated and has been replaced with mc policy admin attach in newer versions of the MinIO client."
                 "Solution: Replace the deprecated command with the new syntax: {MC_BINARY} admin policy attach local (readwrite|readonly|writeonly) --user={MINIO_USER}. Replaces mc admin policy (set|unset|update) commands with mc admin policy (attach|detach)."
                 "Prevention: Always check the MinIO client version and review changelogs when upgrading, or use mc --help to verify current command syntax before scripting."
-                "Error_type:  Configuration Error - using incorrect command syntax due to version mismatch or outdated script. "
+                "Error_type:  Configuration error - using incorrect command syntax due to version mismatch or outdated script. "
                 "Severity: Low - easily fixable by updating to the current command syntax."
                 "Retrieved_sources: https://github.com/minio/mc/issues/4513, https://docs.min.io/enterprise/aistor-object-store/reference/cli/admin/mc-admin-policy/mc-admin-policy-attach/"
     },
@@ -190,7 +190,7 @@ MOCK_PAST_ERRORS = [
         "source": "Diagnosis: MinIO client (mc) is unable to connect to the MinIO server at <IP_ADDRESS>:<PORT_NUMBER>. The connection is being actively refused, meaning no service is listening on that port. This could mean that the MinIO server is not running, or it is running on a different port, or MinIO crashed or failed to start."
                 "Solution: Check if MinIO server is running: (ps aux | grep minio). Start MinIO if not running: (minio server /data --console-address ":9000"). Verify the correct port: (netstat -tuln | grep 9000). Port 9000 is the default port. Update mc alias with the correct endpoint."
                 "Prevention: Always verify the correct MinIO API port (default 9000) before configuring aliases, and check that the server is actually running on that port."
-                "Error_type:  Connection Error "
+                "Error_type:  Connection error "
                 "Severity: Mediun - blocks all downstream MinIO operations."
                 "Retrieved_sources: https://github.com/minio/minio/issues/13639#issuecomment-966244704"
     },
@@ -201,11 +201,76 @@ MOCK_PAST_ERRORS = [
         "source": "Diagnosis: This is a generic failure message. The exact cause can be found in earlier logs. "
                 "Solution: Check earlier logs for ERRORS/Exception. Find the root cause and fix the underlying issue."
                 "Prevention: Log detailed command output (stdout + stderr). Add explicit error messages in scripts."
-                "Error_type: Execution Error"
+                "Error_type: Execution error"
                 "Severity: Medium - Task failed, but reason is not present in the error message itself"
                 "Retrieved_sources: https://stackoverflow.com/questions/20965762/meaning-of-exit-status-1-returned-by-linux-command"
     },
-    
+    {
+        "id": "err_013",
+        "text": "Unable to find image 'minio/minio:<IMAGE_TAG>' locally",
+                
+        "source": "Diagnosis: Docker cannot find the specified image locally and is unable to pull it from the registry because the tag does not exist. The image tag is invalid or mistyped. Possible typo in repository or tag name."
+                "Solution: Verify available images (docker images | grep minio). Build the image locally if source exists (docker build -t minio/minio:<CUSTOM_TAG>). Load image from tar file ifexported (docker load -i <MINIO_IMAGE>.tar)"
+                "Prevention: Pre-build or pre-load images before deployment task. Use docker images to verify local availability before running containers. Implement a pre=check task that validates image eistence."
+                "Error_type: Configuration error"
+                "Severity: Medium - Container cannot start but the fix is straightforward. No system-wide damage"
+                "Retrieved_sources: https://stackoverflow.com/questions/38464549/i-cant-find-my-docker-image-after-building-it"
+    },
+    {
+        "id": "err_014",
+        "text": "docker: Error response from daemon: manifest for minio/minio:<IMAGE_TAG> not found: manifest unknown: manifest unknown",
+                
+        "source": "Diagnosis: Docker successfully connected to Docker Hub but the registry returned a 404 error because the specified image tag does not exist in the remote repository. The image tag is misspelled or invalid. The tag may refer to a version that was never published. The image reposiroty name may be incorrect."
+                "Solution: List all available tags (skopeo list-tags docker://minio/minio). Pull a valid tag (docker pull minio/minio:latest). Update command with the correct tag."
+                "Prevention: Verify image tags exist before deployment. Implement a tag validation step."
+                "Error_type: Configuration error"
+                "Severity: Medium - Container cannot start but fix is straightforward. No system-wide damage."
+                "Retrieved_sources: https://stackoverflow.com/questions/28320134/how-can-i-list-all-tags-for-a-docker-image-on-a-remote-registry, https://forums.docker.com/t/docker-error-response-from-daemon-manifest-not-found-when-running-container-following-get-started-tutorial/65107"
+    },
+    {
+        "id": "err_015",
+        "text": "SSH operator error: exit status = 125",
+                
+        "source": "Diagnosis: SSH operator executed a command on the remote host that failed with exit code 125, which in Docker contexts typically indicates a Docker daemon error such as invalid image reference, pull failure, or container creation issue."
+                "Solution:  Check the full command output above the error to identify the specific failure. Correct accordingly."
+                "Prevention: Use Docker operations with proper error handling. Log full command output to capture specific Docker errors."
+                "Error_type: Runtime error"
+                "Severity: Medium - Container cannot start, root cause is usually a configuration issue which requires manual investigation of commad output."
+                "Retrieved_sources: https://komodor.com/learn/exit-codes-in-containers-and-kubernetes-the-complete-guide/"
+    },
+    {
+        "id": "err_016",
+        "text": "mc: <ERROR> invalid retention mode '<INVALIDMODE>'. Invalid arguments provided, please refer 'mc <command> -h' for relevant documentation.",
+                
+        "source": "Diagnosis: The mc client command failed because an invalid retention mode was specified. The MinIO retention policy requires valid modes such as governance or compliance. Invalid retention mode argument passed to mc retention set."
+                "Solution:  Verify available retention modes (mc retention set --help). Check current retention settings (mc retention info <BUCKET_NAME>). Correct the retention mode to a valid value - governance or compliance."
+                "Prevention: Validate retention mode arguments against allowed values (governance, compliance). Implement parameter checking before executing mc commands."
+                "Error_type: Configuration error"
+                "Severity: Low"
+                "Retrieved_sources: https://docs.min.io/enterprise/aistor-object-store/reference/cli/mc-retention/mc-retention-info/"
+    },
+    {
+        "id": "err_017",
+        "text": "curl: (22) The requested URL returned error: 403",
+                
+        "source": "Diagnosis: The curl command attempted to access an endpoint that exists but returned an HTTP 403 Forbidden error, indicating the request was understood by the server but access is denied due to insufficient permissions.  Credentiasl were not provided, or the authenticated user does not have permission to access the endpoint."
+                "Solution: Include authentication credentials, check available endpoints, or use a valid endpoint path."
+                "Prevention: Verify endpoint paths before scripting. Test endpoints with valid credentials before automating. Always include authentication credentials when accessing protected endpoints."
+                "Error_type: Authentication error"
+                "Severity: Medium - Authentication or authorization issue, but does not affect system stability"
+                "Retrieved_sources: "
+    },
+    {
+        "id": "err_018",
+        "text": "SSH operator error: exit status = 22",
+                
+        "source": "Diagnosis: The curl command-line tool often uses exit code 22 to indicate that the requested URL was not found (e.g., HTTP 404 error) on the server, but curl successfully connected and returned an error message in its output."
+                "Solution: Examine the command output above the error to identify the specific failure. Verify command syntax and arguments. For HTTP-related errors, ensure URLs are correctly formatted and verify authentication credentials are included."
+                "Prevention: Use proper error handling and logging to capture detailed failure reasons. Validate command arguments before execution in automation scripts."
+                "Error_type: Runtime error"
+                "Severity: Medium - Task fails with non-zero exit code which indicates syntax or parameter issue, but does not affect system stability"
+                "Retrieved_sources: https://gist.github.com/gitkodak/b9c253e89397335356b13b37985778f5"
+    },
 ]
 
 

@@ -271,6 +271,50 @@ MOCK_PAST_ERRORS = [
                 "Severity: Medium - Task fails with non-zero exit code which indicates syntax or parameter issue, but does not affect system stability"
                 "Retrieved_sources: https://gist.github.com/gitkodak/b9c253e89397335356b13b37985778f5"
     },
+    {
+        "id": "err_019",
+        "text": "mc: <ERROR> Unable to initialize new alias from the provided credentials. The request signature we calculated does not match the signature you provided. Check your key and signing method.",
+                
+        "source": "Diagnosis:  The mc client failed to authenticate with the MinIO server because the provided credentials were incorrect, the system time was out of sync, or the server was not ready to accept requests. The signature mismatch indicates the server rejected the authentication attempt. Root cause could be nncorrect access key or secret key, or client and server system time are out of sync (signature validation uses timestamps), MinIO server not fully initialized when mc command runs, URL endpoint or protocol mismatch (HTTP vs HTTPS), or special characters in keys misinterpreted by shell."
+                "Solution: Check MinIO server credentials (docker exec minio_server env | grep MINIO_ROOT). Add a health check before alias creation (curl -s http://127.0.0.1:<PORT_NUMBER>/minio/health/live). Synchronize system time (sudo timedatecl set-ntp true; sudo ntpdate -u pool.ntp.org). Set alias with correct credentials (mc alias set local https://127.0.0.1:<PORT_NUMBER> <MINIO_ROOT_USER> <MINIO_ROOT_PASSWORD>). Use single quotes to prevent shell interpretation."
+                "Prevention: Implement server health check before running mc commands. Use environment variables for credentials. Keep system time synchronized using NTP."
+                "Error_type: Authentication error"
+                "Severity: Medium - Authentication fails preventing all subsequent MinIO operations"
+                "Retrieved_sources: https://drdroid.io/stack-diagnosis/minio-the-request-signature-we-calculated-does-not-match-the-signature-you-provided"
+    },
+    {
+        "id": "err_020",
+        "text": "mc: <ERROR> Unable to create new policy: invalid character ']' after object key:value pair.",
+                
+        "source": "Diagnosis: The system is trying to parse a JSON file. It encountered a ] where it expected more key:value content or a closing }. Likely causes are missing } to close an object, extra or misplaced ] or comma, incomplete key-value pair, or improper nesting of {} and []."
+                "Solution: Use jq to show the exact line and column of error (jq . /path/to/policy.json). Fix the JSON structure (nano /path/to/policy.json). Validate the JSON structure (jq . /path/to/policy.json). Rerun the original command. "
+                "Prevention: Always validate JSON before using it."
+                "Error_type: Syntax error"
+                "Severity: Low - Configuration is not applied, but does not crash services"
+                "Retrieved_sources: https://jsonlint.com/json-syntax-error"
+    },
+    {
+        "id": "err_021",
+        "text": "syntax error: unexpected end of file",
+                
+        "source": "Diagnosis: Indicates that the interpreter reached the end of the file while it was still expecting an open syntactical construct to be closed. Likely causes are missing fi for an if block, missing done for a loop, unclosed quotes, uclosed braces {}, or incomplete multi-line command."
+                "Solution: Inspect the file contents (cat /path/to/file). Open the file in an editor and fix the structure (nano /path/to/file). Revalidate using the relevant tools after fixing. Rerun the command."
+                "Prevention: Always run syntax check before execution."
+                "Error_type: Syntax error"
+                "Severity: Low - Workflow is blocked, but no direct system damage"
+                "Retrieved_sources: https://unix.stackexchange.com/questions/193165/syntax-error-unexpected-end-of-file-bash-script"
+    },
+    {
+        "id": "err_022",
+        "text": "req: Unknown option or message digest",
+                
+        "source": "Diagnosis: A command (usually openssl req) received an invalid argument. It either doesn't recognize an option/flag, or a message digest algorithm (like -sha256). Likely causes are typo in a flag, using an unsuppported digest algorithm, passing arguments in the wrong order, using a command incompatible with installed version of openssl"
+                "Solution: Verify valid options for openssl (openssl req -help). Check supported message digests (openssl list -digest-algorithms). Fix the command. If issue persists, check openssl version (openssl version)"
+                "Prevention: Always refer to help before using commands. Avoid typos in flags. Stick to widely supported digests."
+                "Error_type: Configuration error"
+                "Severity: Low - Task fails immediately, no system changes made"
+                "Retrieved_sources: https://docs.openssl.org/3.6/man1/openssl-req/#options"
+    },
 ]
 
 

@@ -73,18 +73,9 @@ MOCK_HPE_DOCS = [
 
 
 MOCK_PAST_ERRORS = [
-    # ---Mock Error ---
-    {
-        "id": "err_001",
-        "text": "Error: ConnectionRefusedError during iLO configuration task. "
-                "Task: configure_ilo | iLO IP 192.168.1.10 port 443 refused connection. "
-                "Root Cause: iLO network interface not enabled after factory reset. "
-                "Fix Applied: Enabled iLO dedicated network port via physical server access, re-ran configure_ilo task successfully.",
-        "source": "Past Error Log #001"
-    },
     #---Actual error logs for installation of MinIO---
     {
-        "id": "err_002",
+        "id": "err_001",
         "text":"wget: unable to resolve host address",
                
         "source":"Diagnosis: The system cannot resolve the hostname to an IP address. This indicates a DNS resolution failure. Possible underlying issues are no internet connectivity, DNS server not configured or not reachable, incorrect or empty /etc/resolv.conf, firewall/proxy blocking DNS queries or temporary DNS server failure."
@@ -95,7 +86,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://stackoverflow.com/questions/24821521/wget-unable-to-resolve-host-address-http"
     },
     {
-        "id": "err_003",
+        "id": "err_002",
         "text": "Resolving <domain_name> failed: Temporary failure in name resolution",
                 
         "source": "Diagnosis: System cannot resolve the domain name to an IP address. Possible causes include no internet connectivity, DNS server not configured or unreachable, incorrect/empty /etc/resolv.conf, firewall/proxy blocking DNS queries, or temporary DNS server failure."
@@ -106,7 +97,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://unix.stackexchange.com/questions/504963/how-to-solve-a-temporary-failure-in-name-resolution-error "
     },
     {
-        "id": "err_004",
+        "id": "err_003",
         "text": "sudo: A terminal is required to read the password; either use the -S option to read from standard input or configure an askpass helper",
                 
         "source": "Diagnosis: Occurs when a script or automated process attempts to use sudo without an interactive terminal (TTY) to prompt for a password. No TTY allocated."
@@ -117,7 +108,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://askubuntu.com/questions/1244898/sudo-a-terminal-is-required-to-read-the-password-either-use-the-s-option-to-r"
     },
     {
-        "id": "err_005",
+        "id": "err_004",
         "text": "sudo: A password is required",
                 
         "source": "Diagnosis: Occurs when a script or automated process attempts to use sudo without an interactive terminal (TTY) to prompt for a password. No TTY allocated."
@@ -128,7 +119,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://askubuntu.com/questions/1244898/sudo-a-terminal-is-required-to-read-the-password-either-use-the-s-option-to-r"
     },
     {
-        "id": "err_006",
+        "id": "err_005",
         "text": "<COMMAND>: command not found",
                 
         "source": "Diagnosis: Occurs when the script or file that the system is trying to execute doesn't exist in the location specified by the PATH variable."
@@ -139,7 +130,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://www.redhat.com/en/blog/fix-command-not-found-error-linux"
     },
     {
-        "id": "err_007",
+        "id": "err_006",
         "text": "SSH operator: exit status = 127",
                 
         "source": "Diagnosis: Indicates that the command was not found. This occurs when the system cannot locate the executable file in any of the paths defined by the PATH variable for the attempted command. "
@@ -150,7 +141,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://linuxconfig.org/how-to-fix-bash-127-error-return-code"
     },
     {
-        "id": "err_008",
+        "id": "err_007",
         "text": "No such file or directory: <file_path>",
                 
         "source": "Diagnosis: The system cannot find the specified file or directory at the provided path. This can occur if the file was deleted, moved, or if there is a typo in the path. It can also happen if the script is being run from a different working directory than expected. Additionally, the file might require special permissions to access."
@@ -161,7 +152,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: "
     },
     {
-        "id": "err_009",
+        "id": "err_008",
         "text": "Failed to enable unit: Unit file <FILE_NAME>.service does not exist",
                 
         "source": "Diagnosis: The systemd service file for <FILE_NAME> is missing or not in the expected location. This occurs when the service was never installed, or the .service file is not placed in systemd directories (/etc/systemd/system/ or /lib/systemd/system/), or the filename is incorrect, or the installation step failed earlier"
@@ -173,7 +164,7 @@ MOCK_PAST_ERRORS = [
     },
     # ---Actual error logs for configuration of MinIO---
     {
-        "id": "err_010",
+        "id": "err_009",
         "text": "mc: <ERROR> Deprecated command. Please use 'mc admin policy attach'",
                 
         "source": "Diagnosis: The mc admin policy set command is deprecated and has been replaced with mc policy admin attach in newer versions of the MinIO client."
@@ -184,7 +175,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://github.com/minio/mc/issues/4513, https://docs.min.io/enterprise/aistor-object-store/reference/cli/admin/mc-admin-policy/mc-admin-policy-attach/"
     },
     {
-        "id": "err_011",
+        "id": "err_010",
         "text": "mc: <ERROR> Unable to initialize new alias from the provided credentials. Get \"http://<IP_ADDRESS>:<PORT_NUMBER>/probe-bsign-<RANDOM_STRING>/?location=\": dial tcp 127.0.0.1:<PORT_NUMBER>:connect: connection refused",
                 
         "source": "Diagnosis: MinIO client (mc) is unable to connect to the MinIO server at <IP_ADDRESS>:<PORT_NUMBER>. The connection is being actively refused, meaning no service is listening on that port. This could mean that the MinIO server is not running, or it is running on a different port, or MinIO crashed or failed to start."
@@ -195,7 +186,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://github.com/minio/minio/issues/13639#issuecomment-966244704"
     },
     {
-        "id": "err_012",
+        "id": "err_011",
         "text": "Command exited with return code 1",
                 
         "source": "Diagnosis: This is a generic failure message. The exact cause can be found in earlier logs. "
@@ -206,7 +197,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://stackoverflow.com/questions/20965762/meaning-of-exit-status-1-returned-by-linux-command"
     },
     {
-        "id": "err_013",
+        "id": "err_012",
         "text": "Unable to find image 'minio/minio:<IMAGE_TAG>' locally",
                 
         "source": "Diagnosis: Docker cannot find the specified image locally and is unable to pull it from the registry because the tag does not exist. The image tag is invalid or mistyped. Possible typo in repository or tag name."
@@ -217,7 +208,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://stackoverflow.com/questions/38464549/i-cant-find-my-docker-image-after-building-it"
     },
     {
-        "id": "err_014",
+        "id": "err_013",
         "text": "docker: Error response from daemon: manifest for minio/minio:<IMAGE_TAG> not found: manifest unknown: manifest unknown",
                 
         "source": "Diagnosis: Docker successfully connected to Docker Hub but the registry returned a 404 error because the specified image tag does not exist in the remote repository. The image tag is misspelled or invalid. The tag may refer to a version that was never published. The image reposiroty name may be incorrect."
@@ -228,7 +219,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://stackoverflow.com/questions/28320134/how-can-i-list-all-tags-for-a-docker-image-on-a-remote-registry, https://forums.docker.com/t/docker-error-response-from-daemon-manifest-not-found-when-running-container-following-get-started-tutorial/65107"
     },
     {
-        "id": "err_015",
+        "id": "err_014",
         "text": "SSH operator error: exit status = 125",
                 
         "source": "Diagnosis: SSH operator executed a command on the remote host that failed with exit code 125, which in Docker contexts typically indicates a Docker daemon error such as invalid image reference, pull failure, or container creation issue."
@@ -239,7 +230,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://komodor.com/learn/exit-codes-in-containers-and-kubernetes-the-complete-guide/"
     },
     {
-        "id": "err_016",
+        "id": "err_015",
         "text": "mc: <ERROR> invalid retention mode '<INVALIDMODE>'. Invalid arguments provided, please refer 'mc <command> -h' for relevant documentation.",
                 
         "source": "Diagnosis: The mc client command failed because an invalid retention mode was specified. The MinIO retention policy requires valid modes such as governance or compliance. Invalid retention mode argument passed to mc retention set."
@@ -250,7 +241,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://docs.min.io/enterprise/aistor-object-store/reference/cli/mc-retention/mc-retention-info/"
     },
     {
-        "id": "err_017",
+        "id": "err_016",
         "text": "curl: (22) The requested URL returned error: 403",
                 
         "source": "Diagnosis: The curl command attempted to access an endpoint that exists but returned an HTTP 403 Forbidden error, indicating the request was understood by the server but access is denied due to insufficient permissions.  Credentiasl were not provided, or the authenticated user does not have permission to access the endpoint."
@@ -261,7 +252,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: "
     },
     {
-        "id": "err_018",
+        "id": "err_017",
         "text": "SSH operator error: exit status = 22",
                 
         "source": "Diagnosis: The curl command-line tool often uses exit code 22 to indicate that the requested URL was not found (e.g., HTTP 404 error) on the server, but curl successfully connected and returned an error message in its output."
@@ -272,7 +263,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://gist.github.com/gitkodak/b9c253e89397335356b13b37985778f5"
     },
     {
-        "id": "err_019",
+        "id": "err_018",
         "text": "mc: <ERROR> Unable to initialize new alias from the provided credentials. The request signature we calculated does not match the signature you provided. Check your key and signing method.",
                 
         "source": "Diagnosis:  The mc client failed to authenticate with the MinIO server because the provided credentials were incorrect, the system time was out of sync, or the server was not ready to accept requests. The signature mismatch indicates the server rejected the authentication attempt. Root cause could be nncorrect access key or secret key, or client and server system time are out of sync (signature validation uses timestamps), MinIO server not fully initialized when mc command runs, URL endpoint or protocol mismatch (HTTP vs HTTPS), or special characters in keys misinterpreted by shell."
@@ -283,7 +274,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://drdroid.io/stack-diagnosis/minio-the-request-signature-we-calculated-does-not-match-the-signature-you-provided"
     },
     {
-        "id": "err_020",
+        "id": "err_019",
         "text": "mc: <ERROR> Unable to create new policy: invalid character ']' after object key:value pair.",
                 
         "source": "Diagnosis: The system is trying to parse a JSON file. It encountered a ] where it expected more key:value content or a closing }. Likely causes are missing } to close an object, extra or misplaced ] or comma, incomplete key-value pair, or improper nesting of {} and []."
@@ -294,7 +285,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://jsonlint.com/json-syntax-error"
     },
     {
-        "id": "err_021",
+        "id": "err_020",
         "text": "syntax error: unexpected end of file",
                 
         "source": "Diagnosis: Indicates that the interpreter reached the end of the file while it was still expecting an open syntactical construct to be closed. Likely causes are missing fi for an if block, missing done for a loop, unclosed quotes, uclosed braces {}, or incomplete multi-line command."
@@ -305,7 +296,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://unix.stackexchange.com/questions/193165/syntax-error-unexpected-end-of-file-bash-script"
     },
     {
-        "id": "err_022",
+        "id": "err_021",
         "text": "req: Unknown option or message digest",
                 
         "source": "Diagnosis: A command (usually openssl req) received an invalid argument. It either doesn't recognize an option/flag, or a message digest algorithm (like -sha256). Likely causes are typo in a flag, using an unsuppported digest algorithm, passing arguments in the wrong order, using a command incompatible with installed version of openssl"
@@ -317,7 +308,7 @@ MOCK_PAST_ERRORS = [
     },
     # --- Actual error logs for configuration of NFS ---
     {
-        "id": "err_023",
+        "id": "err_022",
         "text": "Error response from daemon: No such container: <CONTAINER_NAME>",
                 
         "source": "Diagnosis: The Docker daemon cannot find a container with the given name or ID. The container either does not exist, was removed/stopped or was referenced incorrectly. Likely causes include typo in container name/ID, container was deleted, container hasn't been created yet, or trying to access a stopped container with wrong command."
@@ -328,7 +319,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://stackoverflow.com/questions/50323199/docker-error-no-such-container-friendlyhello, https://oneuptime.com/blog/post/2026-01-25-fix-docker-no-such-container-errors/view#:~:text=%22No%20such%20container%22%20errors%20typically,container%20existence%20before%20attempting%20operations."
     },
     {
-        "id": "err_024",
+        "id": "err_023",
         "text": "SSH comand timed out",
                 
         "source": "Diagnosis: An SSH connection was attempted, but no response was received within the allowed time. Likely causes are target machine is down or unreachable, network issues (wrong IP, DNS failure, firewall blocking), SSH service not running on the remote machine, or a long-running command exceeding timeout limit."
@@ -339,7 +330,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://oneuptime.com/blog/post/2026-01-24-fix-ssh-connection-timeout-errors/view#:~:text=SSH%20connection%20timeouts%20are%20frustrating,and%20fix%20SSH%20connection%20timeouts."
     },
     {
-        "id": "err_025",
+        "id": "err_024",
         "text": "ERROR: nfs module is not loaded in the Docker host's kernel (try: modprobe nfs)",
                 
         "source": "Diagnosis: The host system is trying to use NFS functionality, but the required kernel module (nfs) is not loaded. Docker (or another service) cannot access NFS-based storage without it. Likely causes are NFS kernel module not loaded, NFS support not installed on the system, insufficient privileges to load kernel modules, or running inside a minimal/stripped-down OS."
@@ -350,7 +341,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://unix.stackexchange.com/questions/119725/fatal-module-nfs-not-found#:~:text=Sorted%20by:,kernel%20is%20already%20the%20latest."
     },
     {
-        "id": "err_026",
+        "id": "err_025",
         "text": "exportfs: /etc/exports: unknown keyword <UNKNOWN_KEYWORD>",
                 
         "source": "Diagnosis: The exportfs command failed because the /etc/exports file contains an invalid NFS export option that is not recognized. NFS export options must be valid keywords such as rw, ro, sync, async, no_root_squash, etc. The parser failed while reading the file, so exports cannot be applied. Likely causes are typo in an export option, unsupported or invalid keyword, wrong syntax/format in /etc/exports, or mixing options from different NFS versions."
@@ -362,7 +353,7 @@ MOCK_PAST_ERRORS = [
     },
     # --- Actual error logs for OS validation ---
     {
-        "id": "err_027",
+        "id": "err_026",
         "text": "ping: <INVALID_HOSTNAME>: Name or service not known",
                 
         "source": "Diagnosis: The system cannot resolve the provided hostname. It failed to convert the name to IP address using DNS or local resolution. Likely causes are typo in hostname, DNS server not configured or unreachable, no internet/network connectivity, missing or incorrect /etc/hosts entry, or using a service name that does not exist."
@@ -373,7 +364,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://oneuptime.com/blog/post/2026-03-02-how-to-fix-name-or-service-not-known-errors-on-ubuntu/view#:~:text=The%20error%20%22Name%20or%20service%20not%20known%22,configuration%2C%20a%20malfunctioning%20DNS%20server%2C%20incorrect%20/etc/nsswitch."
     },
     {
-        "id": "err_028",
+        "id": "err_027",
         "text": "Command exited with return code 2",
                 
         "source": "Diagnosis: A command finished execution but returned a non-zero exit code, which indicates some kind of error. Specifically, exit code 2 usually indicates incorrect usage of a command, syntax error or invalid arguments, and sometimes a misconfiguration or missing file/option. Likely causes are wrong flags or parameters passed to a command, missing required arguments, tool-specific validation failure, or invalid file paths or inputs."
@@ -384,7 +375,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://askubuntu.com/questions/892604/what-is-the-meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script"
     },
     {
-        "id": "err_029",
+        "id": "err_028",
         "text": "df: unrecognized option '<OPTION>'",
                 
         "source": "Diagnosis: The df command received a flag/option it does not support. The command-line parser does not recognize that argument. Likely causes are a typo in the option, using an option from a different OS, or running in a minimal environment where df supports fewer flags."
@@ -395,7 +386,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://labex.io/tutorials/linux-how-to-understand-df-command-flags-431265"
     },
     {
-        "id": "err_030",
+        "id": "err_029",
         "text": "free: unrecognized option '<OPTION>'",
                 
         "source": "Diagnosis: The free command recceived a flag it does not support. The command exists, but the environment's version does not recognize the option. Likely causes are typos in the option, using flags from another Linux version, running inside a minimal environment, incorrect flag syntax, or using an older version of free with limited features."
@@ -406,7 +397,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://man7.org/linux/man-pages/man1/free.1.html"
     },
     {
-        "id": "err_031",
+        "id": "err_030",
         "text": "curl: Failed to connect to localhost port <PORT>: Connection refused",
                 
         "source": "Diagnosis: The curl command failed because it could not establish a TCP connection to the specified host and port. The connection was actively refused by the target machine, indicating that no service is listening on the specified host and port, or a firewall is rejecting the connection. Likely causes are target service is not running, service is running on a different port, service crashed or exited, port is not exposed, or firewall rules are blocking the port."
@@ -417,7 +408,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://oneuptime.com/blog/post/2026-01-24-fix-connection-refused-errors/view"
     },
     {
-        "id": "err_032",
+        "id": "err_031",
         "text": "Command exited with return code 7",
                 
         "source": "Diagnosis: The command executed but failed with exit code 7. For curl commands, exit code 7 specifically indicates a failure to connect to the host (connection refused, host unreachable, or timeout). For other commands, exit code 7 may have different meanings depending on the application. Likely causes could be target service not running, wrong host or port, port is closed or not listening, or network/firewall restrictions."
@@ -428,7 +419,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://www.quora.com/How-do-I-resolve-cURL-Error-7-couldnt-connect-to-host"
     },
     {
-        "id": "err_033",
+        "id": "err_032",
         "text": "touch: cannot touch '<FILE>': Permission denied",
                 
         "source": "Diagnosis: The touch command tried to create or modify a file, but the OS denied permission for that operation. Likely causes are user does not have write permission in the directory, file or directory is owned by another user like root, attempting to write in a restricted location (e.g. /root, /etc), file exits but is read-only or running inside a container with limited privileges. For example, /sys is a read-only virtual filesystem (sysfs). Regular users do not have write permissions in /sys. Even with sudo, arbitrary file creation in /sys is not allowed as it represents kernel objects"
@@ -439,7 +430,7 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://oneuptime.com/blog/post/2026-01-24-bash-permission-denied/view"
     },
     {
-        "id": "err_034",
+        "id": "err_033",
         "text": "Command exited with return code 3",
                 
         "source": "Diagnosis: A command executed but returned exit code 3, indicating failure. The exact meaning depends on the specific command/tool. Likely causes are service or process is not running, invalid state for the requested operation, or configuration or runtime condition not satisfied. For systemctl is-active <SERVICE>m return code 3 means the service is inactive or does not exist."

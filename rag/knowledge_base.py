@@ -315,6 +315,140 @@ MOCK_PAST_ERRORS = [
                 "Severity: Low - Task fails immediately, no system changes made"
                 "Retrieved_sources: https://docs.openssl.org/3.6/man1/openssl-req/#options"
     },
+    # --- Actual error logs for configuration of NFS ---
+    {
+        "id": "err_023",
+        "text": "Error response from daemon: No such container: <CONTAINER_NAME>",
+                
+        "source": "Diagnosis: The Docker daemon cannot find a container with the given name or ID. The container either does not exist, was removed/stopped or was referenced incorrectly. Likely causes include typo in container name/ID, container was deleted, container hasn't been created yet, or trying to access a stopped container with wrong command."
+                "Solution: List running containers (docker ps). List all containers including stopped (docker ps -a). Start container if it exists but is stopped (docker start <CONTAINER_NAME>). Re-run container if it was removed (docker run <IMAGE_NAME>). Double check the container name (docker ps -a --format "{{.Names}}")."
+                "Prevention: Avoid losing containers unintentionally. Be careful with --rm flag. Check container status before operations (docker ps -a)."
+                "Error_type: Runtime error"
+                "Severity: Low - Container access is affected, but no system damage or data corruption."
+                "Retrieved_sources: https://stackoverflow.com/questions/50323199/docker-error-no-such-container-friendlyhello, https://oneuptime.com/blog/post/2026-01-25-fix-docker-no-such-container-errors/view#:~:text=%22No%20such%20container%22%20errors%20typically,container%20existence%20before%20attempting%20operations."
+    },
+    {
+        "id": "err_024",
+        "text": "SSH comand timed out",
+                
+        "source": "Diagnosis: An SSH connection was attempted, but no response was received within the allowed time. Likely causes are target machine is down or unreachable, network issues (wrong IP, DNS failure, firewall blocking), SSH service not running on the remote machine, or a long-running command exceeding timeout limit."
+                "Solution: Check is target machine is reachable over the network (ping <TARGET_MACHINE>). Check is port 22 for SSH is open (nc -zv <TARGET_MACHINE> 22). Try manual SSH with verbose output to see what is failing (ssh -vvv user@<TARGET_MACHINE>). Confirm if SSH server is active on the target machine (sudo systemctl status ssh). If needed, start SSH (sydo systemctl start ssh). Increase timeout of command is long-running (ssh -o ConnectTimeout=30 user@<TARGET_MACHINE>). Verify is SSH port 22 is allowed by the firewall (sudo ufw status). If blocked, allow it (sudo ufw allow 22)."
+                "Prevention: Ensure SSH service is always running (sudo systemctl enable ssh). Avoid DNS or typo-related failures. Set appropriate timeouts in scripts. Configure proper firewall rules."
+                "Error_type: Network error"
+                "Severity: Medium - Blocks automation scripts, but no direct data/system damage"
+                "Retrieved_sources: https://oneuptime.com/blog/post/2026-01-24-fix-ssh-connection-timeout-errors/view#:~:text=SSH%20connection%20timeouts%20are%20frustrating,and%20fix%20SSH%20connection%20timeouts."
+    },
+    {
+        "id": "err_025",
+        "text": "ERROR: nfs module is not loaded in the Docker host's kernel (try: modprobe nfs)",
+                
+        "source": "Diagnosis: The host system is trying to use NFS functionality, but the required kernel module (nfs) is not loaded. Docker (or another service) cannot access NFS-based storage without it. Likely causes are NFS kernel module not loaded, NFS support not installed on the system, insufficient privileges to load kernel modules, or running inside a minimal/stripped-down OS."
+                "Solution: Try loading the NFS kernel module dynamically without reboot (sudo modprobe nfs). Verify the module is loaded (lsmod | grep nfs). Install NFS utilities if missing (sudo apt update && sudo apt install nfs-common). Retry command on target machine again."
+                "Prevention: Ensure NFS module loads automatically on startup (echo "nfs" | sudo tee -a /etc/modules). Verify dependencies before deployment. Avoid minimal OS images without NFS support. Ensure proper privileges, because kernel module loading requires root access."
+                "Error_type: Configuration error"
+                "Severity: Medium - Blocks NFS-based storage usage but does not affect unrelated system functions"
+                "Retrieved_sources: https://unix.stackexchange.com/questions/119725/fatal-module-nfs-not-found#:~:text=Sorted%20by:,kernel%20is%20already%20the%20latest."
+    },
+    {
+        "id": "err_026",
+        "text": "exportfs: /etc/exports: unknown keyword <UNKNOWN_KEYWORD>",
+                
+        "source": "Diagnosis: The exportfs command failed because the /etc/exports file contains an invalid NFS export option that is not recognized. NFS export options must be valid keywords such as rw, ro, sync, async, no_root_squash, etc. The parser failed while reading the file, so exports cannot be applied. Likely causes are typo in an export option, unsupported or invalid keyword, wrong syntax/format in /etc/exports, or mixing options from different NFS versions."
+                "Solution: Inspect the current NFS exports configuration (cat /etc/exports). Look for unkown or misspelled options/incorrect syntax and edit the file (sudo nano /etc/exports). Validate exports configuration (sudo exportfs -ra). Restart NFS service if needed (sudo systemctl restart nfs-kernel-server)."
+                "Prevention: Follow correct syntax strictly. Avoid unknown or unsupported options. Validate after every change (sudo exportfs -ra). Backup /etc/exports before making changes."
+                "Error_type: Configuration error"
+                "Severity: Medium -  NFS exports fail to load, shared directories become inaccessible but no direct system damage"
+                "Retrieved_sources: https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/5/html/deployment_guide/s1-nfs-server-config-exports"
+    },
+    # --- Actual error logs for OS validation ---
+    {
+        "id": "err_027",
+        "text": "ping: <INVALID_HOSTNAME>: Name or service not known",
+                
+        "source": "Diagnosis: The system cannot resolve the provided hostname. It failed to convert the name to IP address using DNS or local resolution. Likely causes are typo in hostname, DNS server not configured or unreachable, no internet/network connectivity, missing or incorrect /etc/hosts entry, or using a service name that does not exist."
+                "Solution: Test with a known valid domain (ping google.com). If it works, the original hostname is likely wrong. If it fails, there is no internet connectivity. Query DNS directly and try resolving the hostname to an IP (nslookup <HOSTNAME>). Check DNS configuration (cat /etc/resolv.conf). Add a temporary host entry if needed, which manually maps hostname to an IP (sudo nano /etc/hosts). Restart networking if DNS issue (sudo systemctl restart NetworkManager)."
+                "Prevention: Verify hostnames before. Ensure DNS is configured properly by keeping valid namservers in /etc/resolv.conf. Use IP addressess for critical operations."
+                "Error_type: Network error"
+                "Severity: Medium - Network operations fail completely, but no direct system damage."
+                "Retrieved_sources: https://oneuptime.com/blog/post/2026-03-02-how-to-fix-name-or-service-not-known-errors-on-ubuntu/view#:~:text=The%20error%20%22Name%20or%20service%20not%20known%22,configuration%2C%20a%20malfunctioning%20DNS%20server%2C%20incorrect%20/etc/nsswitch."
+    },
+    {
+        "id": "err_028",
+        "text": "Command exited with return code 2",
+                
+        "source": "Diagnosis: A command finished execution but returned a non-zero exit code, which indicates some kind of error. Specifically, exit code 2 usually indicates incorrect usage of a command, syntax error or invalid arguments, and sometimes a misconfiguration or missing file/option. Likely causes are wrong flags or parameters passed to a command, missing required arguments, tool-specific validation failure, or invalid file paths or inputs."
+                "Solution: Rerun the command to see the real error message above this return code. Print the last exit code (echo $?). Check command usage/help (<COMMAND> --help). Ensure required files actually exist (ls -l /path/to/file)."
+                "Prevention:  Always validate command syntax before running. Test commands incrementally."
+                "Error_type: Runtime error"
+                "Severity: Medium - indicates failure of a command which can break deployments, but no inherent system damage"
+                "Retrieved_sources: https://askubuntu.com/questions/892604/what-is-the-meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script"
+    },
+    {
+        "id": "err_029",
+        "text": "df: unrecognized option '<OPTION>'",
+                
+        "source": "Diagnosis: The df command received a flag/option it does not support. The command-line parser does not recognize that argument. Likely causes are a typo in the option, using an option from a different OS, or running in a minimal environment where df supports fewer flags."
+                "Solution: Check valid flags for the current df version (df --help). Try common valid options (df -h). Check df version (df --version). Install full utilities if needed (sudo apt update && sudo apt insall coreutils)."
+                "Prevention: Always check command compatibility. Use portable options and stick to widely supported flags like -h,-k. Avoid copying commands from incompatible systems."
+                "Error_type: Configuration error "
+                "Severity: Low - Command execution fails, but fix is straightforward and no damage to system/data occurs"
+                "Retrieved_sources: https://labex.io/tutorials/linux-how-to-understand-df-command-flags-431265"
+    },
+    {
+        "id": "err_030",
+        "text": "free: unrecognized option '<OPTION>'",
+                
+        "source": "Diagnosis: The free command recceived a flag it does not support. The command exists, but the environment's version does not recognize the option. Likely causes are typos in the option, using flags from another Linux version, running inside a minimal environment, incorrect flag syntax, or using an older version of free with limited features."
+                "Solution: Check which version of free is being used (free --version). Display all valid flags for the current version of the free command (free --help). Try common valid options that work on most systems (free -h). Install full utilities if needed (sudo apt update && sudo apt install procps)."
+                "Prevention: Check command options before use. Avoid copying commands blindly across different OSes. Use widely supported options like -m."
+                "Error_type: Configuration error "
+                "Severity: Low - Command execution fails, but fix is straightforward and no damage to system/data occurs"
+                "Retrieved_sources: https://man7.org/linux/man-pages/man1/free.1.html"
+    },
+    {
+        "id": "err_031",
+        "text": "curl: Failed to connect to localhost port <PORT>: Connection refused",
+                
+        "source": "Diagnosis: The curl command failed because it could not establish a TCP connection to the specified host and port. The connection was actively refused by the target machine, indicating that no service is listening on the specified host and port, or a firewall is rejecting the connection. Likely causes are target service is not running, service is running on a different port, service crashed or exited, port is not exposed, or firewall rules are blocking the port."
+                "Solution: Check if any service is listening on the port (ss -tuln | grep <PORT>). If nothing shows, no service is running on that port. Check whether the required service is running (ps aux | grep <SERVICE_NAME>). Start the service if not running. Verify that the service is configured to run on the expected port (cat config.yaml). If using Docker, confirm that the container is running and check port mapping."
+                "Prevention: Always verify service is running before connecting; avoid blind curl requests. Use health checks to confirm service availability." 
+                "Error_type: Network error"
+                "Severity: Medium - Service is unreachable and pipelines are broken, but no system damage"
+                "Retrieved_sources: https://oneuptime.com/blog/post/2026-01-24-fix-connection-refused-errors/view"
+    },
+    {
+        "id": "err_032",
+        "text": "Command exited with return code 7",
+                
+        "source": "Diagnosis: The command executed but failed with exit code 7. For curl commands, exit code 7 specifically indicates a failure to connect to the host (connection refused, host unreachable, or timeout). For other commands, exit code 7 may have different meanings depending on the application. Likely causes could be target service not running, wrong host or port, port is closed or not listening, or network/firewall restrictions."
+                "Solution: Identify which command failed (history | tail -n 5). If using curl, retry with verbose output (curl -v http://<HOST>:<PORT>). Check if service is running (ss -tuln | grep <PORT>). Check connectivity to confirm network reachability (ping <HOST>). If using Docker, ensure container is running and check port mapping."
+                "Prevention: Verify service before connecting. Use correct host and port. Confirm server readiness before requests."
+                "Error_type: Network error"
+                "Severity: Medium - Service is unreachable and pipelines are broken, but no system damage."
+                "Retrieved_sources: https://www.quora.com/How-do-I-resolve-cURL-Error-7-couldnt-connect-to-host"
+    },
+    {
+        "id": "err_033",
+        "text": "touch: cannot touch '<FILE>': Permission denied",
+                
+        "source": "Diagnosis: The touch command tried to create or modify a file, but the OS denied permission for that operation. Likely causes are user does not have write permission in the directory, file or directory is owned by another user like root, attempting to write in a restricted location (e.g. /root, /etc), file exits but is read-only or running inside a container with limited privileges. For example, /sys is a read-only virtual filesystem (sysfs). Regular users do not have write permissions in /sys. Even with sudo, arbitrary file creation in /sys is not allowed as it represents kernel objects"
+                "Solution: Check directory permissions to confirm whether write permission is present (ls -ld <DIRECTORY>). Check file ownership (ls -l <FILE>). Bypass permission restrictions if allowed by running the command as root (sudo touch <FILE>). Change permissions if ownership of the file is available (chmod u+w <FILE>). Change ownership of the file if needed (sudo chown $USER:$USER <FILE_OR_DIRECTORY>). Use a writable directory (touch ~/<FILE)."
+                "Prevention: Work in user-owned directories. Check permissions before writing. Set correct permissions during setup."
+                "Error_type: Permission error"
+                "Severity: Medium - prevents file creation/modification, but no system damage"
+                "Retrieved_sources: https://oneuptime.com/blog/post/2026-01-24-bash-permission-denied/view"
+    },
+    {
+        "id": "err_034",
+        "text": "Command exited with return code 3",
+                
+        "source": "Diagnosis: A command executed but returned exit code 3, indicating failure. The exact meaning depends on the specific command/tool. Likely causes are service or process is not running, invalid state for the requested operation, or configuration or runtime condition not satisfied. For systemctl is-active <SERVICE>m return code 3 means the service is inactive or does not exist."
+                "Solution: Identify the command that failed (history | tail -n 5). Verify the correct service name (systemctl list-units --type=service --all). Check if the service exists in systemd (systemctl list-unit-files). Use correct service name. Install the service if needed (sudo apt update && sudo apt install <SERVICE>). Check the service status to get detailed information about why it might be inactive (systemctl status <SERVICE_NAME>)"
+                "Prevention: Validate service existence before checking status. Use idempotent checks that handle missing services gracefully."
+                "Error_type: Configuration error"
+                "Severity: Low - easily fixed by using correct service name or installing the service, no system impact"
+                "Retrieved_sources: https://man7.org/linux/man-pages/man1/systemctl.1.html"
+    },
 ]
 
 

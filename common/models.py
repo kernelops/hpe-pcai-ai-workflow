@@ -1,5 +1,5 @@
 # common/models.py
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 class DeploymentConfig(BaseModel):
@@ -24,6 +24,11 @@ class ErrorReport(BaseModel):
     diagnosis: str
     confidence: float
     raw_log: str
+    rag_error_location: Optional[str] = None
+    rag_diagnosis: Optional[str] = None
+    rag_solution: Optional[str] = None
+    rag_prevention: Optional[str] = None
+    rag_sources: list[str] = Field(default_factory=list)
 
 class RootCauseReport(BaseModel):
     error_report: ErrorReport

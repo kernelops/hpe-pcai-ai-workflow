@@ -11,8 +11,12 @@ Core RAG logic:
 import os
 from groq import Groq
 from typing import List, Dict
-from log_parser import ParsedError, format_error_location
-from knowledge_base import retrieve_context
+try:
+    from .log_parser import ParsedError, format_error_location
+    from .knowledge_base import retrieve_context
+except ImportError:
+    from log_parser import ParsedError, format_error_location
+    from knowledge_base import retrieve_context
 import chromadb
 
 
@@ -62,6 +66,9 @@ Based on the error above and the context provided, diagnose the root cause and p
 
 def query_llm(prompt: str, groq_api_key: str) -> str:
     """Sends prompt to LLaMA3-8b via Groq and returns response text."""
+    if not groq_api_key:
+        return ""
+
     client = Groq(api_key=groq_api_key)
 
     chat_completion = client.chat.completions.create(
@@ -75,6 +82,35 @@ def query_llm(prompt: str, groq_api_key: str) -> str:
     )
 
     return chat_completion.choices[0].message.content
+
+
+def _extract_inline_field(text: str, label: str) -> str:
+    import re
+    match = re.search(rf"{label}:\s*(.*?)(?=(Diagnosis|Solution|Prevention|Causes|$))", text, re.IGNORECASE)
+    if match:
+        return match.group(1).strip()
+    return ""
+
+
+def _build_fallback_result(parsed_error: ParsedError, context_chunks: List[Dict]) -> Dict:
+    fallback_text = context_chunks[0]["text"] if context_chunks else ""
+    diagnosis = _extract_inline_field(fallback_text, "Diagnosis") or (
+        f"The task failed with {parsed_error.error_type or 'an unknown error'} and needs manual review."
+    )
+    solution = _extract_inline_field(fallback_text, "Solution") or (
+        "Review the task log, compare it with the closest known error pattern, and retry after applying the fix."
+    )
+    prevention = _extract_inline_field(fallback_text, "Prevention")
+    return {
+        "error_location": format_error_location(parsed_error),
+        "error_type": parsed_error.error_type or "Unknown",
+        "error_message": parsed_error.error_message,
+        "diagnosis": diagnosis,
+        "solution": solution,
+        "prevention": prevention,
+        "retrieved_sources": [c["source"] for c in context_chunks],
+        "raw_llm_response": "",
+    }
 
 
 def run_rag_pipeline(
@@ -107,6 +143,8 @@ def run_rag_pipeline(
 
     # Query LLM
     llm_response = query_llm(prompt, groq_api_key)
+    if not llm_response:
+        return _build_fallback_result(parsed_error, context_chunks)
 
     # Parse LLM response sections
     diagnosis = _extract_section(llm_response, "DIAGNOSIS")

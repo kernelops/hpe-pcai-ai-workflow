@@ -46,6 +46,151 @@ class PipelineRequest(BaseModel):
     sample_log_path : Optional[str] = None   # empty = real Airflow mode
 
 
+class FailureAnalysisRequest(BaseModel):
+    dag_id      : str = "deployment_workflow"
+    dag_run_id  : str
+    failed_task : str
+    task_state  : str = "failed"
+    log_text    : str
+    timestamp   : str
+
+
+def _build_failure_analysis_response(
+    dag_id: str,
+    dag_run_id: str,
+    failure: TaskFailure,
+):
+    workflow_agent_output = {
+        "thinking": [
+            f"Received failed run context for DAG: {dag_id}",
+            f"Existing Airflow run ID: {dag_run_id}",
+            "Skipping DAG trigger because the deployment already ran",
+            f"Using failed task payload for: {failure.task_id}",
+        ],
+        "output": {
+            "dag_run_id": dag_run_id,
+            "dag_id": dag_id,
+            "status": "existing-run",
+            "run_path": dag_id,
+        },
+    }
+
+    monitor_agent_output = {
+        "thinking": [
+            f"Received failure context for DAG run: {dag_run_id}",
+            "Skipping live polling and using provided failed task payload",
+            f"Failure confirmed in task: {failure.task_id}",
+        ],
+        "output": {
+            "failure_detected": True,
+            "failed_task": failure.task_id,
+            "task_state": failure.state,
+            "breakpoint": failure.task_id,
+        },
+    }
+
+    error_report = _log.analyse(failure)
+
+    log_analysis_agent_output = {
+        "thinking": [
+            f"Fetched raw log for task: {failure.task_id}",
+            "Chunking and tokenising log content...",
+            "Querying RAG layer for similar HPE error patterns...",
+            f"Identified error type: {error_report.error_type}",
+            f"Confidence: {error_report.confidence}",
+            f"Diagnosis: {error_report.diagnosis}",
+        ],
+        "output": {
+            "task_id": error_report.task_id,
+            "error_type": error_report.error_type,
+            "error_message": error_report.error_message,
+            "error_line": error_report.error_line,
+            "diagnosis": error_report.diagnosis,
+            "confidence": error_report.confidence,
+            "strongest_error_signal": error_report.error_message,
+            "rag_diagnosis": error_report.rag_diagnosis,
+            "rag_solution": error_report.rag_solution,
+            "rag_prevention": error_report.rag_prevention,
+            "rag_sources": error_report.rag_sources,
+        },
+    }
+
+    rca = _rca.analyse(error_report)
+
+    root_cause_agent_output = {
+        "thinking": [
+            f"Received structured error report for: {error_report.error_type}",
+            "Reasoning over cause chain with LLM...",
+            f"Classification: {rca.classification}",
+            f"Severity assigned: {rca.severity}",
+            f"Root cause identified: {rca.root_cause}",
+            f"Recommended action: {rca.engineer_action}",
+        ],
+        "output": {
+            "root_cause": rca.root_cause,
+            "classification": rca.classification,
+            "severity": rca.severity,
+            "engineer_action": rca.engineer_action,
+            "remediation_steps": rca.engineer_action,
+            "next_check": f"Retry {failure.task_id} after applying fix",
+            "knowledge_sources": error_report.rag_sources,
+        },
+    }
+
+    alert_result = _alert.alert(rca)
+
+    severity = rca.severity.lower()
+    is_critical = severity == "critical"
+    action_status = "review-needed" if is_critical else "safe"
+
+    alerting_agent_output = {
+        "thinking": [
+            f"Received fix action plan with severity: {rca.severity}",
+            "Evaluating remediation steps for risk...",
+            f"Action classified as: {action_status.upper()}",
+            "Composing human-readable alert message with LLM...",
+            f"Routing alert via: {', '.join(alert_result.channels_notified) if alert_result.channels_notified else 'console'}",
+        ],
+        "output": {
+            "alert_message": alert_result.alert_message,
+            "action_status": action_status,
+            "flagged": is_critical,
+            "approval_required": is_critical,
+            "flag_reason": "Critical severity — requires engineer approval" if is_critical else None,
+            "channels_notified": alert_result.channels_notified or ["console"],
+            "safe_checks": [rca.engineer_action] if not is_critical else [],
+            "disruptive_actions": [rca.engineer_action] if is_critical else [],
+        },
+    }
+
+    combined_summary = {
+        "verdict": f"🚨 [{rca.severity.upper()}] Deployment failed — {failure.task_id}",
+        "failed_task": failure.task_id,
+        "error_type": error_report.error_type,
+        "error_message": error_report.error_message,
+        "root_cause": rca.root_cause,
+        "classification": rca.classification,
+        "severity": rca.severity,
+        "engineer_action": rca.engineer_action,
+        "rag_solution": error_report.rag_solution,
+        "alert_message": alert_result.alert_message,
+        "approval_required": is_critical,
+        "channels_notified": alert_result.channels_notified or ["console"],
+    }
+
+    return {
+        "pipeline_status": "alerted",
+        "dag_run_id": dag_run_id,
+        "failure_detected": True,
+        "workflow_agent": workflow_agent_output,
+        "monitor_agent": monitor_agent_output,
+        "log_analysis_agent": log_analysis_agent_output,
+        "root_cause_agent": root_cause_agent_output,
+        "alerting_agent": alerting_agent_output,
+        "combined_summary": combined_summary,
+    }
+
+
 # ENDPOINTS
 
 @app.get("/health")
@@ -136,108 +281,26 @@ def run_pipeline(request: PipelineRequest):
                 }
             }
 
-        # Agent 3: Log Analysis Agent 
-        error_report = _log.analyse(failure)
+        return _build_failure_analysis_response(config.dag_id, dag_run_id, failure)
 
-        log_analysis_agent_output = {
-            "thinking": [
-                f"Fetched raw log for task: {failure.task_id}",
-                "Chunking and tokenising log content...",
-                "Querying RAG layer for similar HPE error patterns...",
-                f"Identified error type: {error_report.error_type}",
-                f"Confidence: {error_report.confidence}",
-                f"Diagnosis: {error_report.diagnosis}"
-            ],
-            "output": {
-                "task_id"               : error_report.task_id,
-                "error_type"            : error_report.error_type,
-                "error_message"         : error_report.error_message,
-                "error_line"            : error_report.error_line,
-                "diagnosis"             : error_report.diagnosis,
-                "confidence"            : error_report.confidence,
-                "strongest_error_signal": error_report.error_message,
-            }
-        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-        # Agent 4: Root Cause Agent 
-        rca = _rca.analyse(error_report)
 
-        root_cause_agent_output = {
-            "thinking": [
-                f"Received structured error report for: {error_report.error_type}",
-                "Reasoning over cause chain with LLM...",
-                f"Classification: {rca.classification}",
-                f"Severity assigned: {rca.severity}",
-                f"Root cause identified: {rca.root_cause}",
-                f"Recommended action: {rca.engineer_action}"
-            ],
-            "output": {
-                "root_cause"        : rca.root_cause,
-                "classification"    : rca.classification,
-                "severity"          : rca.severity,
-                "engineer_action"   : rca.engineer_action,
-                "remediation_steps" : rca.engineer_action,
-                "next_check"        : f"Retry {failure.task_id} after applying fix"
-            }
-        }
-
-        # ── Agent 5: Alerting Agent
-        alert_result = _alert.alert(rca)
-
-        severity       = rca.severity.lower()
-        is_critical    = severity == "critical"
-        action_status  = "review-needed" if is_critical else "safe"
-
-        alerting_agent_output = {
-            "thinking": [
-                f"Received fix action plan with severity: {rca.severity}",
-                "Evaluating remediation steps for risk...",
-                f"Action classified as: {action_status.upper()}",
-                "Composing human-readable alert message with LLM...",
-                f"Routing alert via: {', '.join(alert_result.channels_notified) if alert_result.channels_notified else 'console'}"
-            ],
-            "output": {
-                "alert_message"     : alert_result.alert_message,
-                "action_status"     : action_status,
-                "flagged"           : is_critical,
-                "approval_required" : is_critical,
-                "flag_reason"       : "Critical severity — requires engineer approval" if is_critical else None,
-                "channels_notified" : alert_result.channels_notified or ["console"],
-                "safe_checks"       : [rca.engineer_action] if not is_critical else [],
-                "disruptive_actions": [rca.engineer_action] if is_critical else []
-            }
-        }
-
-        # Combined Summary 
-        combined_summary = {
-            "verdict"          : f"🚨 [{rca.severity.upper()}] Deployment failed — {failure.task_id}",
-            "failed_task"      : failure.task_id,
-            "error_type"       : error_report.error_type,
-            "error_message"    : error_report.error_message,
-            "root_cause"       : rca.root_cause,
-            "classification"   : rca.classification,
-            "severity"         : rca.severity,
-            "engineer_action"  : rca.engineer_action,
-            "alert_message"    : alert_result.alert_message,
-            "approval_required": is_critical,
-            "channels_notified": alert_result.channels_notified or ["console"]
-        }
-
-        return {
-            "pipeline_status"  : "alerted",
-            "dag_run_id"       : dag_run_id,
-            "failure_detected" : True,
-
-            # Per-agent data for the 4 frontend placeholder cards
-            "workflow_agent"             : workflow_agent_output,
-            "monitor_agent"              : monitor_agent_output,
-            "log_analysis_agent"         : log_analysis_agent_output,
-            "root_cause_agent"   : root_cause_agent_output,
-            "alerting_agent"            : alerting_agent_output,
-
-            # Final result for Combined Summary card
-            "combined_summary"           : combined_summary
-        }
-
+@app.post("/api/agents/analyze-failure")
+def analyze_failure(request: FailureAnalysisRequest):
+    try:
+        failure = TaskFailure(
+            dag_run_id=request.dag_run_id,
+            task_id=request.failed_task,
+            state=request.task_state,
+            log_text=request.log_text,
+            timestamp=request.timestamp,
+        )
+        return _build_failure_analysis_response(
+            dag_id=request.dag_id,
+            dag_run_id=request.dag_run_id,
+            failure=failure,
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

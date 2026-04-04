@@ -13,9 +13,14 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-from log_parser import parse_airflow_log
-from knowledge_base import build_knowledge_base
-from rag_engine import run_rag_pipeline
+try:
+    from .log_parser import parse_airflow_log
+    from .knowledge_base import build_knowledge_base
+    from .rag_engine import run_rag_pipeline
+except ImportError:
+    from log_parser import parse_airflow_log
+    from knowledge_base import build_knowledge_base
+    from rag_engine import run_rag_pipeline
 
 load_dotenv()
 
@@ -31,7 +36,7 @@ async def lifespan(app: FastAPI):
 
     GROQ_API_KEY = os.getenv("GROQ_API_KEY")
     if not GROQ_API_KEY:
-        raise RuntimeError("GROQ_API_KEY not set in environment. Check your .env file.")
+        print("[Startup] GROQ_API_KEY not set. Running RAG in retrieval-only fallback mode.")
 
     print("[Startup] Building knowledge base...")
     chroma_client = build_knowledge_base(persist_dir="./chroma_db")
@@ -154,7 +159,10 @@ def ingest_new_error(request: IngestRequest):
     Optional endpoint to add new error+fix pairs to the knowledge base at runtime.
     Useful as your team encounters and fixes new errors.
     """
-    from knowledge_base import ERRORS_COLLECTION, get_embedding_function
+    try:
+        from .knowledge_base import ERRORS_COLLECTION, get_embedding_function
+    except ImportError:
+        from knowledge_base import ERRORS_COLLECTION, get_embedding_function
     import uuid
 
     ef = get_embedding_function()
@@ -182,4 +190,4 @@ def ingest_new_error(request: IngestRequest):
 # --- Run directly ---
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("rag.main:app", host="0.0.0.0", port=8002, reload=True)

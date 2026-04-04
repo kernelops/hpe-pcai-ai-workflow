@@ -11,6 +11,10 @@ All error text and diagnosis/solution combined into 'text' field for proper RAG 
 
 import chromadb
 from chromadb.utils import embedding_functions
+import hashlib
+import math
+import os
+import re
 from typing import List, Dict
 
 # Collection names
@@ -450,11 +454,83 @@ MOCK_PAST_ERRORS = [
 
 
 def get_embedding_function():
-    """Returns sentence-transformers embedding function for ChromaDB."""
-    return embedding_functions.SentenceTransformerEmbeddingFunction(
-        model_name="all-mpnet-base-v2",
-        cache_folder="./model_cache"
-    )
+    """Returns an embedding function for ChromaDB with offline fallback."""
+    if os.getenv("RAG_FORCE_LOCAL_EMBEDDINGS", "").lower() in {"1", "true", "yes"}:
+        print("[KnowledgeBase] Using forced local hash embeddings.")
+
+        class LocalHashEmbeddingFunction:
+            def name(self) -> str:
+                return "local-hash"
+
+            def embed_query(self, input: str) -> List[float]:
+                return self([input])[0]
+
+            def embed_documents(self, input: List[str]) -> List[List[float]]:
+                return self(input)
+
+            def __call__(self, input: List[str]) -> List[List[float]]:
+                vectors = []
+                for text in input:
+                    dims = 128
+                    vector = [0.0] * dims
+                    tokens = re.findall(r"[A-Za-z0-9_./:-]+", text.lower())
+                    if not tokens:
+                        vectors.append(vector)
+                        continue
+
+                    for token in tokens:
+                        digest = hashlib.sha256(token.encode("utf-8")).digest()
+                        index = int.from_bytes(digest[:4], "big") % dims
+                        sign = 1.0 if digest[4] % 2 == 0 else -1.0
+                        weight = 1.0 + (digest[5] / 255.0)
+                        vector[index] += sign * weight
+
+                    norm = math.sqrt(sum(value * value for value in vector)) or 1.0
+                    vectors.append([value / norm for value in vector])
+                return vectors
+
+        return LocalHashEmbeddingFunction()
+
+    try:
+        return embedding_functions.SentenceTransformerEmbeddingFunction(
+            model_name="all-mpnet-base-v2",
+            cache_folder="./model_cache"
+        )
+    except Exception as exc:
+        print(f"[KnowledgeBase] Falling back to local hash embeddings: {exc}")
+
+        class LocalHashEmbeddingFunction:
+            def name(self) -> str:
+                return "local-hash"
+
+            def embed_query(self, input: str) -> List[float]:
+                return self([input])[0]
+
+            def embed_documents(self, input: List[str]) -> List[List[float]]:
+                return self(input)
+
+            def __call__(self, input: List[str]) -> List[List[float]]:
+                vectors = []
+                for text in input:
+                    dims = 128
+                    vector = [0.0] * dims
+                    tokens = re.findall(r"[A-Za-z0-9_./:-]+", text.lower())
+                    if not tokens:
+                        vectors.append(vector)
+                        continue
+
+                    for token in tokens:
+                        digest = hashlib.sha256(token.encode("utf-8")).digest()
+                        index = int.from_bytes(digest[:4], "big") % dims
+                        sign = 1.0 if digest[4] % 2 == 0 else -1.0
+                        weight = 1.0 + (digest[5] / 255.0)
+                        vector[index] += sign * weight
+
+                    norm = math.sqrt(sum(value * value for value in vector)) or 1.0
+                    vectors.append([value / norm for value in vector])
+                return vectors
+
+        return LocalHashEmbeddingFunction()
 
 
 def build_knowledge_base(persist_dir: str = "./chroma_db") -> chromadb.ClientAPI:

@@ -13,7 +13,7 @@ class AlertingAgent:
     Routes to Slack/Email based on severity.
     """
     def __init__(self):
-        self.client = Groq(api_key=GROQ_API_KEY)
+        self.client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
 
     def _compose_alert(self, rca: RootCauseReport) -> str:
         prompt = f"""Write a concise Slack alert for an HPE infrastructure engineer.
@@ -35,6 +35,15 @@ Rules:
 - Do NOT repeat any line
 - Each line must be unique and add new information
 - Maximum 5 lines total"""
+
+        if not self.client:
+            emoji = SEVERITY_EMOJI.get(rca.severity, "⚠️")
+            return (
+                f"{emoji} [{rca.severity.upper()}] Deployment task {rca.error_report.task_id} failed\n"
+                f"Error: {rca.error_report.error_type}: {rca.error_report.error_message}\n"
+                f"Root cause: {rca.root_cause}\n"
+                f"Action: {rca.engineer_action}"
+            )
 
         response = self.client.chat.completions.create(
             model=GROQ_MODEL,

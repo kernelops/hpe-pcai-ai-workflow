@@ -12,7 +12,7 @@ AIRFLOW_PASSWORD = os.getenv("AIRFLOW_PASSWORD", "admin")
 AIRFLOW_DAG_ID   = os.getenv("AIRFLOW_DAG_ID", "pcai_deployment")
 
 SLACK_WEBHOOK    = os.getenv("SLACK_WEBHOOK_URL", "")
-RAG_API_URL      = os.getenv("RAG_API_URL", "")   # empty until RAG is ready
+RAG_API_URL      = os.getenv("RAG_API_URL", "http://127.0.0.1:8002")
 
 POLL_INTERVAL_SEC   = 10    # how often Monitor Agent polls Airflow
 TASK_TIMEOUT_SEC    = 300   # task stall threshold (5 mins)

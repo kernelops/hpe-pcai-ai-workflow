@@ -21,6 +21,24 @@ from typing import List, Dict
 DOCS_COLLECTION = "hpe_docs"
 ERRORS_COLLECTION = "past_errors"
 
+
+def _normalize_embedding_input(input_data) -> List[str]:
+    """
+    Chroma may call embedding functions with either a single string or a list.
+    Normalize both cases into a plain list[str].
+    """
+    if isinstance(input_data, str):
+        return [input_data]
+    if isinstance(input_data, list):
+        normalized = []
+        for item in input_data:
+            if isinstance(item, str):
+                normalized.append(item)
+            else:
+                normalized.append(str(item))
+        return normalized
+    return [str(input_data)]
+
 # --- HPE Documentation ---
 MOCK_HPE_DOCS = [
     {
@@ -462,15 +480,15 @@ def get_embedding_function():
             def name(self) -> str:
                 return "local-hash"
 
-            def embed_query(self, input: str) -> List[float]:
-                return self([input])[0]
+            def embed_query(self, input) -> List[List[float]]:
+                return self(input)
 
             def embed_documents(self, input: List[str]) -> List[List[float]]:
                 return self(input)
 
             def __call__(self, input: List[str]) -> List[List[float]]:
                 vectors = []
-                for text in input:
+                for text in _normalize_embedding_input(input):
                     dims = 128
                     vector = [0.0] * dims
                     tokens = re.findall(r"[A-Za-z0-9_./:-]+", text.lower())
@@ -503,15 +521,15 @@ def get_embedding_function():
             def name(self) -> str:
                 return "local-hash"
 
-            def embed_query(self, input: str) -> List[float]:
-                return self([input])[0]
+            def embed_query(self, input) -> List[List[float]]:
+                return self(input)
 
             def embed_documents(self, input: List[str]) -> List[List[float]]:
                 return self(input)
 
             def __call__(self, input: List[str]) -> List[List[float]]:
                 vectors = []
-                for text in input:
+                for text in _normalize_embedding_input(input):
                     dims = 128
                     vector = [0.0] * dims
                     tokens = re.findall(r"[A-Za-z0-9_./:-]+", text.lower())

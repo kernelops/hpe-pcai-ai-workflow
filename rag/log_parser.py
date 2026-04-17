@@ -69,6 +69,12 @@ def parse_airflow_log(log_text: str) -> ParsedError:
         error_line_match = re.search(r"ERROR\s+-\s+(.+)", log_text)
         if error_line_match:
             error_message = error_line_match.group(1).strip()
+        else:
+            # Fallback 2: look for general exceptions like AirflowException
+            exception_match = re.search(r"(\w*Exception):\s*(.+)", log_text)
+            if exception_match:
+                error_type = exception_match.group(1).strip()
+                error_message = exception_match.group(2).strip()
 
     # --- Extract file path and line number from traceback ---
     file_path = None

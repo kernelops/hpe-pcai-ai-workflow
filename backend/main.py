@@ -21,7 +21,7 @@ except ImportError:
     from log_parser import build_agent_failure_payloads, build_llm_log_context
 
 
-AIRFLOW_BASE_URL = os.getenv("AIRFLOW_BASE_URL", "http://host.docker.internal:8080")
+AIRFLOW_BASE_URL = os.getenv("AIRFLOW_BASE_URL", "http://localhost:8080")
 AIRFLOW_DAG_ID = os.getenv("AIRFLOW_DAG_ID", "deployment_workflow")
 AIRFLOW_USERNAME = os.getenv("AIRFLOW_USERNAME", "airflow")
 AIRFLOW_PASSWORD = os.getenv("AIRFLOW_PASSWORD", "airflow")
@@ -43,6 +43,7 @@ class WorkerNode(WorkerNodeBase):
 
 
 class DeploymentStartResponse(BaseModel):
+    dag_id: str
     run_id: str
     state: Optional[Literal["queued", "running", "success", "failed", "up_for_retry", "upstream_failed"]] = None
     message: str
@@ -81,6 +82,16 @@ class AgentOpsAnalyzeRequest(BaseModel):
     run_id: str
     status: str
     logs: str
+
+
+class DeploymentStartRequest(BaseModel):
+    dag_id: Optional[str] = None
+
+
+class AirflowDagResponse(BaseModel):
+    dag_id: str
+    is_paused: bool = False
+    description: Optional[str] = None
 
 
 app = FastAPI(title="Infra AI Deployer Backend")
@@ -331,14 +342,19 @@ def _airflow_client() -> httpx.Client:
     )
 
 
-def _get_dag_run_state(run_id: str) -> Optional[str]:
+def _resolve_dag_id(dag_id: Optional[str]) -> str:
+    return dag_id or AIRFLOW_DAG_ID
+
+
+def _get_dag_run_state(run_id: str, dag_id: Optional[str] = None) -> Optional[str]:
+    resolved_dag_id = _resolve_dag_id(dag_id)
     try:
         with _airflow_client() as client:
-            resp = client.get(f"/api/v1/dags/{AIRFLOW_DAG_ID}/dagRuns/{run_id}")
+            resp = client.get(f"/api/v1/dags/{resolved_dag_id}/dagRuns/{run_id}")
             if resp.is_success:
                 return resp.json().get("state")
     except Exception as exc:
-        print(f"Warning: failed to fetch dag run state for {run_id}: {exc}")
+        print(f"Warning: failed to fetch dag run state for {resolved_dag_id}/{run_id}: {exc}")
     return None
 
 
@@ -497,10 +513,12 @@ def _analyze_failed_run_with_agents(run_id: str, status: str, logs: str) -> dict
 
 
 @app.post("/deployments/start", response_model=DeploymentStartResponse)
-def start_deployment():
+def start_deployment(payload: Optional[DeploymentStartRequest] = None):
     """
     Trigger Airflow DAG run via Airflow REST API.
     """
+    dag_id = _resolve_dag_id(payload.dag_id if payload else None)
+
     # Check if we have reachable nodes
     reachable_nodes = [node for node in worker_nodes if node.status == "reachable"]
     
@@ -526,11 +544,11 @@ def start_deployment():
     
     try:
         with _airflow_client() as client:
-            resp = client.post(f"/api/v1/dags/{AIRFLOW_DAG_ID}/dagRuns", json=payload)
+            resp = client.post(f"/api/v1/dags/{dag_id}/dagRuns", json=payload)
             if resp.status_code not in (200, 201):
                 raise HTTPException(
                     status_code=500,
-                    detail=f"Failed to trigger DAG: {resp.status_code} {resp.text}",
+                    detail=f"Failed to trigger DAG '{dag_id}': {resp.status_code} {resp.text}",
                 )
             data = resp.json()
     except httpx.RequestError as exc:
@@ -538,30 +556,60 @@ def start_deployment():
 
     # Start direct log monitoring
     dag_run_id = data.get("dag_run_id", run_id)
-    print(f"🚀 Starting deployment: {dag_run_id}")
-    log_reader.start_monitoring(AIRFLOW_DAG_ID, dag_run_id)
+    print(f"🚀 Starting deployment: {dag_id}/{dag_run_id}")
+    log_reader.start_monitoring(dag_id, dag_run_id)
 
     state = data.get("state")
     return DeploymentStartResponse(
+        dag_id=dag_id,
         run_id=dag_run_id, 
         state=state,
-        message=f"Airflow deployment started on {len(reachable_nodes)} worker nodes"
+        message=f"Airflow DAG '{dag_id}' started on {len(reachable_nodes)} worker nodes"
     )
 
 
+@app.get("/airflow/dags", response_model=List[AirflowDagResponse])
+def list_airflow_dags():
+    """
+    List available DAGs from Airflow so UI can trigger a specific workflow.
+    """
+    try:
+        with _airflow_client() as client:
+            resp = client.get("/api/v1/dags?limit=200")
+            if not resp.is_success:
+                raise HTTPException(
+                    status_code=502,
+                    detail=f"Failed to fetch DAG list from Airflow: {resp.status_code} {resp.text}",
+                )
+            dag_items = resp.json().get("dags", [])
+    except httpx.RequestError as exc:
+        raise HTTPException(status_code=502, detail=f"Error reaching Airflow: {exc}") from exc
+
+    return [
+        AirflowDagResponse(
+            dag_id=item.get("dag_id"),
+            is_paused=bool(item.get("is_paused", False)),
+            description=item.get("description"),
+        )
+        for item in dag_items
+        if item.get("dag_id")
+    ]
+
+
 @app.get("/deployments/{run_id}/logs/{task_id}", response_model=DeploymentLogResponse)
-def get_deployment_logs(run_id: str, task_id: str):
+def get_deployment_logs(run_id: str, task_id: str, dag_id: Optional[str] = None):
     """
     Fetch task logs and state for a given DAG run + task from Airflow.
     """
     print(f"🔍 Fetching logs for run_id={run_id}, task_id={task_id}")
     print(f"🔗 Airflow URL: {AIRFLOW_BASE_URL}")
     
+    resolved_dag_id = _resolve_dag_id(dag_id)
     try:
         with _airflow_client() as client:
             print(f"📡 Getting task instance for {task_id}")
             ti_resp = client.get(
-                f"/api/v1/dags/{AIRFLOW_DAG_ID}/dagRuns/{run_id}/taskInstances/{task_id}"
+                f"/api/v1/dags/{resolved_dag_id}/dagRuns/{run_id}/taskInstances/{task_id}"
             )
             print(f"📊 Task instance response: {ti_resp.status_code}")
             
@@ -580,7 +628,7 @@ def get_deployment_logs(run_id: str, task_id: str):
 
             print(f"📄 Getting logs for {task_id}")
             log_resp = client.get(
-                f"/api/v1/dags/{AIRFLOW_DAG_ID}/dagRuns/{run_id}/taskInstances/{task_id}/logs/1"
+                f"/api/v1/dags/{resolved_dag_id}/dagRuns/{run_id}/taskInstances/{task_id}/logs/1"
             )
             print(f"📊 Log response: {log_resp.status_code}")
             
@@ -650,15 +698,16 @@ def get_deployment_logs_direct(run_id: str, task_id: str):
 
 
 @app.get("/deployments/{run_id}/live-logs", response_model=DeploymentLiveLogResponse)
-def get_deployment_logs_live(run_id: str):
+def get_deployment_logs_live(run_id: str, dag_id: Optional[str] = None):
     """
     Return combined real-time logs for all tasks in a DAG run.
     """
-    combined_logs, task_streams = log_reader.get_combined_logs_for_run(AIRFLOW_DAG_ID, run_id)
+    resolved_dag_id = _resolve_dag_id(dag_id)
+    combined_logs, task_streams = log_reader.get_combined_logs_for_run(resolved_dag_id, run_id)
     if not combined_logs:
         combined_logs = log_reader.get_combined_logs()
         task_streams = len(log_reader.get_all_logs())
-    state = _get_dag_run_state(run_id) or "running"
+    state = _get_dag_run_state(run_id, resolved_dag_id) or "running"
 
     return DeploymentLiveLogResponse(
         run_id=run_id,

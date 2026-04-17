@@ -1133,6 +1133,10 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
   const [status, setStatus] = useState("Idle");
   const [logs, setLogs] = useState("");
   const [taskStreams, setTaskStreams] = useState(0);
+  const [availableDags, setAvailableDags] = useState([]);
+  const [selectedDagId, setSelectedDagId] = useState("deployment_workflow");
+  const [activeDagId, setActiveDagId] = useState("deployment_workflow");
+  const [dagLoading, setDagLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [pollTimer, setPollTimer] = useState(null);
   const [isDeploying, setIsDeploying] = useState(false);
@@ -1145,11 +1149,37 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
     onStatusChange?.(s);
   };
 
-  const startPolling = (runId) => {
+  const loadAvailableDags = async () => {
+    setDagLoading(true);
+    try {
+      const res = await fetch(`${apiBase}/airflow/dags`);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.detail || "Failed to fetch DAG list");
+      }
+      const dags = await res.json();
+      const dagIds = Array.isArray(dags) ? dags.map((d) => d.dag_id).filter(Boolean) : [];
+      setAvailableDags(dagIds);
+      if (dagIds.length > 0) {
+        const nextDag = dagIds.includes(selectedDagId) ? selectedDagId : dagIds[0];
+        setSelectedDagId(nextDag);
+        setActiveDagId(nextDag);
+      }
+    } catch (err) {
+      console.error(err);
+      setAvailableDags(["deployment_workflow"]);
+      toast?.show?.("Could not fetch DAG list; using default DAG", "error");
+    } finally {
+      setDagLoading(false);
+    }
+  };
+
+  const startPolling = (runId, dagId) => {
     if (pollTimer) clearInterval(pollTimer);
+    const dagQuery = dagId ? `?dag_id=${encodeURIComponent(dagId)}` : "";
     const id = setInterval(async () => {
       try {
-        const res = await fetch(`${apiBase}/deployments/${encodeURIComponent(runId)}/live-logs`);
+        const res = await fetch(`${apiBase}/deployments/${encodeURIComponent(runId)}/live-logs${dagQuery}`);
         if (!res.ok) {
           const errorData = await res.json();
           throw new Error(errorData.detail || "Failed to fetch deployment logs");
@@ -1159,6 +1189,7 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
         setTaskStreams(data.task_streams || 0);
         onInsightUpdate?.({
           runId,
+          dagId,
           status: data.state ? (["success", "failed", "upstream_failed"].includes(data.state) ? (data.state === "success" ? "Completed" : "Failed") : "Running") : status,
           logs: data.log || "",
           taskStreams: data.task_streams || 0,
@@ -1195,8 +1226,10 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
       setStatusBoth("Running");
       setLogs("");
       setTaskStreams(0);
+      setActiveDagId(selectedDagId);
       onInsightUpdate?.({
         runId: null,
+        dagId: selectedDagId,
         status: "Running",
         logs: "",
         taskStreams: 0,
@@ -1205,17 +1238,19 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
       const res = await fetch(`${apiBase}/deployments/start`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: "{}"
+        body: JSON.stringify({ dag_id: selectedDagId })
       });
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData.detail || "Failed to start deployment");
       }
       const data = await res.json();
+      const runDagId = data.dag_id || selectedDagId;
+      setActiveDagId(runDagId);
       setCurrentRunId(data.run_id);
       setLastUpdated(new Date());
       toast?.show?.(data.message || "Deployment started successfully.");
-      startPolling(data.run_id);
+      startPolling(data.run_id, runDagId);
     } catch (err) {
       console.error(err);
       setStatusBoth("Failed");
@@ -1231,6 +1266,7 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
     setTaskStreams(0);
     onInsightUpdate?.({
       runId: currentRunId,
+      dagId: activeDagId,
       status,
       logs: "",
       taskStreams: 0,
@@ -1249,6 +1285,10 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
   };
 
   useEffect(() => {
+    loadAvailableDags();
+  }, []);
+
+  useEffect(() => {
     return () => {
       if (pollTimer) clearInterval(pollTimer);
     };
@@ -1265,17 +1305,39 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
       <section className="panel deployment-status">
         <div className="panel-header">
           <h2>Airflow Deployment</h2>
-          <button 
-            className="primary-btn" 
-            onClick={startDeployment}
-            disabled={isDeploying}
-          >
-            {isDeploying ? "Deploying..." : "Start Infrastructure Deployment"}
-          </button>
+          <div className="monitor-controls">
+            <select
+              value={selectedDagId}
+              onChange={(e) => setSelectedDagId(e.target.value)}
+              disabled={isDeploying || dagLoading}
+              aria-label="Select DAG"
+            >
+              {availableDags.length === 0 && <option value="deployment_workflow">deployment_workflow</option>}
+              {availableDags.map((dagId) => (
+                <option key={dagId} value={dagId}>
+                  {dagId}
+                </option>
+              ))}
+            </select>
+            <button
+              className="ghost-btn"
+              onClick={loadAvailableDags}
+              disabled={isDeploying || dagLoading}
+            >
+              {dagLoading ? "Loading DAGs..." : "Refresh DAGs"}
+            </button>
+            <button
+              className="primary-btn"
+              onClick={startDeployment}
+              disabled={isDeploying || dagLoading || !selectedDagId}
+            >
+              {isDeploying ? "Deploying..." : "Start Infrastructure Deployment"}
+            </button>
+          </div>
         </div>
         <div className="deployment-info">
           <p style={{ marginBottom: '12px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-            🚀 This will trigger an Airflow DAG that deploys applications across all reachable worker nodes.
+            🚀 This will trigger the selected Airflow DAG across all reachable worker nodes.
             The DAG will execute SSH commands on each node for system updates, Docker installation, and application deployment.
           </p>
         </div>
@@ -1286,7 +1348,7 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
           </div>
           <div className="meta-card">
             <span className="label">DAG</span>
-            <span className="value">deployment_workflow</span>
+            <span className="value">{activeDagId || selectedDagId || "-"}</span>
           </div>
           <div className="meta-card">
             <span className="label">Status</span>
@@ -1532,6 +1594,7 @@ export default function App() {
   const [lastDeploymentStatus, setLastDeploymentStatus] = useState("Idle");
   const [insightData, setInsightData] = useState({
     runId: null,
+    dagId: null,
     status: "Idle",
     logs: "",
     taskStreams: 0,

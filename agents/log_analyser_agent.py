@@ -28,8 +28,10 @@ class LogAnalyserAgent:
                               }, timeout=10)
             if r.status_code == 200:
                 return r.json()
+            else:
+                print(f"[LogAnalyser] RAG returned non-200 status: {r.status_code} - {r.text}")
         except Exception as e:
-            print(f"[LogAnalyser] RAG unavailable, using LLM only: {e}")
+            print(f"[LogAnalyser] RAG unavailable or timed out, using LLM only: {e}")
         return {}
 
     def _format_rag_context(self, rag_analysis: dict) -> str:

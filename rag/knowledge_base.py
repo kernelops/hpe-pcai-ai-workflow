@@ -439,144 +439,27 @@ MOCK_PAST_ERRORS = [
                 "Retrieved_sources: https://man7.org/linux/man-pages/man1/systemctl.1.html",
         "source": "OS Validation Logs"
     },
-
-    # =========================================================================
-    # NEW ENTRIES — Added to fix missing RAG solutions for Tasks 1, 2, 3, 4
-    # =========================================================================
-
-    # --- Task 1: simulate_minio_service_error ---
-    # Exact error from logs:
-    #   Command: sudo systemctl enable --now minio-broken
-    #   SSH output: [sudo] password for kernelops:
-    #   Exception: AirflowException: SSH command timed out
-    # Root cause: sudo on remote host blocked waiting for password in non-interactive SSH session,
-    #             causing Airflow SSHOperator to hit its timeout limit.
     {
         "id": "err_034",
-        "text": "Error: SSH command timed out during Airflow SSHOperator task simulate_minio_service_error. "
-                "Task ran command: sudo systemctl enable --now minio-broken on remote worker node via SSH. "
-                "SSH output showed: [sudo] password for kernelops: followed by timeout after 10 seconds. "
-                "Airflow exception: AirflowException: SSH command timed out. "
-                "Diagnosis: The sudo command on the remote host blocked waiting for an interactive password prompt. "
-                "Airflow SSHOperator does not allocate a TTY by default, so sudo cannot display the prompt or receive input. "
-                "The command hung indefinitely waiting for a password that can never be entered, causing the Airflow SSH timeout to trigger. "
-                "The underlying MinIO service file minio-broken does not exist, which would cause a separate systemctl failure if sudo succeeded. "
-                "Causes: sudo requires a password on the remote host and no NOPASSWD rule is configured for the executing user. "
-                "SSHOperator runs commands without an interactive terminal so sudo password prompts always hang. "
-                "Solution: Configure passwordless sudo for the user on the remote worker node by editing the sudoers file: "
-                "Run sudo visudo on the remote host and add the line: kernelops ALL=(ALL) NOPASSWD: ALL "
-                "Or restrict to specific commands: kernelops ALL=(ALL) NOPASSWD: /bin/systemctl "
-                "After fixing sudo, also verify the minio service file exists: sudo systemctl list-unit-files | grep minio "
-                "If minio service is missing, install MinIO and create the service: sudo systemctl enable --now minio "
-                "Check MinIO service status: sudo systemctl status minio "
-                "Start the SSH service on the target machine: sudo systemctl start ssh and enable it: sudo systemctl enable ssh. "
-                "Prevention: Always configure NOPASSWD sudo for automated pipeline users on all worker nodes before running deployment tasks. "
-                "Validate sudo works without password before running Airflow SSH tasks: ssh user@host sudo whoami",
-        "source": "Deployment Error #035 - SSH Timeout Sudo Password Minio Service"
+        "text": "SSH operator error: exit status = 7"
+                "Diagnosis: The command executed but failed with exit code 7. For curl commands, exit code 7 specifically indicates a failure to connect to the host (connection refused, host unreachable, or timeout). For other commands, exit code 7 may have different meanings depending on the application. Likely causes could be target service not running, wrong host or port, port is closed or not listening, or network/firewall restrictions."
+                "Solution: Identify which command failed (history | tail -n 5). If using curl, retry with verbose output (curl -v http://<HOST>:<PORT>). Check if service is running (ss -tuln | grep <PORT>). Check connectivity to confirm network reachability (ping <HOST>). If using Docker, ensure container is running and check port mapping."
+                "Prevention:  Verify service before connecting. Use correct host and port. Confirm server readiness before requests."
+                "Error_type:  Network error."
+                "Severity: Medium - Service is unreachable and pipelines are broken, but no system damage."
+                "Retrieved_sources: https://www.quora.com/How-do-I-resolve-cURL-Error-7-couldnt-connect-to-host",
+        "source": "OS Validation Logs"
     },
-
-     # --- Task 2: simulate_nfs_configuration_error ---
-    # Exact error from logs:
-    #   Command: sudo mkdir -p /srv/nfs/share; printf .../srv/nfs/share *(rw,sync,broken_option)... | sudo tee /etc/exports; sudo exportfs -ra
-    #   SSH output: [sudo] password for kernelops:
-    #   Exception: AirflowException: SSH command timed out
-    # Root cause: Same sudo password prompt block as Task 1. Also broken_option is an invalid NFS export keyword.
     {
         "id": "err_035",
-        "text": "Error: SSH command timed out during Airflow SSHOperator task simulate_nfs_configuration_error. "
-                "Task ran command: sudo mkdir -p /srv/nfs/share followed by writing /srv/nfs/share *(rw,sync,broken_option) to /etc/exports and running sudo exportfs -ra on remote worker node. "
-                "SSH output showed: [sudo] password for kernelops: followed by timeout after 10 seconds. "
-                "Airflow exception: AirflowException: SSH command timed out. "
-                "Diagnosis: The sudo command on the remote host blocked waiting for an interactive password prompt. "
-                "Airflow SSHOperator does not allocate a TTY so sudo hangs indefinitely waiting for a password, triggering the SSH timeout. "
-                "Even if sudo were fixed, the /etc/exports file contains broken_option which is an invalid NFS export keyword. "
-                "Running sudo exportfs -ra with broken_option in /etc/exports would produce: exportfs: /etc/exports: unknown keyword broken_option "
-                "and NFS exports would fail to apply. "
-                "Causes: sudo password required on remote host with no NOPASSWD rule configured. "
-                "SSHOperator has no TTY so sudo password prompt causes hang and timeout. "
-                "Invalid NFS export option broken_option in /etc/exports causing exportfs to reject the configuration. "
-                "Solution: Configure passwordless sudo on the remote worker node: "
-                "Run sudo visudo and add: kernelops ALL=(ALL) NOPASSWD: ALL "
-                "Or restrict to NFS commands: kernelops ALL=(ALL) NOPASSWD: /bin/mkdir, /usr/bin/tee, /usr/sbin/exportfs "
-                "After fixing sudo, correct the /etc/exports file by removing broken_option: "
-                "Edit /etc/exports: sudo nano /etc/exports "
-                "Replace broken_option with valid NFS options. Valid options include: rw, ro, sync, async, no_subtree_check, no_root_squash, root_squash. "
-                "Example valid entry: /srv/nfs/share *(rw,sync,no_subtree_check) "
-                "Validate the corrected exports: sudo exportfs -ra "
-                "Restart NFS server if needed: sudo systemctl restart nfs-kernel-server "
-                "Prevention: Always configure NOPASSWD sudo for automated pipeline users on worker nodes. "
-                "Validate /etc/exports syntax with sudo exportfs -ra before running deployment tasks. "
-                "Never use unsupported or misspelled NFS export options.",
-        "source": "Deployment Error #036 - SSH Timeout Sudo Password NFS broken_option exports"
-    },
-
-    # --- Task 3: simulate_os_validation_error ---
-    # Exact error from logs:
-    #   Command: test -f /etc/redhat-release || (echo 'OS baseline validation failed: expected /etc/redhat-release on target host' >&2; exit 1)
-    #   SSH output: OS baseline validation failed: expected /etc/redhat-release on target host
-    #   Host OS: Linux kali 6.18.12+kali-amd64 (Kali Linux) - NOT RHEL
-    #   Exception: AirflowException: SSH operator error: exit status = 1
-    {
-        "id": "err_036",
-        "text": "Error: SSH operator error: exit status = 1 during Airflow SSHOperator task simulate_os_validation_error. "
-                "Task ran OS baseline validation command: test -f /etc/redhat-release on remote worker node. "
-                "SSH output: OS baseline validation failed: expected /etc/redhat-release on target host. "
-                "Host uname output: Linux kali 6.18.12+kali-amd64 Kali Linux x86_64. "
-                "Airflow exception: AirflowException: SSH operator error: exit status = 1. "
-                "Diagnosis: The deployment pipeline performs RHEL-style OS baseline validation by checking for the existence of /etc/redhat-release. "
-                "The target worker node is running Kali Linux which is a Debian-based distribution and does not have /etc/redhat-release. "
-                "The file /etc/redhat-release only exists on Red Hat Enterprise Linux and its derivatives such as CentOS, Rocky Linux, and AlmaLinux. "
-                "The test command returned exit code 1 meaning the file was not found, causing the pipeline to print the validation failure message and exit with code 1. "
-                "Airflow SSHOperator treats any non-zero exit code as a task failure. "
-                "Causes: Target host OS is Kali Linux not RHEL or a RHEL-compatible distribution. "
-                "The pipeline OS validation check is RHEL-specific and incompatible with Debian-based or non-RHEL hosts. "
-                "OS baseline validation check expects /etc/redhat-release which does not exist on Kali Linux Ubuntu Debian or other non-RHEL systems. "
-                "Solution: Verify the OS running on the target worker node: cat /etc/os-release or uname -a. "
-                "If the pipeline requires RHEL: replace the target worker node with a RHEL-compatible OS such as Rocky Linux or AlmaLinux or RHEL. "
-                "If the pipeline should support multiple OS types: update the OS validation task in deployment_workflow.py to handle both RHEL and Debian-based checks. "
-                "For Debian-based systems check /etc/debian_version or /etc/lsb-release instead. "
-                "Update the validation logic: test -f /etc/redhat-release || test -f /etc/debian_version "
-                "Or use a more portable check: cat /etc/os-release and parse the ID field. "
-                "Prevention: Document the required OS for all worker nodes in the pipeline prerequisites. "
-                "Validate worker node OS compatibility before triggering the deployment pipeline. "
-                "Make OS baseline validation checks portable across supported distributions.",
-        "source": "Deployment Error #037 - OS Baseline Validation Failed RHEL redhat-release Kali Linux"
-    },
-
-    # --- Task 4: simulate_postcheck_error ---
-    # Exact error from logs:
-    #   Command: curl -fsS http://127.0.0.1:9005/minio/health/live
-    #   SSH output: curl: (7) Failed to connect to 127.0.0.1 port 9005 after 0 ms: Could not connect to server
-    #   Exception: AirflowException: SSH operator error: exit status = 7
-    {
-        "id": "err_037",
-        "text": "Error: SSH operator error: exit status = 7 during Airflow SSHOperator task simulate_postcheck_error. "
-                "Task ran post-deployment health check command: curl -fsS http://127.0.0.1:9005/minio/health/live on remote worker node. "
-                "SSH output: curl: (7) Failed to connect to 127.0.0.1 port 9005 after 0 ms: Could not connect to server. "
-                "Airflow exception: AirflowException: SSH operator error: exit status = 7. "
-                "Diagnosis: curl exit code 7 means it could not establish a TCP connection to the target host and port. "
-                "The post-deployment validation task checks the MinIO health endpoint at http://127.0.0.1:9005/minio/health/live. "
-                "No service is listening on port 9005 on the worker node, meaning MinIO is not running or is not configured to use port 9005. "
-                "The MinIO server was either never started, failed to start, is running on a different port, or crashed before the postcheck ran. "
-                "The curl -f flag causes curl to return exit code 22 on HTTP errors and exit code 7 on connection failure confirming no service is bound to port 9005. "
-                "Causes: MinIO service is not running on the remote worker node. "
-                "MinIO is configured to run on a different port than 9005. "
-                "MinIO service failed to start during the deployment phase before the postcheck ran. "
-                "Port 9005 is blocked by firewall on the worker node. "
-                "The postcheck health endpoint URL or port does not match the actual MinIO configuration. "
-                "Solution: Check if MinIO is running on the worker node via SSH: ps aux | grep minio "
-                "Check which port MinIO is actually listening on: ss -tuln | grep minio or netstat -tuln | grep 9000 "
-                "Check MinIO service status: sudo systemctl status minio "
-                "Start MinIO if not running: sudo systemctl start minio "
-                "Verify MinIO health endpoint on the correct port: curl -fsS http://127.0.0.1:9000/minio/health/live "
-                "Default MinIO API port is 9000 not 9005. Update the postcheck curl command to use the correct port. "
-                "Check firewall is not blocking the port: sudo ufw status and sudo ufw allow 9005 if needed. "
-                "Check MinIO logs for startup errors: sudo journalctl -u minio -n 50 "
-                "Prevention: Ensure MinIO service is fully started and healthy before triggering postcheck tasks. "
-                "Use correct port in health check URL matching the actual MinIO server configuration. "
-                "Add a startup delay or retry loop in the postcheck task to wait for MinIO to become ready. "
-                "Always confirm MinIO is running as part of the deployment step before proceeding to postchecks.",
-        "source": "Deployment Error #038 - Post-deployment MinIO Health Check curl exit 7 port 9005 not reachable"
+        "text": "SSH operator error: exit status = 1"
+                "Diagnosis: This is a generic failure message. The exact cause can be found in earlier logs."
+                "Solution: Check earlier logs for ERRORS/Exception. Find the root cause and fix the underlying issue."
+                "Prevention: Log detailed command output (stdout + stderr). Add explicit error messages in scripts."
+                "Error_type: Execution error"
+                "Severity: Medium - Task failed, but reason is not present in the error message itself. "
+                "Retrieved_sources: https://stackoverflow.com/questions/20965762/meaning-of-exit-status-1-returned-by-linux-command",
+        "source": "OS Validation Logs"
     },
 ]
 

@@ -8,9 +8,9 @@ Core RAG logic:
 5. Returns structured solution
 """
 
-import os
 from groq import Groq
 from typing import List, Dict
+import re
 try:
     from .log_parser import ParsedError, format_error_location
     from .knowledge_base import retrieve_context
@@ -33,6 +33,63 @@ DIAGNOSIS: <one sentence explaining what went wrong and why>
 SOLUTION:
 <numbered step-by-step fix, be specific with commands where applicable>
 PREVENTION: <one sentence on how to avoid this in future>"""
+
+
+def _task_domain_terms(task_id: str | None) -> str:
+    task = (task_id or "").lower()
+    if "minio" in task:
+        return "minio object storage service mc s3 bucket endpoint"
+    if "nfs" in task:
+        return "nfs exportfs exports mount storage kernel module"
+    if "ilo" in task:
+        return "ilo bmc lights-out port 443 credentials"
+    if "postcheck" in task:
+        return "curl health check minio port 9005 connection refused"
+    if "os" in task or "validation" in task:
+        return "os validation package command compatibility network"
+    return ""
+
+
+def _extract_log_hints(parsed_error: ParsedError) -> str:
+    full_log = parsed_error.full_log or ""
+    hints: List[str] = []
+
+    command_match = re.search(r"Running command:\s*(.+)", full_log)
+    if command_match:
+        hints.append(command_match.group(1).strip())
+
+    for pattern in [
+        r"broken_option",
+        r"exportfs",
+        r"systemctl\s+enable\s+--now\s+minio-broken",
+        r"\[sudo\]\s+password\s+for\s+\w+",
+        r"sudo",
+        r"curl\s+-fsS\s+http://[^\s]+",
+        r"connection refused",
+        r"timed out",
+        r"port\s+\d+",
+    ]:
+        match = re.search(pattern, full_log, re.IGNORECASE)
+        if match:
+            hints.append(match.group(0).strip())
+
+    deduped: List[str] = []
+    for hint in hints:
+        if hint not in deduped:
+            deduped.append(hint)
+
+    return " ".join(deduped[:6])
+
+
+def build_search_query(parsed_error: ParsedError) -> str:
+    parts = [
+        parsed_error.task_id or "",
+        _task_domain_terms(parsed_error.task_id),
+        parsed_error.error_type or "",
+        parsed_error.error_message,
+        _extract_log_hints(parsed_error),
+    ]
+    return " ".join(part for part in parts if part).strip()
 
 
 def build_prompt(parsed_error: ParsedError, context_chunks: List[Dict]) -> str:
@@ -128,8 +185,8 @@ def run_rag_pipeline(
     - Return structured result
     """
 
-    # Build a search query from the error
-    search_query = f"{parsed_error.error_type or ''} {parsed_error.error_message} {parsed_error.task_id or ''}"
+    # Build a search query from domain hints, the parsed error, and raw log evidence.
+    search_query = build_search_query(parsed_error)
 
     # Retrieve relevant context
     context_chunks = retrieve_context(

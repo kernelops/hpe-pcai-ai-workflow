@@ -1,37 +1,42 @@
-# Agent Framework
+# Root Python dependencies for the integrated dev stack.
+#
+# Covers:
+# - backend API
+# - agent API
+# - LangGraph / CrewAI agents
+# - RAG service
+#
+# Not covered here:
+# - Airflow runtime image dependencies (managed by airflow/docker-compose.yaml)
+# - frontend dependencies (managed by frontend/package.json)
+
+# API / web
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.0.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+httpx>=0.27.0
+
+# Agent orchestration
 crewai>=0.28.0
+crewai-tools
 langgraph>=0.1.0
 langchain>=0.2.0
 langchain-community>=0.2.0
+langchain-core>=0.2.0
+langchain-groq>=0.1.0
 
-# LLM
-groq>=0.4.0
+# LLM providers
+groq>=0.11.0
 ollama>=0.1.0
 
-# RAG / Vector Store
-chromadb>=0.4.0
-sentence-transformers>=2.2.0
+# RAG / vector store
+chromadb>=0.5.15
+sentence-transformers>=3.1.1
 
-# Airflow Client
+# Airflow integration client
 apache-airflow-client>=2.7.0
-
-# API / Web
-fastapi>=0.110.0
-uvicorn>=0.27.0
-requests>=2.31.0
 
 # Notifications
 slack-sdk>=3.27.0
-
-# Utils
-python-dotenv>=1.0.0
-pydantic>=2.0.0
-fastapi
-
-
-uvicorn[standard]
-crewai
-crewai-tools
-langgraph
-langchain-groq
-langchain-core

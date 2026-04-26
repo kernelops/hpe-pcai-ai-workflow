@@ -83,9 +83,10 @@ source .venv/bin/activate
 
 ```bash
 pip install -r requirements.txt
-pip install -r rag/requirements.txt
-pip install httpx
 ```
+
+`requirements.txt` covers the backend API, agent API, agents, and RAG service for this integrated branch.
+Airflow dependencies are handled by Docker Compose, and frontend dependencies are handled by `frontend/package.json`.
 
 ### 4. Install frontend dependencies
 

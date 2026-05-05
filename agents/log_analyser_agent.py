@@ -21,28 +21,72 @@ class LogAnalyserAgent:
         if not self.use_rag:
             return {}
         try:
+            print(f"log_text: {failure.log_text}")
+            print(f"task_id: {failure.task_id}")
             r = requests.post(f"{RAG_API_URL}/analyze",
                               json={
                                   "log_text": failure.log_text,
                                   "task_id": failure.task_id,
                               }, timeout=10)
             if r.status_code == 200:
+                print(f"RAG ANALYSIS: {r.json()}")
                 return r.json()
+            else:
+                print(f"[LogAnalyser] RAG API error: {r.status_code} {r.text}")
         except Exception as e:
             print(f"[LogAnalyser] RAG unavailable, using LLM only: {e}")
         return {}
 
     def _format_rag_context(self, rag_analysis: dict) -> str:
-        if not rag_analysis:
+        if not rag_analysis or not rag_analysis.get("matches"):
             return ""
-        return (
-            "RAG Context:\n"
-            f"Error location: {rag_analysis.get('error_location', '')}\n"
-            f"Diagnosis: {rag_analysis.get('diagnosis', '')}\n"
-            f"Solution hints: {rag_analysis.get('solution', '')}\n"
-            f"Prevention: {rag_analysis.get('prevention', '')}\n"
-            f"Similar errors: {', '.join(rag_analysis.get('retrieved_sources', []))}"
-        )
+        
+        sections = []
+        
+        # Group by field
+        diagnoses = []
+        solutions = []
+        preventions = []
+        error_types = []
+        severities = []
+        sources = set()
+        
+        for match in rag_analysis["matches"]:
+            matched_line = match.get("matched_line", "")
+            diagnosis = match.get("diagnosis", "").strip()
+            solution = match.get("solution", "").strip()
+            prevention = match.get("prevention", "").strip()
+            error_type = match.get("error_type", "").strip()
+            severity = match.get("severity", "").strip()
+            source = match.get("source", "")
+            
+            if diagnosis:
+                diagnoses.append(f"log-line = {matched_line}\n{diagnosis}")
+            if solution:
+                solutions.append(f"log-line = {matched_line}\n{solution}")
+            if prevention:
+                preventions.append(f"log-line = {matched_line}\n{prevention}")
+            if error_type:
+                error_types.append(f"log-line = {matched_line}\n{error_type}")
+            if severity:
+                severities.append(f"log-line = {matched_line}\n{severity}")
+            if source:
+                sources.add(source)
+        
+        if diagnoses:
+            sections.append("diagnosis:\n" + "\n\n".join(diagnoses))
+        if solutions:
+            sections.append("solution:\n" + "\n\n".join(solutions))
+        if preventions:
+            sections.append("prevention:\n" + "\n\n".join(preventions))
+        if error_types:
+            sections.append("error_type:\n" + "\n\n".join(error_types))
+        if severities:
+            sections.append("severity:\n" + "\n\n".join(severities))
+        if sources:
+            sections.append("retrieved_sources:\n" + "\n".join(sorted(sources)))
+        
+        return "\n\n".join(sections) if sections else ""
 
     def _extract_basic_error(self, log_text: str) -> tuple[str, str, str | None]:
         traceback_match = re.search(
@@ -69,20 +113,36 @@ class LogAnalyserAgent:
 
     def _build_report_without_llm(self, failure: TaskFailure, rag_analysis: dict) -> ErrorReport:
         fallback_type, fallback_message, fallback_line = self._extract_basic_error(failure.log_text)
-        diagnosis = rag_analysis.get("diagnosis") or "Unable to use the LLM. Falling back to retrieved evidence from the knowledge base and raw logs."
+        matches = rag_analysis.get("matches", [])
+        if matches:
+            first_match = matches[0]
+            diagnosis = first_match.get("diagnosis") or "Unable to use the LLM. Falling back to retrieved evidence from the knowledge base and raw logs."
+            error_type = first_match.get("error_type") or fallback_type
+            error_message = first_match.get("kb_document") or fallback_message  # or matched_line?
+            prevention = first_match.get("prevention", "")
+            solution = first_match.get("solution", "")
+            sources = [m.get("source") for m in matches if m.get("source")]
+        else:
+            diagnosis = "Unable to use the LLM. Falling back to retrieved evidence from the knowledge base and raw logs."
+            error_type = fallback_type
+            error_message = fallback_message
+            prevention = ""
+            solution = ""
+            sources = []
+        
         return ErrorReport(
             task_id=failure.task_id,
-            error_type=rag_analysis.get("error_type") or fallback_type,
-            error_message=rag_analysis.get("error_message") or fallback_message,
+            error_type=error_type,
+            error_message=error_message,
             error_line=fallback_line,
             diagnosis=diagnosis,
-            confidence=0.9 if rag_analysis else 0.45,
+            confidence=0.9 if matches else 0.45,
             raw_log=failure.log_text,
             rag_error_location=rag_analysis.get("error_location"),
-            rag_diagnosis=rag_analysis.get("diagnosis"),
-            rag_solution=rag_analysis.get("solution"),
-            rag_prevention=rag_analysis.get("prevention"),
-            rag_sources=rag_analysis.get("retrieved_sources", []),
+            rag_diagnosis=diagnosis,
+            rag_solution=solution,
+            rag_prevention=prevention,
+            rag_sources=sources,
         )
 
     def _strip_json_fence(self, raw: str) -> str:
@@ -148,9 +208,9 @@ Analyse this log and respond with ONLY valid JSON in this exact format:
             confidence   = float(parsed["confidence"]),
             raw_log      = failure.log_text,
             rag_error_location = rag_analysis.get("error_location"),
-            rag_diagnosis = rag_analysis.get("diagnosis"),
-            rag_solution = rag_analysis.get("solution"),
-            rag_prevention = rag_analysis.get("prevention"),
+            rag_diagnosis = rag_analysis.get("matches", [{}])[0].get("diagnosis") if rag_analysis.get("matches") else None,
+            rag_solution = rag_analysis.get("matches", [{}])[0].get("solution") if rag_analysis.get("matches") else None,
+            rag_prevention = rag_analysis.get("matches", [{}])[0].get("prevention") if rag_analysis.get("matches") else None,
             rag_sources = rag_analysis.get("retrieved_sources", []),
         )
 

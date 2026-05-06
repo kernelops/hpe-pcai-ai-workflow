@@ -2,12 +2,13 @@
 main.py
 FastAPI app — entry point for the RAG pipeline.
 Exposes:
-  POST /analyze  → receives Airflow log, returns error location + solution
+  POST /analyze  → receives Airflow log, returns error location + KB-matched solutions
   GET  /health   → health check
-  POST /ingest   → (optional) add new error+fix to knowledge base at runtime
+  POST /ingest   → add new error+fix to knowledge base at runtime
 """
 
 import os
+import uuid
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -15,43 +16,38 @@ from dotenv import load_dotenv
 
 try:
     from .log_parser import parse_airflow_log
-    from .knowledge_base import build_knowledge_base
+    from .knowledge_base import build_knowledge_base, ERRORS_COLLECTION, get_embedding_function
     from .rag_engine import run_rag_pipeline
 except ImportError:
     from log_parser import parse_airflow_log
-    from knowledge_base import build_knowledge_base
+    from knowledge_base import build_knowledge_base, ERRORS_COLLECTION, get_embedding_function
     from rag_engine import run_rag_pipeline
 
 load_dotenv()
 
 # --- Global state ---
 chroma_client = None
-GROQ_API_KEY = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Startup: build knowledge base and load config."""
-    global chroma_client, GROQ_API_KEY
-
-    GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-    if not GROQ_API_KEY:
-        print("[Startup] GROQ_API_KEY not set. Running RAG in retrieval-only fallback mode.")
+    """Startup: build knowledge base."""
+    global chroma_client
 
     print("[Startup] Building knowledge base...")
     chroma_client = build_knowledge_base(persist_dir="./chroma_db")
     print("[Startup] Knowledge base ready.")
     print("[Startup] RAG Pipeline is live.")
 
-    yield  # App runs here
+    yield
 
     print("[Shutdown] Cleaning up...")
 
 
 app = FastAPI(
     title="HPE PCAI RAG Pipeline",
-    description="Analyzes Airflow deployment logs, identifies errors, and provides LLM-powered solutions.",
-    version="1.0.0",
+    description="Analyzes Airflow deployment logs, identifies errors, and returns KB-matched solutions.",
+    version="2.0.0",
     lifespan=lifespan,
 )
 
@@ -59,41 +55,62 @@ app = FastAPI(
 # --- Request / Response Models ---
 
 class AnalyzeRequest(BaseModel):
-    log_text: str                  # Raw Airflow log text
-    dag_id: str | None = None      # Optional override
-    task_id: str | None = None     # Optional override
+    log_text: str
+    dag_id: str | None = None
+    task_id: str | None = None
 
     class Config:
         json_schema_extra = {
             "example": {
-                "log_text": "[2024-01-15 10:23:45] ERROR - task_id=configure_ilo dag_id=pcai_deploy\nTraceback (most recent call last):\n  File \"/opt/airflow/dags/tasks/ilo_config.py\", line 42, in configure_ilo\n    ilo.connect(ip='192.168.1.10', port=443)\nConnectionRefusedError: [Errno 111] Connection refused",
-                "dag_id": "pcai_deploy",
-                "task_id": "configure_ilo"
+                "log_text": "[2026-05-05T08:38:23.680+0000] {taskinstance.py:2905} ERROR - Task failed with exception\nTraceback (most recent call last):\n...\nairflow.exceptions.AirflowException: SSH command timed out",
+                "dag_id": "deployment_workflow",
+                "task_id": "simulate_nfs_configuration_error"
             }
         }
+
+
+class KBMatch(BaseModel):
+    matched_line: str           # The log line that triggered this match
+    similarity: float           # Similarity score (0-1)
+    kb_document: str            # The KB error_line that was matched
+    diagnosis: str
+    solution: str
+    prevention: str
+    error_type: str
+    severity: str
+    source: str
+    retrieved_sources: str      # URLs / references from KB entry
 
 
 class AnalyzeResponse(BaseModel):
     error_location: str
     error_type: str
     error_message: str
-    diagnosis: str
-    solution: str
-    prevention: str
+    matches: list[KBMatch]      # All KB entries that survived threshold + dedup
     retrieved_sources: list[str]
 
 
 class IngestRequest(BaseModel):
-    error_description: str         # Description of the error
-    fix_description: str           # How it was fixed
+    error_line: str             # The exact error string to embed and match against
+    diagnosis: str
+    solution: str
+    prevention: str
+    error_type: str = "Unknown"
+    severity: str = "Medium"
     source_label: str = "User Submitted"
+    retrieved_sources: str = ""
 
     class Config:
         json_schema_extra = {
             "example": {
-                "error_description": "MinIO connection timeout during configure_storage task on worker node 3",
-                "fix_description": "Restarted MinIO service and updated firewall rules to allow port 9000",
-                "source_label": "Field Fix #007"
+                "error_line": "MinIO connection timeout during configure_storage task",
+                "diagnosis": "MinIO server is unreachable on port 9000",
+                "solution": "Restart MinIO service and verify firewall rules allow port 9000",
+                "prevention": "Add a MinIO health check before running configure_storage",
+                "error_type": "Connection error",
+                "severity": "Medium",
+                "source_label": "Field Fix #007",
+                "retrieved_sources": ""
             }
         }
 
@@ -109,7 +126,8 @@ def health_check():
 def analyze_log(request: AnalyzeRequest):
     """
     Main endpoint.
-    Receives raw Airflow log text, returns error location + LLM solution.
+    Receives raw Airflow log text, returns error location + KB-matched solutions.
+    No LLM involved — diagnosis/solution/prevention come directly from the knowledge base.
     """
     if not request.log_text.strip():
         raise HTTPException(status_code=400, detail="log_text cannot be empty")
@@ -128,7 +146,7 @@ def analyze_log(request: AnalyzeRequest):
         raise HTTPException(
             status_code=422,
             detail="No error or traceback detected in the provided log. "
-                   "Ensure log contains ERROR lines or a Python traceback."
+                   "Ensure the log contains ERROR lines or a Python traceback."
         )
 
     # Step 3: Run RAG pipeline
@@ -136,8 +154,7 @@ def analyze_log(request: AnalyzeRequest):
         result = run_rag_pipeline(
             parsed_error=parsed_error,
             chroma_client=chroma_client,
-            groq_api_key=GROQ_API_KEY,
-            top_k=3,
+            top_k=1,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"RAG pipeline error: {str(e)}")
@@ -146,9 +163,7 @@ def analyze_log(request: AnalyzeRequest):
         error_location=result["error_location"],
         error_type=result["error_type"],
         error_message=result["error_message"],
-        diagnosis=result["diagnosis"],
-        solution=result["solution"],
-        prevention=result["prevention"],
+        matches=result["matches"],
         retrieved_sources=result["retrieved_sources"],
     )
 
@@ -156,28 +171,26 @@ def analyze_log(request: AnalyzeRequest):
 @app.post("/ingest")
 def ingest_new_error(request: IngestRequest):
     """
-    Optional endpoint to add new error+fix pairs to the knowledge base at runtime.
-    Useful as your team encounters and fixes new errors.
+    Add a new error+fix pair to the knowledge base at runtime.
+    Only the error_line is embedded. All other fields go into metadata.
     """
-    try:
-        from .knowledge_base import ERRORS_COLLECTION, get_embedding_function
-    except ImportError:
-        from knowledge_base import ERRORS_COLLECTION, get_embedding_function
-    import uuid
-
     ef = get_embedding_function()
     col = chroma_client.get_collection(name=ERRORS_COLLECTION, embedding_function=ef)
 
     new_id = f"err_{uuid.uuid4().hex[:8]}"
-    combined_text = (
-        f"Error: {request.error_description}\n"
-        f"Fix Applied: {request.fix_description}"
-    )
 
     col.add(
         ids=[new_id],
-        documents=[combined_text],
-        metadatas=[{"source": request.source_label}],
+        documents=[request.error_line],
+        metadatas=[{
+            "source": request.source_label,
+            "error_type": request.error_type,
+            "severity": request.severity,
+            "diagnosis": request.diagnosis,
+            "solution": request.solution,
+            "prevention": request.prevention,
+            "retrieved_sources": request.retrieved_sources,
+        }],
     )
 
     return {

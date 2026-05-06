@@ -2,11 +2,8 @@
 knowledge_base.py
 Builds and manages the ChromaDB knowledge base.
 Contains:
-- HPE documentation snippets
-- Real MinIO installation + configuration errors with fixes
-- NFS configuration errors with fixes
-- OS validation errors with fixes
-All error text and diagnosis/solution combined into 'text' field for proper RAG retrieval.
+- Mock HPE documentation snippets
+- Mock past error logs + their fixes
 """
 
 import chromadb
@@ -18,455 +15,440 @@ import re
 from typing import List, Dict
 
 # Collection names
-DOCS_COLLECTION = "hpe_docs"
 ERRORS_COLLECTION = "past_errors"
 
 
 def _normalize_embedding_input(input_data) -> List[str]:
-    """
-    Chroma may call embedding functions with either a single string or a list.
-    Normalize both cases into a plain list[str].
-    """
     if isinstance(input_data, str):
         return [input_data]
     if isinstance(input_data, list):
-        normalized = []
-        for item in input_data:
-            if isinstance(item, str):
-                normalized.append(item)
-            else:
-                normalized.append(str(item))
-        return normalized
+        return [item if isinstance(item, str) else str(item) for item in input_data]
     return [str(input_data)]
 
-# --- HPE Documentation ---
-MOCK_HPE_DOCS = [
-    {
-        "id": "doc_001",
-        "text": "HPE iLO Configuration: iLO (Integrated Lights-Out) requires network configuration before OS deployment. "
-                "Ensure iLO IP is reachable and credentials are set. Common errors include 'Connection refused' when "
-                "iLO port 443 is blocked, and 'Authentication failed' when default credentials haven't been changed. "
-                "Fix: Verify network connectivity with ping, check firewall rules for port 443, reset iLO credentials via physical access.",
-        "source": "HPE iLO Setup Guide"
-    },
-    {
-        "id": "doc_002",
-        "text": "SPP (Service Pack for ProLiant) Deployment: SPP must match the server hardware generation. "
-                "Deploying wrong SPP version causes 'Incompatible firmware' errors. "
-                "Always verify server model against SPP release notes before deployment. "
-                "Fix: Download correct SPP ISO from HPE portal, verify checksum, remount and retry.",
-        "source": "HPE SPP Deployment Guide"
-    },
-    {
-        "id": "doc_003",
-        "text": "OS Deployment on HPE Servers: OS installation via automated pipeline requires correct boot order. "
-                "Errors like 'No bootable device found' occur when PXE boot is not enabled or BIOS boot mode mismatch (UEFI vs Legacy). "
-                "Fix: Enter BIOS, enable PXE boot, ensure boot mode matches OS installer (UEFI for modern OS).",
-        "source": "HPE OS Deployment Guide"
-    },
-    {
-        "id": "doc_004",
-        "text": "MinIO Object Storage Configuration: MinIO requires correct endpoint URL, access key and secret key. "
-                "Errors include 'S3 endpoint unreachable', 'Access Denied', and 'Bucket not found'. "
-                "Fix: Verify MinIO service is running (systemctl status minio), check access/secret keys in config, "
-                "create bucket manually if missing using mc mb command.",
-        "source": "MinIO on HPE PCAI Guide"
-    },
-    {
-        "id": "doc_005",
-        "text": "Network Configuration on PCAI Rack: Aruba and NVIDIA switches require VLAN configuration for inter-node communication. "
-                "Errors include 'Host unreachable' between control and worker nodes, caused by missing VLAN tags. "
-                "Fix: SSH into switch, verify VLAN config, add missing VLAN tags to relevant ports.",
-        "source": "HPE PCAI Network Guide"
-    },
-    {
-        "id": "doc_006",
-        "text": "NFS Configuration: NFS server must be running on control node before worker nodes attempt to mount. "
-                "Error 'mount.nfs: Connection timed out' means NFS service is down or firewall is blocking port 2049. "
-                "Fix: Run 'systemctl start nfs-server' on control node, open port 2049 in firewall.",
-        "source": "HPE PCAI Storage Guide"
-    },
-    {
-        "id": "doc_007",
-        "text": "GLFS (GlusterFS) Cluster Setup: GlusterFS peer probe fails when hostname resolution fails between nodes. "
-                "Error: 'Probe returned with unknown errno 107'. "
-                "Fix: Ensure /etc/hosts has entries for all nodes, verify glusterd service is running on all nodes.",
-        "source": "HPE PCAI GLFS Guide"
-    },
-]
 
-# --- Past Errors & Fixes ---
+def _make_local_hash_embedding_function():
+    class LocalHashEmbeddingFunction:
+        def name(self) -> str:
+            return "local-hash"
+
+        def embed_query(self, input):
+            return self(input)
+
+        def embed_documents(self, input):
+            return self(input)
+
+        def __call__(self, input):
+            vectors = []
+            for text in _normalize_embedding_input(input):
+                dims = 128
+                vector = [0.0] * dims
+                tokens = re.findall(r"[A-Za-z0-9_./:-]+", text.lower())
+                if not tokens:
+                    vectors.append(vector)
+                    continue
+
+                for token in tokens:
+                    digest = hashlib.sha256(token.encode("utf-8")).digest()
+                    index = int.from_bytes(digest[:4], "big") % dims
+                    sign = 1.0 if digest[4] % 2 == 0 else -1.0
+                    weight = 1.0 + (digest[5] / 255.0)
+                    vector[index] += sign * weight
+
+                norm = math.sqrt(sum(value * value for value in vector)) or 1.0
+                vectors.append([value / norm for value in vector])
+            return vectors
+
+    return LocalHashEmbeddingFunction()
+
 MOCK_PAST_ERRORS = [
-
-    # --- Mock iLO Error ---
+    #---Actual error logs for installation of MinIO---
     {
         "id": "err_001",
-        "text": "Error: ConnectionRefusedError during iLO configuration task. "
-                "Task: configure_ilo | iLO IP 192.168.1.10 port 443 refused connection. "
-                "Diagnosis: iLO network interface not enabled after factory reset. "
-                "Solution: Enable iLO dedicated network port via physical server access. Re-run configure_ilo task. "
-                "Prevention: Always verify iLO network interface is enabled before running configure_ilo task.",
-        "source": "Past Error Log #001 - iLO Configuration"
+        "text": "wget: unable to resolve host address. ",
+        "source": "MinIO Installation Logs",
+        "diagnosis": "The system cannot resolve the hostname to an IP address. This indicates a DNS resolution failure. Possible underlying issues are no internet connectivity, DNS server not configured or not reachable, incorrect or empty /etc/resolv.conf, firewall/proxy blocking DNS queries or temporary DNS server failure. ",
+        "solution": "Check network connectivity and DNS resolution with ping (e.g. ping google.com). Edit /etc/resolv.conf and add reliable DNS servers (Put nameserver 8.8.8.8 to the first line of /etc/resolv.conf). Restart DNS services (e.g. sudo systemctl restart systemd-resolved). ",
+        "prevention": "Ensure stable network connection. Configure stable DNS servers. Monitor DNS resolution regularly. Verify firewall settings do not block DNS traffic. ",
+        "error_type": "Network configuration error",
+        "severity": "Medium",
+        "retrieved_sources": "https://stackoverflow.com/questions/24821521/wget-unable-to-resolve-host-address-http"
     },
-
-    # --- MinIO Installation Errors ---
     {
         "id": "err_002",
-        "text": "Error: wget: unable to resolve host address. "
-                "Diagnosis: DNS resolution failure. System cannot resolve hostname to IP address. "
-                "Causes: no internet connectivity, DNS server not configured or unreachable, incorrect /etc/resolv.conf, firewall blocking DNS queries. "
-                "Solution: Check connectivity with ping google.com. Edit /etc/resolv.conf and add nameserver 8.8.8.8 as first line. "
-                "Restart DNS: sudo systemctl restart systemd-resolved. "
-                "Prevention: Configure stable DNS servers. Ensure firewall does not block DNS traffic.",
-        "source": "MinIO Installation Error #002 - DNS Resolution"
+        "text": "Resolving <domain_name> failed: Temporary failure in name resolution. ",
+        "source": "MinIO Installation Logs",
+        "diagnosis": "System cannot resolve the domain name to an IP address. Possible causes include no internet connectivity, DNS server not configured or unreachable, incorrect/empty /etc/resolv.conf, firewall/proxy blocking DNS queries, or temporary DNS server failure. ",
+        "solution": "Test connectivity with ping (e.g. ping google.com). Edit /etc/resolv.conf to add reliable DNS servers (e.g. nameserver 8.8.8.8). Restart DNS services (e.g. sudo systemctl restart systemd-resolved). Check if nameservers are configured in systemd-resolved with resolvectl status. ",
+        "prevention": "Ensure stable network connection. Configure reliable DNS servers. Verify firewall settings do not block DNS traffic. ",
+        "error_type": "Network configuration error",
+        "severity": "Medium",
+        "retrieved_sources": "https://unix.stackexchange.com/questions/504963/how-to-solve-a-temporary-failure-in-name-resolution-error"
     },
     {
         "id": "err_003",
-        "text": "Error: Resolving domain_name failed: Temporary failure in name resolution. "
-                "Diagnosis: System cannot resolve domain name to IP address. "
-                "Causes: no internet connectivity, DNS not configured, incorrect /etc/resolv.conf, firewall blocking DNS. "
-                "Solution: Test with ping google.com. Edit /etc/resolv.conf to add nameserver 8.8.8.8. "
-                "Restart DNS: sudo systemctl restart systemd-resolved. Check nameservers with resolvectl status. "
-                "Prevention: Configure reliable DNS servers. Verify firewall does not block DNS traffic.",
-        "source": "MinIO Installation Error #003 - Name Resolution"
+        "text": "sudo: A terminal is required to read the password; either use the -S option to read from standard input or configure an askpass helper. ",
+        "source": "MinIO Installation Logs",
+        "diagnosis": "Occurs when a script or automated process attempts to use sudo without an interactive terminal (TTY) to prompt for a password. No TTY allocated. ",
+        "solution": "Use the -S flag to pipe the password via stdin (echo $password | sudo -S /path/to/command) or (sudo -S /path/to/command < password.secret). This method is not recommended because a password can appear in logs and environment variables can be exposed. An alternate method is to configure /etc/sudoers file to allow specific commands without a password (E.g. myuser ALL=(ALL) NOPASSWD: /usr/local/bin/minio). ",
+        "prevention": "Always use passwordless sudo for specific commands in scripts by editing the sudoers file. ",
+        "error_type": "Privilege escalation failure",
+        "severity": "Medium - prevents command execution only when sudo requires authentication and no terminal is available",
+        "retrieved_sources": "https://askubuntu.com/questions/1244898/sudo-a-terminal-is-required-to-read-the-password-either-use-the-s-option-to-r"
     },
     {
         "id": "err_004",
-        "text": "Error: sudo: A terminal is required to read the password; either use the -S option to read from standard input or configure an askpass helper. "
-                "Diagnosis: Script attempts to use sudo without interactive terminal TTY to prompt for password. "
-                "Solution: Use -S flag to pipe password via stdin: echo $password | sudo -S /path/to/command. "
-                "Or configure sudoers file to allow specific commands without password: myuser ALL=(ALL) NOPASSWD: /usr/local/bin/minio. "
-                "Prevention: Always use passwordless sudo for specific commands in automated scripts by editing the sudoers file.",
-        "source": "MinIO Installation Error #004 - Sudo TTY"
+        "text": "sudo: A password is required. ",
+        "source": "MinIO Installation Logs",
+        "diagnosis": "Occurs when a script or automated process attempts to use sudo without an interactive terminal (TTY) to prompt for a password. No TTY allocated. ",
+        "solution": "Use the -S flag to pipe the password via stdin (echo $password | sudo -S /path/to/command) or (sudo -S /path/to/command < password.secret). This method is not recommended because a password can appear in logs and environment variables can be exposed. An alternate method is to configure /etc/sudoers file to allow specific commands without a password (E.g. myuser ALL=(ALL) NOPASSWD: /usr/local/bin/minio). ",
+        "prevention": "Always use passwordless sudo for specific commands in scripts by editing the sudoers file. ",
+        "error_type": "Privilege escalation failure",
+        "severity": "Medium - prevents command execution only when sudo requires authentication and no terminal is available",
+        "retrieved_sources": "https://askubuntu.com/questions/1244898/sudo-a-terminal-is-required-to-read-the-password-either-use-the-s-option-to-r"
     },
     {
         "id": "err_005",
-        "text": "Error: sudo: A password is required. "
-                "Diagnosis: Automated script attempts to use sudo without interactive terminal. No TTY allocated. "
-                "Solution: Use -S flag: echo $password | sudo -S /path/to/command. "
-                "Or configure sudoers: myuser ALL=(ALL) NOPASSWD: /usr/local/bin/minio. "
-                "Prevention: Always configure passwordless sudo for specific commands in scripts via sudoers file.",
-        "source": "MinIO Installation Error #005 - Sudo Password"
+        "text": "<COMMAND>: command not found. ",   
+        "source": "MinIO Installation Logs",
+        "diagnosis": "Occurs when the script or file that the system is trying to execute doesn't exist in the location specified by the PATH variable. ",
+        "solution": "Execute the file directly using its absolute or relative path (e.g., ~/script or ./script), or add a new directory containing the command to the PATH variable (export PATH=$PATH:/path/to/directory). Also, make sure to install the missing package containing the command. Make sure there are no typos in the command using which command (which <command>). ",
+        "prevention": "Always place custom executables in directories included in the PATH (e.g., ~/.local/bin), add new directories to PATH via shell configuration files like .bashrc for persistent changes across all future sessions, and ensure required packages are installed before attempting to run their commands. ",
+        "error_type": "Configuration error",
+        "severity": "Medium - task fails, but system is not corrupted, and the fix is typically simple",
+        "retrieved_sources": "https://www.redhat.com/en/blog/fix-command-not-found-error-linux"
     },
     {
         "id": "err_006",
-        "text": "Error: command not found. "
-                "Diagnosis: Command or executable does not exist in PATH variable locations. "
-                "Solution: Execute with absolute path: ~/script or ./script. "
-                "Add directory to PATH: export PATH=$PATH:/path/to/directory. "
-                "Install missing package containing the command. Verify with: which command_name. "
-                "Prevention: Place executables in PATH directories like ~/.local/bin. Add directories to PATH in .bashrc.",
-        "source": "MinIO Installation Error #006 - Command Not Found"
+        "text": "SSH operator: exit status = 127. ",     
+        "source": "MinIO Installation Logs",
+        "diagnosis": "Indicates that the command was not found. This occurs when the system cannot locate the executable file in any of the paths defined by the PATH variable for the attempted command. ",
+        "solution": "Check that the command is typed correctly using the which command (which <command>). Check if the directory containing the command is included in the PATH variable (echo $PATH). If not, add it to PATH (export PATH=$PATH:/path/to/directory). Ensure that the required package providing the command is installed. Specify the full path to the command. ",
+        "prevention": "Ensure the command or script exists and is executable by verifying its installation and path configuration before execution. ",
+        "error_type": "Configuration error",
+        "severity": "Medium - prevents command execution, but fix is typically straightforward and does not indicate deeper system issues",
+        "retrieved_sources": "https://linuxconfig.org/how-to-fix-bash-127-error-return-code"
     },
     {
         "id": "err_007",
-        "text": "Error: SSH operator exit status 127. Command not found on remote host. "
-                "Diagnosis: Remote system cannot find executable in PATH variable. "
-                "Solution: Verify command exists with: which command_name. "
-                "Check PATH: echo $PATH. Add to PATH: export PATH=$PATH:/path/to/directory. "
-                "Install missing package. Use full absolute path to command. "
-                "Prevention: Verify command installation and PATH before execution.",
-        "source": "MinIO Installation Error #007 - SSH Exit 127"
+        "text": "No such file or directory: <file_path>. ",
+        "source": "MinIO Installation Logs",
+        "diagnosis": "The system cannot find the specified file or directory at the provided path. This can occur if the file was deleted, moved, or if there is a typo in the path. It can also happen if the script is being run from a different working directory than expected. Additionally, the file might require special permissions to access. ",
+        "solution": "Use absolute paths or ensure the script is run from the correct working directory. Check the exact path spelling. If the file is expected to be generated by a previous command, verify that command executed successfully. ",
+        "prevention": "Always use absolute paths in scripts or ensure the working directory is correct. Implement error handling to check for file existence before attempting to access it. ",
+        "error_type": "File system error",
+        "severity": "Medium - prevents file access, but fix is typically straightforward and does not indicate deeper system issues",
+        "retrieved_sources":" "
     },
     {
         "id": "err_008",
-        "text": "Error: No such file or directory at specified file_path. "
-                "Diagnosis: System cannot find file or directory at provided path. File deleted, moved, or path has typo. "
-                "Solution: Use absolute paths in scripts. Ensure correct working directory. "
-                "Check path spelling carefully. Verify previous commands executed successfully if file should be generated. "
-                "Prevention: Always use absolute paths. Implement file existence checks before access.",
-        "source": "MinIO Installation Error #008 - File Not Found"
+        "text": "Failed to enable unit: Unit file <FILE_NAME>.service does not exist. ",        
+        "source": "MinIO Installation Logs",
+        "diagnosis": "The systemd service file for <FILE_NAME> is missing or not in the expected location. This occurs when the service was never installed, or the .service file is not placed in systemd directories (/etc/systemd/system/ or /lib/systemd/system/), or the filename is incorrect, or the installation step failed earlier. ",    
+        "solution": "Verify the service file exists (ls /etc/systemd/system/<FILE_NAME>.service). If missing, create or install the service. Reload the service (sudo systemctl daemon-reexec or sudo systemctl daemon-reload). Enable the service (sudo systemctl enable --now <FILE_NAME>). ",
+        "prevention": "Add a validation step to check if file exists before running systemctl enable. ",
+        "error_type": "Configuration error",
+        "severity": "Medium - prevents service startup but does not impact system stability",
+        "retrieved_sources": " "
     },
+    # ---Actual error logs for configuration of MinIO---
     {
         "id": "err_009",
-        "text": "Error: Failed to enable unit: Unit file service_name.service does not exist. "
-                "Diagnosis: systemd service file missing from expected location /etc/systemd/system/ or /lib/systemd/system/. "
-                "Causes: service never installed, wrong filename, installation failed earlier. "
-                "Solution: Check if service file exists: ls /etc/systemd/system/service_name.service. "
-                "If missing install or create the service. Reload: sudo systemctl daemon-reload. "
-                "Enable: sudo systemctl enable --now service_name. "
-                "Prevention: Add validation step to check service file exists before running systemctl enable.",
-        "source": "MinIO Installation Error #009 - Service File Missing"
+        "text": "mc: <ERROR> Deprecated command. Please use 'mc admin policy attach'. ",
+        "source": "MinIO Configuration Logs",
+        "diagnosis": "The mc admin policy set command is deprecated and has been replaced with mc policy admin attach in newer versions of the MinIO client. ",
+        "solution": "Replace the deprecated command with the new syntax: {MC_BINARY} admin policy attach local (readwrite|readonly|writeonly) --user={MINIO_USER}. Replaces mc admin policy (set|unset|update) commands with mc admin policy (attach|detach). ",
+        "prevention": "Always check the MinIO client version and review changelogs when upgrading, or use mc --help to verify current command syntax before scripting. ",
+        "error_type": "Configuration error",
+        "severity": "Low - easily fixable by updating to the current command syntax",
+        "retrieved_sources": "https://github.com/minio/mc/issues/4513, https://docs.min.io/enterprise/aistor-object-store/reference/cli/admin/mc-admin-policy/mc-admin-policy-attach/"
     },
-
-    # --- MinIO Configuration Errors ---
     {
         "id": "err_010",
-        "text": "Error: mc: Deprecated command. Please use mc admin policy attach. "
-                "Diagnosis: mc admin policy set command deprecated and replaced with mc admin policy attach in newer MinIO client versions. "
-                "Solution: Replace deprecated command with new syntax: mc admin policy attach local readwrite --user=MINIO_USER. "
-                "Use mc admin policy attach instead of mc admin policy set. "
-                "Prevention: Check MinIO client version and review changelogs when upgrading. Use mc --help to verify current syntax.",
-        "source": "MinIO Configuration Error #010 - Deprecated mc Command"
+        "text": "mc: <ERROR> Unable to initialize new alias from the provided credentials. Get \"http://<IP_ADDRESS>:<PORT_NUMBER>/probe-bsign-<RANDOM_STRING>/?location=\": dial tcp 127.0.0.1:<PORT_NUMBER>:connect: connection refused. ",
+        "source": "MinIO Configuration Logs",
+        "diagnosis": "MinIO client (mc) is unable to connect to the MinIO server at <IP_ADDRESS>:<PORT_NUMBER>. The connection is being actively refused, meaning no service is listening on that port. This could mean that the MinIO server is not running, or it is running on a different port, or MinIO crashed or failed to start. ",
+        "solution": "Check if MinIO server is running: (ps aux | grep minio). Start MinIO if not running: (minio server /data --console-address \":9000\"). Verify the correct port: (netstat -tuln | grep 9000). Port 9000 is the default port. Update mc alias with the correct endpoint. ",
+        "prevention": "Always verify the correct MinIO API port (default 9000) before configuring aliases, and check that the server is actually running on that port. ",
+        "error_type": "Connection error",
+        "severity": "Medium - blocks all downstream MinIO operations",
+        "retrieved_sources": "https://github.com/minio/minio/issues/13639#issuecomment-966244704"
     },
     {
         "id": "err_011",
-        "text": "Error: mc: Unable to initialize new alias from provided credentials. Connection refused at IP_ADDRESS:PORT_NUMBER. dial tcp connect: connection refused. "
-                "Diagnosis: MinIO client cannot connect to MinIO server. No service listening on that port. MinIO not running or running on different port. "
-                "Solution: Check if MinIO running: ps aux | grep minio. "
-                "Start MinIO if not running: minio server /data --console-address :9001. "
-                "Verify correct port: netstat -tuln | grep 9000. Port 9000 is default API port. "
-                "Update mc alias with correct endpoint. "
-                "Prevention: Verify MinIO is running on correct port before configuring aliases.",
-        "source": "MinIO Configuration Error #011 - Connection Refused"
+        "text": "Command exited with return code 1. ",
+        "source": "MinIO Configuration Logs",
+        "diagnosis": "This is a generic failure message. The exact cause can be found in earlier logs. ",
+        "solution": "Check earlier logs for ERRORS/Exception. Find the root cause and fix the underlying issue. ",
+        "prevention": "Log detailed command output (stdout + stderr). Add explicit error messages in scripts. ",
+        "error_type": "Execution error",
+        "severity": "Medium - Task failed, but reason is not present in the error message itself",
+        "retrieved_sources": "https://stackoverflow.com/questions/20965762/meaning-of-exit-status-1-returned-by-linux-command"
     },
     {
         "id": "err_012",
-        "text": "Error: Command exited with return code 1. Generic failure. "
-                "Diagnosis: Generic failure message. Exact cause found in earlier log output. "
-                "Solution: Check earlier logs for ERROR or Exception messages. Find root cause and fix underlying issue. "
-                "Prevention: Log detailed command output including stdout and stderr. Add explicit error messages in scripts.",
-        "source": "MinIO Configuration Error #012 - Exit Code 1"
+        "text": "Unable to find image 'minio/minio:<IMAGE_TAG>' locally",
+        "source": "MinIO Configuration Logs",
+        "diagnosis": "Docker cannot find the specified image locally and is unable to pull it from the registry because the tag does not exist. The image tag is invalid or mistyped. Possible typo in repository or tag name. ",
+        "solution": "Verify available images (docker images | grep minio). Build the image locally if source exists (docker build -t minio/minio:<CUSTOM_TAG>). Load image from tar file if exported (docker load -i <MINIO_IMAGE>.tar). ",
+        "prevention": "Pre-build or pre-load images before deployment task. Use docker images to verify local availability before running containers. Implement a pre-check task that validates image existence. ",
+        "error_type": "Configuration error",
+        "severity": "Medium - Container cannot start but the fix is straightforward. No system-wide damage",
+        "retrieved_sources": "https://stackoverflow.com/questions/38464549/i-cant-find-my-docker-image-after-building-it"
     },
     {
         "id": "err_013",
-        "text": "Error: Unable to find image minio/minio:IMAGE_TAG locally. Docker image not found. "
-                "Diagnosis: Docker cannot find specified image locally and cannot pull from registry. Tag invalid or mistyped. "
-                "Solution: Verify available images: docker images | grep minio. "
-                "Pull valid tag: docker pull minio/minio:latest. "
-                "Load from tar file if exported: docker load -i minio_image.tar. "
-                "Prevention: Pre-pull or pre-load images before deployment. Validate image existence before running containers.",
-        "source": "MinIO Configuration Error #013 - Docker Image Not Found"
+        "text": "docker: Error response from daemon: manifest for minio/minio:<IMAGE_TAG> not found: manifest unknown: manifest unknown. ",
+        "source": "MinIO Configuration Logs",
+        "diagnosis": "Docker successfully connected to Docker Hub but the registry returned a 404 error because the specified image tag does not exist in the remote repository. The image tag is misspelled or invalid. The tag may refer to a version that was never published. The image repository name may be incorrect. ",
+        "solution": "List all available tags (skopeo list-tags docker://minio/minio). Pull a valid tag (docker pull minio/minio:latest). Update command with the correct tag. ",
+        "prevention": "Verify image tags exist before deployment. Implement a tag validation step. ",
+        "error_type": "Configuration error. ",
+        "severity": "Medium - Container cannot start but fix is straightforward. No system-wide damage. ",
+        "retrieved_sources": "https://stackoverflow.com/questions/28320134/how-can-i-list-all-tags-for-a-docker-image-on-a-remote-registry, https://forums.docker.com/t/docker-error-response-from-daemon-manifest-not-found-when-running-container-following-get-started-tutorial/65107"
     },
     {
         "id": "err_014",
-        "text": "Error: docker: Error response from daemon: manifest for minio/minio:IMAGE_TAG not found: manifest unknown. "
-                "Diagnosis: Docker connected to registry but tag does not exist. Tag misspelled, never published, or repo name incorrect. "
-                "Solution: List available tags: skopeo list-tags docker://minio/minio. "
-                "Pull valid tag: docker pull minio/minio:latest. Update command with correct tag. "
-                "Prevention: Verify image tags exist before deployment. Implement tag validation step.",
-        "source": "MinIO Configuration Error #014 - Docker Manifest Not Found"
+        "text": "SSH operator error: exit status = 125. ",    
+        "source": "MinIO Configuration Logs",
+        "diagnosis": "SSH operator executed a command on the remote host that failed with exit code 125, which in Docker contexts typically indicates a Docker daemon error such as invalid image reference, pull failure, or container creation issue.",
+        "solution": "Check the full command output above the error to identify the specific failure. Correct accordingly. ",
+        "prevention": "Use Docker operations with proper error handling. Log full command output to capture specific Docker errors. ",
+        "error_type": "Runtime error",
+        "severity": "Medium - Container cannot start, root cause is usually a configuration issue which requires manual investigation of command output",
+        "retrieved_sources": "https://komodor.com/learn/exit-codes-in-containers-and-kubernetes-the-complete-guide/"
     },
     {
         "id": "err_015",
-        "text": "Error: SSH operator error exit status 125. Docker daemon error on remote host. "
-                "Diagnosis: SSH command on remote host failed with exit code 125. Indicates Docker daemon error, invalid image reference, pull failure, or container creation issue. "
-                "Solution: Check full command output above error to identify specific failure. Correct accordingly. "
-                "Prevention: Use Docker operations with proper error handling. Log full command output.",
-        "source": "MinIO Configuration Error #015 - SSH Exit 125 Docker Error"
+        "text": "mc: <ERROR> invalid retention mode '<INVALIDMODE>'. Invalid arguments provided, please refer 'mc <command> -h' for relevant documentation. ",      
+        "source": "MinIO Configuration Logs",
+        "diagnosis": "The mc client command failed because an invalid retention mode was specified. The MinIO retention policy requires valid modes such as governance or compliance. Invalid retention mode argument passed to mc retention set. ",
+        "solution": "Verify available retention modes (mc retention set --help). Check current retention settings (mc retention info <BUCKET_NAME>). Correct the retention mode to a valid value - governance or compliance. ",
+        "prevention": "Validate retention mode arguments against allowed values (governance, compliance). Implement parameter checking before executing mc commands. ",
+        "error_type": "Configuration error",
+        "severity": "Low",
+        "retrieved_sources": "https://docs.min.io/enterprise/aistor-object-store/reference/cli/mc-retention/mc-retention-info/"
     },
     {
         "id": "err_016",
-        "text": "Error: mc: invalid retention mode INVALIDMODE. Invalid arguments provided. "
-                "Diagnosis: mc command failed because invalid retention mode specified. Valid modes are governance or compliance only. "
-                "Solution: Verify retention modes: mc retention set --help. "
-                "Check current settings: mc retention info BUCKET_NAME. "
-                "Correct mode to valid value: governance or compliance. "
-                "Prevention: Validate retention mode arguments against allowed values before executing mc commands.",
-        "source": "MinIO Configuration Error #016 - Invalid Retention Mode"
+        "text": "curl: (22) The requested URL returned error: 403",   
+        "source": "MinIO Configuration Logs",
+        "diagnosis": "The curl command attempted to access an endpoint that exists but returned an HTTP 403 Forbidden error, indicating the request was understood by the server but access is denied due to insufficient permissions. Credentials were not provided, or the authenticated user does not have permission to access the endpoint. ",
+        "solution": "Include authentication credentials, check available endpoints, or use a valid endpoint path. ",
+        "prevention": "Verify endpoint paths before scripting. Test endpoints with valid credentials before automating. Always include authentication credentials when accessing protected endpoints. ",
+        "error_type": "Authentication error",
+        "severity": "Medium - Authentication or authorization issue, but does not affect system stability",
+        "retrieved_sources":" "
     },
     {
         "id": "err_017",
-        "text": "Error: curl: (22) The requested URL returned error: 403 Forbidden. "
-                "Diagnosis: curl accessed endpoint that returned HTTP 403. Request understood but access denied due to insufficient permissions. Credentials not provided or user lacks permission. "
-                "Solution: Include authentication credentials in curl request. Check available endpoints. Use valid endpoint path. "
-                "Prevention: Verify endpoint paths before scripting. Test with valid credentials. Always include auth credentials for protected endpoints.",
-        "source": "MinIO Configuration Error #017 - HTTP 403 Forbidden"
+        "text": "SSH operator error: exit status = 22",       
+        "source": "MinIO Configuration Logs",
+        "diagnosis": "The curl command-line tool often uses exit code 22 to indicate that the requested URL was not found (e.g., HTTP 404 error) on the server, but curl successfully connected and returned an error message in its output. ",
+        "solution": "Examine the command output above the error to identify the specific failure. Verify command syntax and arguments. For HTTP-related errors, ensure URLs are correctly formatted and verify authentication credentials are included. ",
+        "prevention": "Use proper error handling and logging to capture detailed failure reasons. Validate command arguments before execution in automation scripts.",
+        "error_type": "Runtime error",
+        "severity": "Medium - Task fails with non-zero exit code which indicates syntax or parameter issue, but does not affect system stability",
+        "retrieved_sources": "https://gist.github.com/gitkodak/b9c253e89397335356b13b37985778f5"
     },
     {
         "id": "err_018",
-        "text": "Error: SSH operator error exit status 22. curl HTTP 404 error on remote host. "
-                "Diagnosis: curl exit code 22 indicates requested URL not found, HTTP 404 error. curl connected but server returned error. "
-                "Solution: Check command output above error for specific failure. Verify command syntax and arguments. "
-                "Ensure URLs correctly formatted and authentication credentials included. "
-                "Prevention: Validate command arguments before execution. Use proper error handling and logging.",
-        "source": "MinIO Configuration Error #018 - SSH Exit 22 HTTP 404"
+        "text": "mc: <ERROR> Unable to initialize new alias from the provided credentials. The request signature we calculated does not match the signature you provided. Check your key and signing method.",  
+        "source": "MinIO Configuration Logs",
+        "diagnosis": "The mc client failed to authenticate with the MinIO server because the provided credentials were incorrect, the system time was out of sync, or the server was not ready to accept requests. The signature mismatch indicates the server rejected the authentication attempt. Root cause could be incorrect access key or secret key, or client and server system time are out of sync (signature validation uses timestamps), MinIO server not fully initialized when mc command runs, URL endpoint or protocol mismatch (HTTP vs HTTPS), or special characters in keys misinterpreted by shell. ",
+        "solution": "Check MinIO server credentials (docker exec minio_server env | grep MINIO_ROOT). Add a health check before alias creation (curl -s http://127.0.0.1:<PORT_NUMBER>/minio/health/live). Synchronize system time (sudo timedatectl set-ntp true; sudo ntpdate -u pool.ntp.org). Set alias with correct credentials (mc alias set local https://127.0.0.1:<PORT_NUMBER> <MINIO_ROOT_USER> <MINIO_ROOT_PASSWORD>). Use single quotes to prevent shell interpretation. ",
+        "prevention": "Implement server health check before running mc commands. Use environment variables for credentials. Keep system time synchronized using NTP. ",
+        "error_type": "Authentication error",
+        "severity": "Medium - Authentication fails preventing all subsequent MinIO operations",
+        "retrieved_sources": "https://drdroid.io/stack-diagnosis/minio-the-request-signature-we-calculated-does-not-match-the-signature-you-provided"
     },
     {
         "id": "err_019",
-        "text": "Error: mc: Unable to initialize new alias from provided credentials. The request signature we calculated does not match the signature you provided. Check your key and signing method. "
-                "Diagnosis: mc failed to authenticate with MinIO server. Credentials incorrect, system time out of sync, or server not ready. "
-                "Causes: wrong access key or secret key, client and server time out of sync, MinIO not fully initialized, HTTP vs HTTPS mismatch, special characters in keys. "
-                "Solution: Check MinIO credentials: docker exec minio_server env | grep MINIO_ROOT. "
-                "Add health check before alias: curl -s http://127.0.0.1:PORT/minio/health/live. "
-                "Sync system time: sudo timedatectl set-ntp true. "
-                "Set alias with correct credentials: mc alias set local http://127.0.0.1:9000 MINIO_ROOT_USER MINIO_ROOT_PASSWORD. "
-                "Prevention: Implement server health check before mc commands. Keep system time synchronized with NTP.",
-        "source": "MinIO Configuration Error #019 - Signature Mismatch"
+        "text": "mc: <ERROR> Unable to create new policy: invalid character ']' after object key:value pair.",   
+        "source": "MinIO Configuration Logs",
+        "diagnosis": "The system is trying to parse a JSON file. It encountered a ] where it expected more key:value content or a closing }. Likely causes are missing } to close an object, extra or misplaced ] or comma, incomplete key-value pair, or improper nesting of {} and []. ",
+        "solution": "Use jq to show the exact line and column of error (jq . /path/to/policy.json). Fix the JSON structure (nano /path/to/policy.json). Validate the JSON structure (jq . /path/to/policy.json). Rerun the original command. ",
+        "prevention": "Always validate JSON before using it. ",
+        "error_type": "Syntax error",
+        "severity": "Low - Configuration is not applied, but does not crash services",
+        "retrieved_sources": "https://jsonlint.com/json-syntax-error"
     },
     {
         "id": "err_020",
-        "text": "Error: mc: Unable to create new policy: invalid character ] after object key:value pair. JSON parse error. "
-                "Diagnosis: JSON file has syntax error. Found ] where key:value content or closing } expected. "
-                "Causes: missing } to close object, extra or misplaced ], incomplete key-value pair, improper nesting. "
-                "Solution: Use jq to find exact error location: jq . /path/to/policy.json. "
-                "Fix JSON structure: nano /path/to/policy.json. Validate: jq . /path/to/policy.json. Rerun command. "
-                "Prevention: Always validate JSON files before using them.",
-        "source": "MinIO Configuration Error #020 - JSON Syntax Error"
+        "text": "syntax error: unexpected end of file. ",      
+        "source": "MinIO Configuration Logs",
+        "diagnosis": "Indicates that the interpreter reached the end of the file while it was still expecting an open syntactical construct to be closed. Likely causes are missing fi for an if block, missing done for a loop, unclosed quotes, unclosed braces {}, or incomplete multi-line command. ",
+        "solution": "Inspect the file contents (cat /path/to/file). Open the file in an editor and fix the structure (nano /path/to/file). Revalidate using the relevant tools after fixing. Rerun the command. ",
+        "prevention": "Always run syntax check before execution.",
+        "error_type": "Syntax error",
+        "severity": "Low - Workflow is blocked, but no direct system damage",
+        "retrieved_sources": "https://unix.stackexchange.com/questions/193165/syntax-error-unexpected-end-of-file-bash-script"
     },
     {
         "id": "err_021",
-        "text": "Error: syntax error: unexpected end of file in bash script. "
-                "Diagnosis: Interpreter reached end of file while expecting open construct to be closed. "
-                "Causes: missing fi for if block, missing done for loop, unclosed quotes, unclosed braces, incomplete multi-line command. "
-                "Solution: Inspect file: cat /path/to/file. Fix structure in editor: nano /path/to/file. Revalidate and rerun. "
-                "Prevention: Always run syntax check before execution: bash -n script.sh.",
-        "source": "MinIO Configuration Error #021 - Bash Syntax Error"
+        "text": "req: Unknown option or message digest. ",      
+        "source": "MinIO Configuration Logs",
+        "diagnosis": "A command (usually openssl req) received an invalid argument. It either doesn't recognize an option/flag, or a message digest algorithm (like -sha256). Likely causes are typo in a flag, using an unsupported digest algorithm, passing arguments in the wrong order, using a command incompatible with installed version of openssl. ",
+        "solution": "Verify valid options for openssl (openssl req -help). Check supported message digests (openssl list -digest-algorithms). Fix the command. If issue persists, check openssl version (openssl version). ",
+        "prevention": "Always refer to help before using commands. Avoid typos in flags. Stick to widely supported digests.",
+        "error_type": "Configuration error",
+        "severity": "Low - Task fails immediately, no system changes made",
+        "retrieved_sources": "https://docs.openssl.org/3.6/man1/openssl-req/#options"
     },
+    # --- Actual error logs for configuration of NFS ---
     {
         "id": "err_022",
-        "text": "Error: req: Unknown option or message digest. openssl command error. "
-                "Diagnosis: openssl req command received invalid argument. Does not recognize option/flag or message digest algorithm. "
-                "Causes: typo in flag, unsupported digest algorithm, wrong argument order, incompatible openssl version. "
-                "Solution: Verify valid options: openssl req -help. "
-                "Check supported digests: openssl list -digest-algorithms. Fix command. Check version: openssl version. "
-                "Prevention: Always check help before using commands. Avoid typos in flags. Use widely supported digests.",
-        "source": "MinIO Configuration Error #022 - OpenSSL Invalid Option"
+        "text": "Error response from daemon: No such container: <CONTAINER_NAME>.",    
+        "source": "NFS Configuration Logs",
+        "diagnosis": "The Docker daemon cannot find a container with the given name or ID. The container either does not exist, was removed/stopped or was referenced incorrectly. Likely causes include typo in container name/ID, container was deleted, container hasn't been created yet, or trying to access a stopped container with wrong command. ",
+        "solution": "List running containers (docker ps). List all containers including stopped (docker ps -a). Start container if it exists but is stopped (docker start <CONTAINER_NAME>). Re-run container if it was removed (docker run <IMAGE_NAME>). Double check the container name (docker ps -a --format \"{{.Names}}\"). ",
+        "prevention": "Avoid losing containers unintentionally. Be careful with --rm flag. Check container status before operations (docker ps -a). ",
+        "error_type": "Runtime error",
+        "severity": "Low - Container access is affected, but no system damage or data corruption",
+        "retrieved_sources": "https://stackoverflow.com/questions/50323199/docker-error-no-such-container-friendlyhello, https://oneuptime.com/blog/post/2026-01-25-fix-docker-no-such-container-errors/view"
     },
-
-    # --- NFS Configuration Errors ---
     {
         "id": "err_023",
-        "text": "Error: Error response from daemon: No such container: CONTAINER_NAME. "
-                "Diagnosis: Docker daemon cannot find container with given name or ID. Container does not exist, was removed, stopped, or referenced incorrectly. "
-                "Causes: typo in container name or ID, container was deleted, container not yet created, trying to access stopped container incorrectly. "
-                "Solution: List running containers: docker ps. List all containers including stopped: docker ps -a. "
-                "Start container if stopped: docker start CONTAINER_NAME. Re-run container if removed: docker run IMAGE_NAME. "
-                "Verify container name: docker ps -a --format '{{.Names}}'. "
-                "Prevention: Check container status before operations with docker ps -a. Be careful with --rm flag.",
-        "source": "NFS Configuration Error #023 - Docker No Such Container"
+        "text": "SSH command timed out. ",    
+        "source": "NFS Configuration Logs",
+        "diagnosis": "An SSH connection was attempted, but no response was received within the allowed time. Likely causes are target machine is down or unreachable, network issues (wrong IP, DNS failure, firewall blocking), SSH service not running on the remote machine, or a long-running command exceeding timeout limit. ",
+        "solution": "Check if target machine is reachable over the network (ping <TARGET_MACHINE>). Check if port 22 for SSH is open (nc -zv <TARGET_MACHINE> 22). Try manual SSH with verbose output to see what is failing (ssh -vvv user@<TARGET_MACHINE>). Confirm if SSH server is active on the target machine (sudo systemctl status ssh). If needed, start SSH (sudo systemctl start ssh). Increase timeout if command is long-running (ssh -o ConnectTimeout=30 user@<TARGET_MACHINE>). Verify if SSH port 22 is allowed by the firewall (sudo ufw status). If blocked, allow it (sudo ufw allow 22). ",
+        "prevention": "Ensure SSH service is always running (sudo systemctl enable ssh). Avoid DNS or typo-related failures. Set appropriate timeouts in scripts. Configure proper firewall rules. ",
+        "error_type": "Network error",
+        "severity": "Medium - Blocks automation scripts, but no direct data/system damage",
+        "retrieved_sources": "https://oneuptime.com/blog/post/2026-01-24-fix-ssh-connection-timeout-errors/view"
     },
     {
         "id": "err_024",
-        "text": "Error: SSH command timed out. "
-                "Diagnosis: SSH connection attempted but no response received within allowed time. "
-                "Causes: target machine is down or unreachable, network issues such as wrong IP or DNS failure or firewall blocking, SSH service not running on remote machine, or long-running command exceeding timeout limit. "
-                "Solution: Check if target machine is reachable: ping TARGET_MACHINE. "
-                "Check if SSH port 22 is open: nc -zv TARGET_MACHINE 22. "
-                "Try manual SSH with verbose output: ssh -vvv user@TARGET_MACHINE. "
-                "Confirm SSH server is active: sudo systemctl status ssh. Start if needed: sudo systemctl start ssh. "
-                "Increase timeout for long commands: ssh -o ConnectTimeout=30 user@TARGET_MACHINE. "
-                "Verify firewall allows port 22: sudo ufw status. If blocked: sudo ufw allow 22. "
-                "Prevention: Ensure SSH service is always running with sudo systemctl enable ssh. Set appropriate timeouts in scripts.",
-        "source": "NFS Configuration Error #024 - SSH Timeout"
+        "text": "ERROR: nfs module is not loaded in the Docker host's kernel (try: modprobe nfs).",      
+        "source": "NFS Configuration Logs",
+        "diagnosis": "The host system is trying to use NFS functionality, but the required kernel module (nfs) is not loaded. Docker (or another service) cannot access NFS-based storage without it. Likely causes are NFS kernel module not loaded, NFS support not installed on the system, insufficient privileges to load kernel modules, or running inside a minimal/stripped-down OS. ",
+        "solution": "Try loading the NFS kernel module dynamically without reboot (sudo modprobe nfs). Verify the module is loaded (lsmod | grep nfs). Install NFS utilities if missing (sudo apt update && sudo apt install nfs-common). Retry command on target machine again. ",
+        "prevention": "Ensure NFS module loads automatically on startup (echo \"nfs\" | sudo tee -a /etc/modules). Verify dependencies before deployment. Avoid minimal OS images without NFS support. Ensure proper privileges, because kernel module loading requires root access. ",
+        "error_type": "Configuration error",
+        "severity": "Medium - Blocks NFS-based storage usage but does not affect unrelated system functions",
+        "retrieved_sources": "https://unix.stackexchange.com/questions/119725/fatal-module-nfs-not-found"
     },
     {
         "id": "err_025",
-        "text": "Error: ERROR: nfs module is not loaded in the Docker host's kernel (try: modprobe nfs). "
-                "Diagnosis: Host system is trying to use NFS functionality but required kernel module is not loaded. Docker or another service cannot access NFS-based storage without it. "
-                "Causes: NFS kernel module not loaded, NFS support not installed, insufficient privileges to load kernel modules, running inside minimal or stripped-down OS. "
-                "Solution: Load the NFS kernel module dynamically: sudo modprobe nfs. "
-                "Verify module is loaded: lsmod | grep nfs. "
-                "Install NFS utilities if missing: sudo apt update && sudo apt install nfs-common. "
-                "Retry command on target machine. "
-                "Prevention: Ensure NFS module loads automatically on startup: echo 'nfs' | sudo tee -a /etc/modules. "
-                "Verify NFS dependencies before deployment. Avoid minimal OS images without NFS support.",
-        "source": "NFS Configuration Error #025 - NFS Kernel Module Not Loaded"
+        "text": "exportfs: /etc/exports: unknown keyword <UNKNOWN_KEYWORD>. ", 
+        "source": "NFS Configuration Logs",
+        "diagnosis": "The exportfs command failed because the /etc/exports file contains an invalid NFS export option that is not recognized. NFS export options must be valid keywords such as rw, ro, sync, async, no_root_squash, etc. The parser failed while reading the file, so exports cannot be applied. Likely causes are typo in an export option, unsupported or invalid keyword, wrong syntax/format in /etc/exports, or mixing options from different NFS versions. ",
+        "solution": "Inspect the current NFS exports configuration (cat /etc/exports). Look for unknown or misspelled options/incorrect syntax and edit the file (sudo nano /etc/exports). Validate exports configuration (sudo exportfs -ra). Restart NFS service if needed (sudo systemctl restart nfs-kernel-server). ",
+        "prevention": "Follow correct syntax strictly. Avoid unknown or unsupported options. Validate after every change (sudo exportfs -ra). Backup /etc/exports before making changes. ",
+        "error_type": "Configuration error",
+        "severity": "Medium - NFS exports fail to load, shared directories become inaccessible but no direct system damage",
+        "retrieved_sources": "https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/5/html/deployment_guide/s1-nfs-server-config-exports"
     },
+    # --- Actual error logs for OS validation ---
     {
         "id": "err_026",
-        "text": "Error: exportfs: /etc/exports: unknown keyword UNKNOWN_KEYWORD. "
-                "Diagnosis: exportfs command failed because /etc/exports contains an invalid NFS export option not recognized by the parser. NFS exports cannot be applied. "
-                "Causes: typo in export option, unsupported or invalid keyword, wrong syntax or format in /etc/exports, mixing options from different NFS versions. "
-                "Solution: Inspect current NFS exports configuration: cat /etc/exports. "
-                "Look for unknown or misspelled options and edit: sudo nano /etc/exports. "
-                "Validate exports configuration: sudo exportfs -ra. "
-                "Restart NFS service if needed: sudo systemctl restart nfs-kernel-server. "
-                "Prevention: Follow correct NFS syntax strictly. Validate after every change with sudo exportfs -ra. Backup /etc/exports before making changes.",
-        "source": "NFS Configuration Error #026 - Invalid NFS Export Option"
+        "text": "ping: <INVALID_HOSTNAME>: Name or service not known.",      
+        "source": "OS Validation Logs",
+        "diagnosis": "The system cannot resolve the provided hostname. It failed to convert the name to IP address using DNS or local resolution. Likely causes are typo in hostname, DNS server not configured or unreachable, no internet/network connectivity, missing or incorrect /etc/hosts entry, or using a service name that does not exist. ",
+        "solution": "Test with a known valid domain (ping google.com). If it works, the original hostname is likely wrong. If it fails, there is no internet connectivity. Query DNS directly and try resolving the hostname to an IP (nslookup <HOSTNAME>). Check DNS configuration (cat /etc/resolv.conf). Add a temporary host entry if needed, which manually maps hostname to an IP (sudo nano /etc/hosts). Restart networking if DNS issue (sudo systemctl restart NetworkManager).",
+        "prevention": "Verify hostnames before use. Ensure DNS is configured properly by keeping valid nameservers in /etc/resolv.conf. Use IP addresses for critical operations.",
+        "error_type": "Network error",
+        "severity": "Medium - Network operations fail completely, but no direct system damage",
+        "retrieved_sources": "https://oneuptime.com/blog/post/2026-03-02-how-to-fix-name-or-service-not-known-errors-on-ubuntu/view"
     },
-
-    # --- OS Validation Errors ---
     {
         "id": "err_027",
-        "text": "Error: ping: INVALID_HOSTNAME: Name or service not known. "
-                "Diagnosis: System cannot resolve provided hostname. Failed to convert name to IP address using DNS or local resolution. "
-                "Causes: typo in hostname, DNS server not configured or unreachable, no network connectivity, missing or incorrect /etc/hosts entry, service name does not exist. "
-                "Solution: Test with a known valid domain: ping google.com. If it works, original hostname is wrong. If it fails, no internet connectivity. "
-                "Query DNS directly: nslookup HOSTNAME. "
-                "Check DNS configuration: cat /etc/resolv.conf. "
-                "Add temporary host entry if needed: sudo nano /etc/hosts. "
-                "Restart networking if DNS issue: sudo systemctl restart NetworkManager. "
-                "Prevention: Verify hostnames before use. Keep valid nameservers in /etc/resolv.conf. Use IP addresses for critical operations.",
-        "source": "OS Validation Error #027 - Name or Service Not Known"
+        "text": "Command exited with return code 2.",    
+        "source": "OS Validation Logs",
+        "diagnosis": "A command finished execution but returned a non-zero exit code, which indicates some kind of error. Specifically, exit code 2 usually indicates incorrect usage of a command, syntax error or invalid arguments, and sometimes a misconfiguration or missing file/option. Likely causes are wrong flags or parameters passed to a command, missing required arguments, tool-specific validation failure, or invalid file paths or inputs. ",
+        "solution": "Rerun the command to see the real error message above this return code. Print the last exit code (echo $?). Check command usage/help (<COMMAND> --help). Ensure required files actually exist (ls -l /path/to/file). ",
+        "prevention": "Always validate command syntax before running. Test commands incrementally. ",
+        "error_type": "Runtime error",
+        "severity": "Medium - indicates failure of a command which can break deployments, but no inherent system damage",
+        "retrieved_sources": "https://askubuntu.com/questions/892604/what-is-the-meaning-of-exit-0-exit-1-and-exit-2-in-a-bash-script"
     },
     {
         "id": "err_028",
-        "text": "Error: Command exited with return code 2. "
-                "Diagnosis: Command finished execution but returned exit code 2 indicating incorrect usage, syntax error, invalid arguments, misconfiguration, or missing file or option. "
-                "Causes: wrong flags or parameters passed, missing required arguments, tool-specific validation failure, invalid file paths or inputs. "
-                "Solution: Rerun command to see real error message above this return code. Print last exit code: echo $?. "
-                "Check command usage: COMMAND --help. "
-                "Ensure required files exist: ls -l /path/to/file. "
-                "Prevention: Always validate command syntax before running. Test commands incrementally.",
-        "source": "OS Validation Error #028 - Exit Code 2"
+        "text": "df: unrecognized option '<OPTION>'. ",     
+        "source": "OS Validation Logs",
+        "diagnosis": "The df command received a flag/option it does not support. The command-line parser does not recognize that argument. Likely causes are a typo in the option, using an option from a different OS, or running in a minimal environment where df supports fewer flags.",
+        "solution": "Check valid flags for the current df version (df --help). Try common valid options (df -h). Check df version (df --version). Install full utilities if needed (sudo apt update && sudo apt install coreutils). ",
+        "prevention": "Always check command compatibility. Use portable options and stick to widely supported flags like -h, -k. Avoid copying commands from incompatible systems. ",
+        "error_type": "Configuration error",
+        "severity": "Low - Command execution fails, but fix is straightforward and no damage to system/data occurs",
+        "retrieved_sources": "https://labex.io/tutorials/linux-how-to-understand-df-command-flags-431265"
     },
     {
         "id": "err_029",
-        "text": "Error: df: unrecognized option OPTION. "
-                "Diagnosis: df command received a flag or option it does not support. Command-line parser does not recognize the argument. "
-                "Causes: typo in the option, using an option from a different OS, running in minimal environment where df supports fewer flags. "
-                "Solution: Check valid flags for current df version: df --help. "
-                "Try common valid options: df -h. "
-                "Check df version: df --version. "
-                "Install full utilities if needed: sudo apt update && sudo apt install coreutils. "
-                "Prevention: Always check command compatibility. Use portable options like -h and -k. Avoid copying commands from incompatible systems.",
-        "source": "OS Validation Error #029 - df Unrecognized Option"
+        "text": "free: unrecognized option '<OPTION>'. ",
+        "source": "OS Validation Logs",
+        "diagnosis": "The free command received a flag it does not support. The command exists, but the environment's version does not recognize the option. Likely causes are typos in the option, using flags from another Linux version, running inside a minimal environment, incorrect flag syntax, or using an older version of free with limited features. ",
+        "solution": "Check which version of free is being used (free --version). Display all valid flags for the current version of the free command (free --help). Try common valid options that work on most systems (free -h). Install full utilities if needed (sudo apt update && sudo apt install procps). ",
+        "prevention": "Check command options before use. Avoid copying commands blindly across different OSes. Use widely supported options like -m. ",
+        "error_type": "Configuration error",
+        "severity": "Low - Command execution fails, but fix is straightforward and no damage to system/data occurs",
+        "retrieved_sources": "https://man7.org/linux/man-pages/man1/free.1.html"
     },
     {
         "id": "err_030",
-        "text": "Error: free: unrecognized option OPTION. "
-                "Diagnosis: free command received a flag it does not support. Command exists but environment version does not recognize the option. "
-                "Causes: typos in the option, using flags from another Linux version, running inside minimal environment, incorrect flag syntax, older version of free with limited features. "
-                "Solution: Check which version of free is being used: free --version. "
-                "Display all valid flags: free --help. "
-                "Try common valid options: free -h. "
-                "Install full utilities if needed: sudo apt update && sudo apt install procps. "
-                "Prevention: Check command options before use. Avoid copying commands blindly across different OSes. Use widely supported options like -m.",
-        "source": "OS Validation Error #030 - free Unrecognized Option"
+        "text": "curl: Failed to connect to localhost port <PORT>: Connection refused. ",  
+        "source": "OS Validation Logs",
+        "diagnosis": "The curl command failed because it could not establish a TCP connection to the specified host and port. The connection was actively refused by the target machine, indicating that no service is listening on the specified host and port, or a firewall is rejecting the connection. Likely causes are target service is not running, service is running on a different port, service crashed or exited, port is not exposed, or firewall rules are blocking the port. ",
+        "solution": "Check if any service is listening on the port (ss -tuln | grep <PORT>). If nothing shows, no service is running on that port. Check whether the required service is running (ps aux | grep <SERVICE_NAME>). Start the service if not running. Verify that the service is configured to run on the expected port (cat config.yaml). If using Docker, confirm that the container is running and check port mapping. ",
+        "prevention": "Always verify service is running before connecting; avoid blind curl requests. Use health checks to confirm service availability. ",
+        "error_type": "Network error",
+        "severity": "Medium - Service is unreachable and pipelines are broken, but no system damage",
+        "retrieved_sources": "https://oneuptime.com/blog/post/2026-01-24-fix-connection-refused-errors/view"
     },
     {
         "id": "err_031",
-        "text": "Error: curl: Failed to connect to localhost port PORT: Connection refused. "
-                "Diagnosis: curl command failed because it could not establish TCP connection to specified host and port. Connection actively refused meaning no service is listening on that port or firewall is rejecting it. "
-                "Causes: target service is not running, service is running on different port, service crashed, port not exposed, or firewall blocking the port. "
-                "Solution: Check if any service is listening on the port: ss -tuln | grep PORT. "
-                "Check if required service is running: ps aux | grep SERVICE_NAME. "
-                "Start the service if not running. "
-                "Verify service is configured to run on expected port: cat config.yaml. "
-                "If using Docker, confirm container is running and check port mapping. "
-                "Prevention: Always verify service is running before connecting. Use health checks to confirm service availability.",
-        "source": "OS Validation Error #031 - curl Connection Refused"
+        "text": "Command exited with return code 7. ", 
+        "source": "OS Validation Logs",
+        "diagnosis": "The command executed but failed with exit code 7. For curl commands, exit code 7 specifically indicates a failure to connect to the host (connection refused, host unreachable, or timeout). For other commands, exit code 7 may have different meanings depending on the application. Likely causes could be target service not running, wrong host or port, port is closed or not listening, or network/firewall restrictions. ",
+        "solution": "Identify which command failed (history | tail -n 5). If using curl, retry with verbose output (curl -v http://<HOST>:<PORT>). Check if service is running (ss -tuln | grep <PORT>). Check connectivity to confirm network reachability (ping <HOST>). If using Docker, ensure container is running and check port mapping. ",
+        "prevention": "Verify service before connecting. Use correct host and port. Confirm server readiness before requests. ",
+        "error_type": "Network error",
+        "severity": "Medium - Service is unreachable and pipelines are broken, but no system damage",
+        "retrieved_sources": "https://www.quora.com/How-do-I-resolve-cURL-Error-7-couldnt-connect-to-host"
     },
     {
         "id": "err_032",
-        "text": "Error: Command exited with return code 7. "
-                "Diagnosis: Command executed but failed with exit code 7. For curl, exit code 7 specifically indicates failure to connect to the host such as connection refused, host unreachable, or timeout. "
-                "Causes: target service not running, wrong host or port, port is closed or not listening, network or firewall restrictions. "
-                "Solution: Identify which command failed: history | tail -n 5. "
-                "If using curl, retry with verbose output: curl -v http://HOST:PORT. "
-                "Check if service is running: ss -tuln | grep PORT. "
-                "Check connectivity: ping HOST. "
-                "If using Docker, ensure container is running and check port mapping. "
-                "Prevention: Verify service before connecting. Use correct host and port. Confirm server readiness before requests.",
-        "source": "OS Validation Error #032 - Exit Code 7"
+        "text": "touch: cannot touch '<FILE>': Permission denied. ",
+        "source": "OS Validation Logs",
+        "diagnosis": "The touch command tried to create or modify a file, but the OS denied permission for that operation. Likely causes are user does not have write permission in the directory, file or directory is owned by another user like root, attempting to write in a restricted location (e.g. /root, /etc), file exists but is read-only or running inside a container with limited privileges. For example, /sys is a read-only virtual filesystem (sysfs). Regular users do not have write permissions in /sys. Even with sudo, arbitrary file creation in /sys is not allowed as it represents kernel objects. ",
+        "solution": "Check directory permissions to confirm whether write permission is present (ls -ld <DIRECTORY>). Check file ownership (ls -l <FILE>). Bypass permission restrictions if allowed by running the command as root (sudo touch <FILE>). Change permissions if ownership of the file is available (chmod u+w <FILE>). Change ownership of the file if needed (sudo chown $USER:$USER <FILE_OR_DIRECTORY>). Use a writable directory (touch ~/<FILE>). ",
+        "prevention": "Work in user-owned directories. Check permissions before writing. Set correct permissions during setup. ",
+        "error_type": "Permission error",
+        "severity": "Medium - prevents file creation/modification, but no system damage",
+        "retrieved_sources": "https://oneuptime.com/blog/post/2026-01-24-bash-permission-denied/view"
     },
     {
         "id": "err_033",
-        "text": "Error: touch: cannot touch FILE: Permission denied. "
-                "Diagnosis: touch command tried to create or modify a file but OS denied permission. "
-                "Causes: user does not have write permission in directory, file or directory owned by another user such as root, attempting to write in restricted location like /root or /etc or /sys, file is read-only, or running inside container with limited privileges. Note: /sys is a read-only virtual filesystem. Even with sudo, arbitrary file creation in /sys is not allowed as it represents kernel objects. "
-                "Solution: Check directory permissions: ls -ld DIRECTORY. "
-                "Check file ownership: ls -l FILE. "
-                "Run as root if allowed: sudo touch FILE. "
-                "Change permissions if you own the file: chmod u+w FILE. "
-                "Change ownership if needed: sudo chown $USER:$USER FILE_OR_DIRECTORY. "
-                "Use a writable directory: touch ~/FILE. "
-                "Prevention: Work in user-owned directories. Check permissions before writing. Set correct permissions during setup.",
-        "source": "OS Validation Error #033 - Permission Denied touch"
+        "text": "Command exited with return code 3. ",
+        "source": "OS Validation Logs",
+        "diagnosis:": "A command executed but returned exit code 3, indicating failure. The exact meaning depends on the specific command/tool. Likely causes are service or process is not running, invalid state for the requested operation, or configuration or runtime condition not satisfied. For systemctl is-active <SERVICE>, return code 3 means the service is inactive or does not exist. ",
+        "solution": "Identify the command that failed (history | tail -n 5). Verify the correct service name (systemctl list-units --type=service --all). Check if the service exists in systemd (systemctl list-unit-files). Use correct service name. Install the service if needed (sudo apt update && sudo apt install <SERVICE>). Check the service status to get detailed information about why it might be inactive (systemctl status <SERVICE_NAME>). ",
+        "prevention": "Validate service existence before checking status. Use idempotent checks that handle missing services gracefully. ",
+        "error_type": "Configuration error",
+        "severity": "Low - easily fixed by using correct service name or installing the service, no system impact",
+        "retrieved_sources": "https://man7.org/linux/man-pages/man1/systemctl.1.html"
     },
     {
         "id": "err_034",
-        "text": "Error: Command exited with return code 3. "
-                "Diagnosis: Command executed but returned exit code 3 indicating failure. For systemctl is-active SERVICE, return code 3 means the service is inactive or does not exist. "
-                "Causes: service or process is not running, invalid state for the requested operation, configuration or runtime condition not satisfied. "
-                "Solution: Identify the command that failed: history | tail -n 5. "
-                "Verify the correct service name: systemctl list-units --type=service --all. "
-                "Check if service exists in systemd: systemctl list-unit-files. "
-                "Use correct service name. Install the service if needed: sudo apt update && sudo apt install SERVICE. "
-                "Check service status for detailed information: systemctl status SERVICE_NAME. "
-                "Prevention: Validate service existence before checking status. Use idempotent checks that handle missing services gracefully.",
-        "source": "OS Validation Error #034 - Exit Code 3"
+        "text": "SSH operator error: exit status = 7",
+        "source": "OS Validation Logs",
+        "diagnosis": "The command executed but failed with exit code 7. For curl commands, exit code 7 specifically indicates a failure to connect to the host (connection refused, host unreachable, or timeout). For other commands, exit code 7 may have different meanings depending on the application. Likely causes could be target service not running, wrong host or port, port is closed or not listening, or network/firewall restrictions.",
+        "solution": "Identify which command failed (history | tail -n 5). If using curl, retry with verbose output (curl -v http://<HOST>:<PORT>). Check if service is running (ss -tuln | grep <PORT>). Check connectivity to confirm network reachability (ping <HOST>). If using Docker, ensure container is running and check port mapping.",
+        "prevention": "Verify service before connecting. Use correct host and port. Confirm server readiness before requests.",
+        "error_type": "Network error",
+        "severity": "Medium - Service is unreachable and pipelines are broken, but no system damage",
+        "retrieved_sources": "https://www.quora.com/How-do-I-resolve-cURL-Error-7-couldnt-connect-to-host"
+    },
+    {
+        "id": "err_035",
+        "text": "SSH operator error: exit status = 1",
+        "source": "OS Validation Logs",
+        "diagnosis": "This is a generic failure message. The exact cause can be found in earlier logs.",
+        "solution": "Check earlier logs for ERRORS/Exception. Find the root cause and fix the underlying issue.",
+        "prevention": "Log detailed command output (stdout + stderr). Add explicit error messages in scripts.",
+        "error_type": "Execution error",
+        "severity": "Medium - Task failed, but reason is not present in the error message itself ",
+        "retrieved_sources": "https://stackoverflow.com/questions/20965762/meaning-of-exit-status-1-returned-by-linux-command"
     },
 ]
 
@@ -475,107 +457,25 @@ def get_embedding_function():
     """Returns an embedding function for ChromaDB with offline fallback."""
     if os.getenv("RAG_FORCE_LOCAL_EMBEDDINGS", "").lower() in {"1", "true", "yes"}:
         print("[KnowledgeBase] Using forced local hash embeddings.")
-
-        class LocalHashEmbeddingFunction:
-            def name(self) -> str:
-                return "local-hash"
-
-            def embed_query(self, input) -> List[List[float]]:
-                return self(input)
-
-            def embed_documents(self, input: List[str]) -> List[List[float]]:
-                return self(input)
-
-            def __call__(self, input: List[str]) -> List[List[float]]:
-                vectors = []
-                for text in _normalize_embedding_input(input):
-                    dims = 128
-                    vector = [0.0] * dims
-                    tokens = re.findall(r"[A-Za-z0-9_./:-]+", text.lower())
-                    if not tokens:
-                        vectors.append(vector)
-                        continue
-
-                    for token in tokens:
-                        digest = hashlib.sha256(token.encode("utf-8")).digest()
-                        index = int.from_bytes(digest[:4], "big") % dims
-                        sign = 1.0 if digest[4] % 2 == 0 else -1.0
-                        weight = 1.0 + (digest[5] / 255.0)
-                        vector[index] += sign * weight
-
-                    norm = math.sqrt(sum(value * value for value in vector)) or 1.0
-                    vectors.append([value / norm for value in vector])
-                return vectors
-
-        return LocalHashEmbeddingFunction()
+        return _make_local_hash_embedding_function()
 
     try:
         return embedding_functions.SentenceTransformerEmbeddingFunction(
             model_name="all-mpnet-base-v2",
-            cache_folder="./model_cache"
+            cache_folder="./model_cache",
         )
     except Exception as exc:
         print(f"[KnowledgeBase] Falling back to local hash embeddings: {exc}")
-
-        class LocalHashEmbeddingFunction:
-            def name(self) -> str:
-                return "local-hash"
-
-            def embed_query(self, input) -> List[List[float]]:
-                return self(input)
-
-            def embed_documents(self, input: List[str]) -> List[List[float]]:
-                return self(input)
-
-            def __call__(self, input: List[str]) -> List[List[float]]:
-                vectors = []
-                for text in _normalize_embedding_input(input):
-                    dims = 128
-                    vector = [0.0] * dims
-                    tokens = re.findall(r"[A-Za-z0-9_./:-]+", text.lower())
-                    if not tokens:
-                        vectors.append(vector)
-                        continue
-
-                    for token in tokens:
-                        digest = hashlib.sha256(token.encode("utf-8")).digest()
-                        index = int.from_bytes(digest[:4], "big") % dims
-                        sign = 1.0 if digest[4] % 2 == 0 else -1.0
-                        weight = 1.0 + (digest[5] / 255.0)
-                        vector[index] += sign * weight
-
-                    norm = math.sqrt(sum(value * value for value in vector)) or 1.0
-                    vectors.append([value / norm for value in vector])
-                return vectors
-
-        return LocalHashEmbeddingFunction()
+        return _make_local_hash_embedding_function()
 
 
 def build_knowledge_base(persist_dir: str = "./chroma_db") -> chromadb.ClientAPI:
     """
-    Initializes ChromaDB, creates collections, and ingests data.
+    Initializes ChromaDB, creates collections, and ingests mock data.
     Safe to call multiple times — skips if already populated.
     """
     client = chromadb.PersistentClient(path=persist_dir)
     ef = get_embedding_function()
-
-    # --- HPE Docs Collection ---
-    docs_col = client.get_or_create_collection(
-        name=DOCS_COLLECTION,
-        embedding_function=ef,
-        metadata={"hnsw:space": "cosine"}
-    )
-
-    if docs_col.count() == 0:
-        print("[KnowledgeBase] Ingesting HPE documentation...")
-        docs_col.add(
-            ids=[d["id"] for d in MOCK_HPE_DOCS],
-            documents=[d["text"] for d in MOCK_HPE_DOCS],
-            metadatas=[{"source": d["source"]} for d in MOCK_HPE_DOCS],
-        )
-        print(f"[KnowledgeBase] Added {len(MOCK_HPE_DOCS)} HPE doc chunks.")
-    else:
-        print(f"[KnowledgeBase] HPE docs collection already has {docs_col.count()} entries.")
 
     # --- Past Errors Collection ---
     errors_col = client.get_or_create_collection(
@@ -589,34 +489,18 @@ def build_knowledge_base(persist_dir: str = "./chroma_db") -> chromadb.ClientAPI
         errors_col.add(
             ids=[e["id"] for e in MOCK_PAST_ERRORS],
             documents=[e["text"] for e in MOCK_PAST_ERRORS],
-            metadatas=[{"source": e["source"]} for e in MOCK_PAST_ERRORS],
+            metadatas=[{
+                "source": e["source"],
+                "diagnosis": e.get("diagnosis", ""),
+                "solution": e.get("solution", ""),
+                "prevention": e.get("prevention", ""),
+                "error_type": e.get("error_type", "Unknown"),
+                "severity": e.get("severity", ""),
+                "retrieved_sources": e.get("retrieved_sources", ""),
+            } for e in MOCK_PAST_ERRORS],
         )
         print(f"[KnowledgeBase] Added {len(MOCK_PAST_ERRORS)} past error entries.")
     else:
         print(f"[KnowledgeBase] Past errors collection already has {errors_col.count()} entries.")
 
     return client
-
-
-def retrieve_context(
-    query: str,
-    client: chromadb.ClientAPI,
-    top_k: int = 3
-) -> List[Dict]:
-    """
-    Retrieves top_k relevant chunks from both collections for the given query.
-    Returns combined list of results with source info.
-    """
-    ef = get_embedding_function()
-    results = []
-
-    for collection_name in [DOCS_COLLECTION, ERRORS_COLLECTION]:
-        col = client.get_collection(name=collection_name, embedding_function=ef)
-        query_results = col.query(
-            query_texts=[query],
-            n_results=min(top_k, col.count()),
-        )
-        for doc, meta in zip(query_results["documents"][0], query_results["metadatas"][0]):
-            results.append({"text": doc, "source": meta.get("source", "Unknown")})
-
-    return results

@@ -1,0 +1,13 @@
+[ ] — open, not yet addressed 
+[~] — in progress 
+[x] — resolved
+
+Current status - [ ]
+The problem:
+agents/crew_agents.py is never called anywhere in the codebase, making it dead code.
+  
+Why it's a problem:
+The individual agent files (run_workflow_agent.py, monitor_workflow_agent.py etc.) already contain the actual logic and are being called elsewhere to run the pipeline (api/main.py). This file wraps all of them into a CrewAI orchestration layer that is not invoked - so two parallel versions of the same pipeline exist, only one of which actually runs. 
+
+What should be done:
+Delete this file entirely.

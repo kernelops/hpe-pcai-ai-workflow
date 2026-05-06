@@ -1,0 +1,13 @@
+[ ] — open, not yet addressed 
+[~] — in progress 
+[x] — resolved
+
+Current status: [ ]
+The problem:
+agents/workflow_graph.py is never called anywhere in the codebase, making it dead code.
+  
+Why it's a problem:
+The individual agent files (run_workflow_agent.py, monitor_workflow_agent.py etc.) already contain the actual logic and are being called elsewhere to run the pipeline (api/main.py). 
+
+What should be done:
+Delete this file entirely. 

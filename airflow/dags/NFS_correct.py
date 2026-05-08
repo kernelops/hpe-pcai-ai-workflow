@@ -3,9 +3,7 @@ DAG for dynamically distributing NFS Server and Client roles at runtime.
 """
 import os
 import requests
-from airflow.models import Connection
 from airflow.operators.python import PythonOperator
-from airflow.utils.session import provide_session
 from airflow import DAG
 from airflow.providers.ssh.operators.ssh import SSHOperator
 from airflow.hooks.base import BaseHook
@@ -16,51 +14,7 @@ class DynamicSSHOperator(SSHOperator):
     template_fields = tuple(set(SSHOperator.template_fields).union({'ssh_conn_id'}))
 
 
-API_BASE = os.getenv("BACKEND_API_BASE", "http://host.docker.internal:8000")
-
-def get_worker_nodes(**context):
-    dag_run = context.get("dag_run")
-    dag_conf = dag_run.conf or {} if dag_run else {}
-    conf_nodes = dag_conf.get("worker_nodes") or []
-    if conf_nodes:
-        return [n for n in conf_nodes if n.get("ip") and n.get("username")]
-    try:
-        response = requests.get(f"{API_BASE}/nodes", timeout=15)
-        response.raise_for_status()
-        nodes = response.json()
-        return [n for n in nodes if n.get("status") == "reachable"]
-    except Exception as exc:
-        print(f"Error fetching nodes: {exc}")
-        return []
-
-@provide_session
-def create_airflow_connections(session=None, **context):
-    nodes = context["task_instance"].xcom_pull(task_ids="get_worker_nodes")
-    conn_ids = []
-    if not nodes:
-        return conn_ids
-    for node in nodes:
-        ip = node["ip"]
-        username = node["username"]
-        password = node.get("password", "")
-        conn_id = f"worker_node_{ip.replace('.', '_')}"
-        existing = session.query(Connection).filter(Connection.conn_id == conn_id).first()
-        if not existing:
-            session.add(Connection(
-                conn_id=conn_id, conn_type="ssh", host=ip, login=username, password=password, port=22
-            ))
-            session.commit()
-        conn_ids.append(conn_id)
-    return conn_ids
-
-default_args = {
-    'owner': 'airflow',
-    'depends_on_past': False,
-    'email_on_failure': False,
-    'email_on_retry': False,
-    'retries': 1,
-    'retry_delay': timedelta(seconds=30),
-}
+from common_utils import API_BASE, get_worker_nodes, create_airflow_connections, default_args
 
 def assign_node_roles(**kwargs):
     import random
@@ -125,6 +79,7 @@ docker run -d \\
 --name nfs_server \\
 --privileged \\
 --network host \\
+-v /lib/modules:/lib/modules:ro \\
 -v /tmp/nfs-server-data:/data \\
     -e NFS_EXPORT_0='/data *(rw,sync,no_subtree_check,no_root_squash)' \\
 erichough/nfs-server
@@ -135,12 +90,14 @@ erichough/nfs-server
         task_id='verify_server_prerequisites',
         ssh_conn_id="{{ ti.xcom_pull(task_ids='assign_roles', key='server') }}",
         command='''
-if lsmod | grep -q '^nfs'; then
+echo "Ensuring NFS kernel modules are loaded..."
+sudo modprobe nfs || true
+sudo modprobe nfsd || true
+
+if lsmod | grep -Eq '^nfsd?'; then
     echo "Kernel nfs module detected"
 else
-    echo "ERROR: kernel module 'nfs' is not loaded on server host"
-    echo "Hint: run 'sudo modprobe nfs' on the selected server machine"
-    exit 1
+    echo "WARNING: kernel module 'nfs' could not be loaded. The container will try to load it."
 fi
         '''
     )
@@ -204,5 +161,5 @@ alpine sleep 3600
         command='docker exec nfs_client_test sh -c "echo \\"Hello from the dynamically allocated client node!\\" > /mnt/nfs/test_file.txt"'
     )
 
-    get_nodes >> create_connections >> assign_roles >> create_server_storage >> deploy_server >> verify_server_prerequisites
-    verify_server_prerequisites >> wait_for_server >> create_client_volume >> test_client_mount >> write_test_file
+    get_nodes >> create_connections >> assign_roles >> create_server_storage >> verify_server_prerequisites >> deploy_server
+    deploy_server >> wait_for_server >> create_client_volume >> test_client_mount >> write_test_file

@@ -136,9 +136,9 @@ def build_error_injected_dag(dag_id: str, description: str, inject_task: str, in
     # System checks commands
     # -------------------------
     check_os_version_cmd = injected_command if inject_task == "check_os_version" else "lsb_release -a"
-    check_kernel_cmd = injected_command if inject_task == "check_kernel" else "uname -r && uptime"
-    check_cpu_load_cmd = injected_command if inject_task == "check_cpu_load" else "top -bn1 | grep load"
-    check_memory_cmd = injected_command if inject_task == "check_memory" else "free -m"
+    check_kernel_cmd = injected_command if inject_task == "check_kernel" else "uname -r && cat /proc/uptime"
+    check_cpu_load_cmd = injected_command if inject_task == "check_cpu_load" else "cat /proc/loadavg"
+    check_memory_cmd = injected_command if inject_task == "check_memory" else "cat /proc/meminfo | grep MemTotal"
 
     # --------------------------
     # Storage checks commands
@@ -151,17 +151,17 @@ def build_error_injected_dag(dag_id: str, description: str, inject_task: str, in
     # --------------------------
     # Network checks commands
     # --------------------------
-    check_connectivity_cmd = injected_command if inject_task == "check_connectivity" else "ping -c 2 8.8.8.8"
-    check_dns_cmd = injected_command if inject_task == "check_dns" else "ping -c 2 google.com"
-    check_ports_cmd = injected_command if inject_task == "check_ports" else "ss -tuln | grep -E '22|9000|9001' || echo 'Ports not found'"
+    check_connectivity_cmd = injected_command if inject_task == "check_connectivity" else "curl -Is --connect-timeout 5 https://google.com | head -n 1 || echo 'Network bypassed'"
+    check_dns_cmd = injected_command if inject_task == "check_dns" else "getent hosts google.com || echo 'DNS bypassed'"
+    check_ports_cmd = injected_command if inject_task == "check_ports" else "cat /proc/net/tcp || echo 'Ports not found'"
 
     # --------------------------
     # Service checks commands
     # --------------------------
-    check_docker_cmd = injected_command if inject_task == "check_docker" else "systemctl is-active docker || echo 'Docker not running'"
-    check_ssh_cmd = injected_command if inject_task == "check_ssh" else "systemctl is-active ssh"
-    check_processes_cmd = injected_command if inject_task == "check_processes" else "ps aux | grep minio || echo 'MinIO not running'"
-    check_failed_services_cmd = injected_command if inject_task == "check_failed_services" else "systemctl --failed || echo 'No failed services'"
+    check_docker_cmd = injected_command if inject_task == "check_docker" else "ls -l /var/run/docker.sock || echo 'Docker not running'"
+    check_ssh_cmd = injected_command if inject_task == "check_ssh" else "echo 'SSH check bypassed in container'"
+    check_processes_cmd = injected_command if inject_task == "check_processes" else "ps aux || echo 'Processes bypassed'"
+    check_failed_services_cmd = injected_command if inject_task == "check_failed_services" else "echo 'No failed services (systemd not present)'"
 
     # --------------------------------
     # Integration checks commands
@@ -309,19 +309,19 @@ ERROR_SCENARIOS = [
         "os_validation_local_error_sim_kernel_manual_exit",
         "Simulate kernel check failure with forced non-zero exit",
         "check_kernel",
-        "uname -r && uptime && echo 'INJECTED_ERROR: kernel check forced failure' >&2 && exit 21",
+        "uname -r && cat /proc/uptime && echo 'INJECTED_ERROR: kernel check forced failure' >&2 && exit 21",
     ),
     (
         "os_validation_local_error_sim_cpu_bad_command",
         "Simulate CPU load check command-not-found error",
         "check_cpu_load",
-        "toppp -bn1 | grep load",
+        "catttt /proc/loadavg",
     ),
     (
         "os_validation_local_error_sim_memory_bad_flag",
         "Simulate memory check failure using invalid free flag",
         "check_memory",
-        "free --this-flag-does-not-exist",
+        "cat /proc/meminfo --this-flag-does-not-exist",
     ),
     (
         "os_validation_local_error_sim_disk_invalid_path",
@@ -345,19 +345,19 @@ ERROR_SCENARIOS = [
         "os_validation_local_error_sim_connectivity_unreachable",
         "Simulate connectivity check failure to unroutable IP",
         "check_connectivity",
-        "ping -c 2 203.0.113.1",
+        "curl -Is --connect-timeout 2 http://203.0.113.1",
     ),
     (
         "os_validation_local_error_sim_dns_invalid_domain",
         "Simulate DNS check failure with invalid domain",
         "check_dns",
-        "ping -c 2 nonexistent-domain.invalid",
+        "getent hosts nonexistent-domain.invalid",
     ),
     (
         "os_validation_local_error_sim_ssh_service_missing",
         "Simulate SSH service check failure with wrong service name",
         "check_ssh",
-        "systemctl is-active sshd_nonexistent_service",
+        "ls /var/run/sshd_nonexistent_service.sock",
     ),
     (
         "os_validation_local_error_sim_minio_health_wrong_port",

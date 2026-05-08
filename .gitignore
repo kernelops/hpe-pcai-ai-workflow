@@ -39,3 +39,8 @@ backend/venv/
 frontend/node_modules/
 frontend/dist/
 model_cache/
+
+# Doxygen outputs and config
+Doxyfile
+html/
+latex/

@@ -14,9 +14,21 @@ Author: Infrastructure Simulation Project
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.providers.ssh.operators.ssh import SSHOperator
+from airflow.operators.python import PythonOperator
 from airflow.utils.trigger_rule import TriggerRule
 
-SSH_CONN_ID = "remote_os_ssh"
+from common_utils import get_worker_nodes, create_airflow_connections, default_args
+
+class DynamicSSHOperator(SSHOperator):
+    template_fields = tuple(set(SSHOperator.template_fields).union({'ssh_conn_id'}))
+
+def assign_host_node(**kwargs):
+    nodes = kwargs['ti'].xcom_pull(task_ids='get_worker_nodes')
+    if not nodes:
+        raise ValueError("No reachable worker nodes available!")
+    host_conn_id = f"worker_node_{nodes[0]['ip'].replace('.', '_')}"
+    print(f"Assigned host connection: {host_conn_id}")
+    kwargs['ti'].xcom_push(key='host', value=host_conn_id)
 
 DEFAULT_ARGS = {
     "owner": "infra-team",
@@ -54,12 +66,27 @@ Configure an SSH Connection in Airflow with Connection ID: `remote_os_ssh`
     """,
 ) as dag:
 
+    get_nodes = PythonOperator(
+        task_id="get_worker_nodes",
+        python_callable=get_worker_nodes,
+    )
+
+    create_connections = PythonOperator(
+        task_id="create_airflow_connections",
+        python_callable=create_airflow_connections,
+    )
+
+    assign_host = PythonOperator(
+        task_id='assign_host',
+        python_callable=assign_host_node,
+    )
+
     # ─────────────────────────────────────────────────────────────
     # STEP 1: VERIFY & INSTALL HOST PREREQUISITES
     # ─────────────────────────────────────────────────────────────
-    install_host_prerequisites = SSHOperator(
+    install_host_prerequisites = DynamicSSHOperator(
         task_id="install_host_prerequisites",
-        ssh_conn_id=SSH_CONN_ID,
+        ssh_conn_id="{{ ti.xcom_pull(task_ids='assign_host', key='host') }}",
         command=(
             "set -e; "
             "echo '[INFO] Installing KVM/Libvirt prerequisites on Host Computer...'; "
@@ -73,9 +100,9 @@ Configure an SSH Connection in Airflow with Connection ID: `remote_os_ssh`
         cmd_timeout=600,
     )
 
-    download_os_image = SSHOperator(
+    download_os_image = DynamicSSHOperator(
         task_id="download_os_image",
-        ssh_conn_id=SSH_CONN_ID,
+        ssh_conn_id="{{ ti.xcom_pull(task_ids='assign_host', key='host') }}",
         command=(
             "set -e; "
             "echo '[INFO] Downloading Alpine Linux Virt ISO via wget...'; "
@@ -89,9 +116,9 @@ Configure an SSH Connection in Airflow with Connection ID: `remote_os_ssh`
     )
 
 
-    provision_target_vm = SSHOperator(
+    provision_target_vm = DynamicSSHOperator(
         task_id="provision_target_vm",
-        ssh_conn_id=SSH_CONN_ID,
+        ssh_conn_id="{{ ti.xcom_pull(task_ids='assign_host', key='host') }}",
         command=(
             "set -e; "
             "echo '[CLEANUP] Ensuring any prev. instances of iLO-Sim-VM are wiped...'; "
@@ -115,9 +142,9 @@ Configure an SSH Connection in Airflow with Connection ID: `remote_os_ssh`
     )
 
 
-    monitor_os_boot = SSHOperator(
+    monitor_os_boot = DynamicSSHOperator(
         task_id="monitor_os_boot",
-        ssh_conn_id=SSH_CONN_ID,
+        ssh_conn_id="{{ ti.xcom_pull(task_ids='assign_host', key='host') }}",
         command=(
             "set -e; "
             "echo '[TELEMETRY] Simulating iLO remote power state monitoring...'; "
@@ -137,9 +164,9 @@ Configure an SSH Connection in Airflow with Connection ID: `remote_os_ssh`
     )
 
 
-    validate_vm_resources = SSHOperator(
+    validate_vm_resources = DynamicSSHOperator(
         task_id="validate_vm_resources",
-        ssh_conn_id=SSH_CONN_ID,
+        ssh_conn_id="{{ ti.xcom_pull(task_ids='assign_host', key='host') }}",
         command=(
             "set -e; "
             "echo '[VALIDATE] Verifying HW resource allocations via Hypervisor...'; "
@@ -162,9 +189,9 @@ Configure an SSH Connection in Airflow with Connection ID: `remote_os_ssh`
     )
 
  
-    cleanup_target_vm = SSHOperator(
+    cleanup_target_vm = DynamicSSHOperator(
         task_id="cleanup_target_vm",
-        ssh_conn_id=SSH_CONN_ID,
+        ssh_conn_id="{{ ti.xcom_pull(task_ids='assign_host', key='host') }}",
         command=(
             "echo '[CLEANUP] Wiping the simulated Target VM and detached media...'; "
             "sudo virsh destroy ilo-sim-vm 2>/dev/null || true; "
@@ -178,7 +205,10 @@ Configure an SSH Connection in Airflow with Connection ID: `remote_os_ssh`
 
 
     (
-        cleanup_target_vm
+        get_nodes
+        >> create_connections
+        >> assign_host
+        >> cleanup_target_vm
         >> install_host_prerequisites 
         >> download_os_image 
         >> provision_target_vm 

@@ -592,7 +592,11 @@ def list_airflow_dags():
             description=item.get("description"),
         )
         for item in dag_items
-        if item.get("dag_id")
+        if item.get("dag_id") 
+        and not any(tag.get("name", "") == "example" for tag in item.get("tags", []))
+        and not any(kw in item.get("dag_id").lower() for kw in [
+            "example", "tutorial", "dataset", "consume", "produce", "latest_only", "timetable"
+        ])
     ]
 
 

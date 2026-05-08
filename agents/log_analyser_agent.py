@@ -34,7 +34,7 @@ class LogAnalyserAgent:
             else:
                 print(f"[LogAnalyser] RAG API error: {r.status_code} {r.text}")
         except Exception as e:
-            print(f"[LogAnalyser] RAG unavailable or timed out, using LLM only: {e}")
+            print(f"[LogAnalyser] RAG unavailable, using LLM only: {e}")
         return {}
 
     def _format_rag_context(self, rag_analysis: dict) -> str:

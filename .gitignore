@@ -44,7 +44,3 @@ model_cache/
 Doxyfile
 html/
 latex/
-
-# Package Locks
-package-lock.json
-frontend/package-lock.json

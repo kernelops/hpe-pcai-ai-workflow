@@ -30,8 +30,10 @@ High-level flow:
 2. Validate SSH reachability.
 3. Start the Airflow deployment DAG from the UI.
 4. Backend streams combined logs from Airflow.
-5. On failure, backend sends the failed task log block to Agent Ops.
-6. Agent pipeline calls RAG, performs root-cause reasoning, and returns remediation guidance.
+5. On failure, backend sends the failed task log block to Agent Ops (Phase 1).
+6. Agent pipeline calls RAG, performs root-cause reasoning, and issues alerts (Phase 1).
+7. Hybrid Autofix (Phase 2) analyzes the DAG source code. If logic is broken, it patches the DAG and triggers a remediation run (Attempt 1).
+8. If the issue requires OS-level healing, it connects via SSH to apply fixes directly on the worker nodes and runs validation checks (Attempt 2).
 
 ## Repository Layout
 
@@ -42,6 +44,7 @@ hpe-pcai-ai-workflow/
 ├── api/                     # Agent Ops API
 ├── backend/                 # Deployment/backend API used by the frontend
 ├── common/                  # Shared config and models
+├── docs/                    # Detailed technical documentation
 ├── frontend/                # React + Vite UI
 ├── rag/                     # RAG API, knowledge base, retrieval pipeline
 ├── chroma_db/               # Local Chroma persistence

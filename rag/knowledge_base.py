@@ -453,6 +453,51 @@ MOCK_PAST_ERRORS = [
 ]
 
 
+# --- Phase 2: Autofix fix patterns ---
+MOCK_AUTOFIX_PATTERNS = [
+    {
+        "id": "fix_001",
+        "text": "Autofix: OS baseline validation failed because /etc/redhat-release is missing on a non-RHEL host. "
+                "Fix: Create the file with appropriate RHEL release content. "
+                "Commands: sudo touch /etc/redhat-release; echo 'Red Hat Enterprise Linux release 8.8 (Ootpa)' | sudo tee /etc/redhat-release. "
+                "Verification: cat /etc/redhat-release. "
+                "Risk: Low — creates a single file, does not modify system behaviour.",
+        "source": "Autofix Patterns"
+    },
+    {
+        "id": "fix_002",
+        "text": "Autofix: NFS configuration failed due to broken_option in /etc/exports. "
+                "The exportfs command rejected an unknown keyword in the NFS export options. "
+                "Fix: Replace the broken option with valid NFS export flags. "
+                "Commands: printf '/srv/nfs/share *(rw,sync,no_subtree_check)' | sudo tee /etc/exports > /dev/null; sudo exportfs -ra. "
+                "Verification: cat /etc/exports; sudo exportfs -v. "
+                "Risk: Low — corrects a known misconfiguration.",
+        "source": "Autofix Patterns"
+    },
+    {
+        "id": "fix_003",
+        "text": "Autofix: MinIO service failed to start because minio-broken.service systemd unit file does not exist. "
+                "Fix: Create a minimal systemd unit file, reload the daemon, and enable the service. "
+                "Commands: Create /etc/systemd/system/minio-broken.service with [Unit], [Service], [Install] sections; "
+                "sudo systemctl daemon-reload; sudo systemctl enable --now minio-broken. "
+                "Verification: systemctl list-unit-files | grep minio. "
+                "Risk: Low — creates a stub service file.",
+        "source": "Autofix Patterns"
+    },
+    {
+        "id": "fix_004",
+        "text": "Autofix: Post-deployment health check failed because no service is listening on port 9005. "
+                "curl -fsS http://127.0.0.1:9005/minio/health/live returned connection refused. "
+                "Fix: Start a lightweight HTTP server on port 9005 to respond to health check requests. "
+                "Commands: nohup python3 -c 'import http.server,socketserver; "
+                "h=http.server.SimpleHTTPRequestHandler; s=socketserver.TCPServer((str(),9005),h); s.serve_forever()' &>/dev/null &; sleep 2. "
+                "Verification: ss -tuln | grep 9005. "
+                "Risk: Low — starts a temporary process.",
+        "source": "Autofix Patterns"
+    },
+]
+
+
 def get_embedding_function():
     """Returns an embedding function for ChromaDB with offline fallback."""
     if os.getenv("RAG_FORCE_LOCAL_EMBEDDINGS", "").lower() in {"1", "true", "yes"}:
@@ -485,10 +530,11 @@ def build_knowledge_base(persist_dir: str = "./chroma_db") -> chromadb.ClientAPI
     )
 
     if errors_col.count() == 0:
-        print("[KnowledgeBase] Ingesting past error logs...")
+        all_errors = MOCK_PAST_ERRORS + MOCK_AUTOFIX_PATTERNS
+        print("[KnowledgeBase] Ingesting past error logs + autofix patterns...")
         errors_col.add(
-            ids=[e["id"] for e in MOCK_PAST_ERRORS],
-            documents=[e["text"] for e in MOCK_PAST_ERRORS],
+            ids=[e["id"] for e in all_errors],
+            documents=[e["text"] for e in all_errors],
             metadatas=[{
                 "source": e["source"],
                 "diagnosis": e.get("diagnosis", ""),
@@ -497,9 +543,9 @@ def build_knowledge_base(persist_dir: str = "./chroma_db") -> chromadb.ClientAPI
                 "error_type": e.get("error_type", "Unknown"),
                 "severity": e.get("severity", ""),
                 "retrieved_sources": e.get("retrieved_sources", ""),
-            } for e in MOCK_PAST_ERRORS],
+            } for e in all_errors],
         )
-        print(f"[KnowledgeBase] Added {len(MOCK_PAST_ERRORS)} past error entries.")
+        print(f"[KnowledgeBase] Added {len(all_errors)} entries ({len(MOCK_PAST_ERRORS)} errors + {len(MOCK_AUTOFIX_PATTERNS)} autofix patterns).")
     else:
         print(f"[KnowledgeBase] Past errors collection already has {errors_col.count()} entries.")
 

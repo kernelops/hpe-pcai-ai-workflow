@@ -40,3 +40,11 @@ apache-airflow-client>=2.7.0
 
 # Notifications
 slack-sdk>=3.27.0
+
+# SSH for autofix execution (Phase 2)
+paramiko>=3.4.0
+
+# Enterprise job queues (Phase 3)
+redis>=5.0.0
+rq>=1.15.0
+paramiko==3.4.0

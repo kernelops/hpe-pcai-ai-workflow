@@ -39,3 +39,6 @@ backend/venv/
 frontend/node_modules/
 frontend/dist/
 model_cache/
+
+.pids/
+.service_logs/

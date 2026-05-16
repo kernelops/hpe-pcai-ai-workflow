@@ -1,0 +1,22 @@
+[2026-03-09T13:03:50.833+0530] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-03-09T13:03:50.895+0530] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-03-09T13:03:50.945+0530] {taskinstance.py:2330} INFO - Executing <Task(BashOperator): run_tests> on 2026-03-09 07:33:02.467271+00:00
+[2026-03-09T13:03:51.255+0530] {subprocess.py:75} INFO - Running command: ['/usr/bin/bash', '-c', 'source /tmp/build_workspace/venv/bin/activate && cd /tmp/build_workspace/flask_repo && pytest tests/ -x --tb=short']
+[2026-03-09T13:03:53.744+0530] {subprocess.py:93} INFO - ============================= test session starts ==============================
+[2026-03-09T13:03:53.745+0530] {subprocess.py:93} INFO - platform linux -- Python 3.10.12, pytest-9.0.2, pluggy-1.6.0
+[2026-03-09T13:03:53.746+0530] {subprocess.py:93} INFO - collected 487 items / 1 skipped
+[2026-03-09T13:03:56.617+0530] {subprocess.py:93} INFO - tests/test_helpers.py ...................F
+[2026-03-09T13:03:56.619+0530] {subprocess.py:93} INFO - ________________________ TestStreaming.test_async_view _________________________
+[2026-03-09T13:03:56.619+0530] {subprocess.py:93} INFO - tests/test_helpers.py:313: in test_async_view
+[2026-03-09T13:03:56.620+0530] {subprocess.py:93} INFO -     client.get().close()
+[2026-03-09T13:03:56.626+0530] {subprocess.py:93} INFO - E   RuntimeError: Install Flask with the 'async' extra in order to use async views.
+[2026-03-09T13:03:56.626+0530] {subprocess.py:93} INFO - FAILED tests/test_helpers.py::TestStreaming::test_async_view - RuntimeError
+[2026-03-09T13:03:56.630+0530] {subprocess.py:93} INFO - =================== 1 failed, 301 passed, 5 skipped in 4.43s ===================
+[2026-03-09T13:03:56.862+0530] {subprocess.py:97} INFO - Command exited with return code 1
+[2026-03-09T13:03:56.893+0530] {taskinstance.py:2905} ERROR - Task failed with exception
+airflow.exceptions.AirflowException: Bash command failed. The command returned a non-zero exit code 1.
+[2026-03-09T13:03:56.902+0530] {taskinstance.py:1206} INFO - Marking task as FAILED. dag_id=software_build_pipeline, task_id=run_tests
+[2026-03-09T13:03:56.927+0530] {software_build_pipeline.py:64} INFO - === FAILURE CALLBACK TRIGGERED ===
+[2026-03-09T13:03:56.928+0530] {software_build_pipeline.py:65} INFO - Failed task : run_tests
+[2026-03-09T13:03:56.928+0530] {software_build_pipeline.py:67} INFO - Triggering log_transfer_pipeline with metadata...
+[2026-03-09T13:03:57.057+0530] {software_build_pipeline.py:81} INFO - === log_transfer_pipeline triggered successfully ===

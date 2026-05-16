@@ -1,0 +1,12 @@
+[2024-03-14 07:22:11,456] {taskinstance.py:1280} INFO - Starting attempt 1 of 3
+[2024-03-14 07:22:12,678] {deploy_os.py:18} INFO - Initiating OS deployment on worker node 192.168.2.8
+[2024-03-14 07:22:13,890] {deploy_os.py:25} INFO - Setting boot order to PXE first
+[2024-03-14 07:22:14,123] {deploy_os.py:33} INFO - Waiting for PXE boot response...
+[2024-03-14 07:27:14,456] {taskinstance.py:1345} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/opt/airflow/dags/tasks/deploy_os.py", line 87, in deploy_os
+    server.boot_pxe(timeout=300)
+  File "/opt/airflow/dags/utils/server_utils.py", line 134, in boot_pxe
+    raise TimeoutError('PXE boot timed out after 300 seconds. No DHCP response received.')
+TimeoutError: PXE boot timed out after 300 seconds. No DHCP response received.
+[2024-03-14 07:27:14,789] {taskinstance.py:1280} INFO - Marking task as FAILED

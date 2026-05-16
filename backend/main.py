@@ -29,6 +29,7 @@ LLM_API_KEY = os.getenv("LLM_API_KEY", "")
 LLM_MODEL = os.getenv("LLM_MODEL", "gpt-4o-mini")
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://api.openai.com/v1")
 AGENT_OPS_API_URL = os.getenv("AGENT_OPS_API_URL", "http://127.0.0.1:8001/api/agents/analyze-failure")
+AGENT_OPS_BASE_URL = os.getenv("AGENT_OPS_BASE_URL", "http://127.0.0.1:8001")
 
 
 class WorkerNodeBase(BaseModel):
@@ -678,3 +679,80 @@ def summarize_logs_llm(payload: LogSummaryRequest):
 @app.post("/agent-ops/analyze")
 def analyze_agent_ops(payload: AgentOpsAnalyzeRequest):
     return _analyze_failed_run_with_agents(payload.run_id, payload.status, payload.logs)
+
+
+# ── Phase 2: Autofix proxy endpoint ──────────────────────────
+
+class AutofixProxyRequest(BaseModel):
+    run_id: str
+    status: str
+    logs: str
+    auto_approve: bool = True
+    mock: bool = False
+
+
+@app.post("/agent-ops/autofix")
+def trigger_autofix(payload: AutofixProxyRequest):
+    """
+    Phase 2: Run the full autofix pipeline via Agent Ops API.
+    Extracts failed tasks from logs, includes worker node info,
+    and proxies to the Agent Ops autofix-pipeline endpoint.
+    """
+    if not payload.logs or not payload.logs.strip():
+        raise HTTPException(status_code=400, detail="No logs provided")
+
+    failure_payloads = build_agent_failure_payloads(payload.logs)
+    if not failure_payloads:
+        raise HTTPException(
+            status_code=400,
+            detail="Unable to identify a failed task from the provided logs",
+        )
+
+    # Build worker node list from current in-memory nodes
+    node_list = [
+        {"ip": n.ip, "username": n.username, "password": n.password}
+        for n in worker_nodes
+        if n.status == "reachable"
+    ]
+
+    autofix_url = f"{AGENT_OPS_BASE_URL}/api/agents/autofix-pipeline"
+
+    try:
+        with httpx.Client(timeout=90.0) as client:
+            results = []
+
+            for fp in failure_payloads:
+                body = {
+                    "dag_id": AIRFLOW_DAG_ID,
+                    "dag_run_id": payload.run_id,
+                    "failed_task": fp.failed_task,
+                    "task_state": fp.task_state,
+                    "log_text": fp.log_text,
+                    "timestamp": fp.timestamp or datetime.utcnow().isoformat(),
+                    "worker_nodes": node_list,
+                    "auto_approve": payload.auto_approve,
+                    "mock": payload.mock,
+                }
+
+                resp = client.post(autofix_url, json=body)
+                if not resp.is_success:
+                    raise HTTPException(
+                        status_code=502,
+                        detail=f"Agent Ops autofix error: {resp.status_code} {resp.text}",
+                    )
+
+                result = resp.json()
+                result["analysis_task_id"] = fp.failed_task
+                results.append(result)
+
+            return {
+                "pipeline_status": "autofix_complete",
+                "dag_run_id": payload.run_id,
+                "autofix_count": len(results),
+                "results": results,
+            }
+    except httpx.RequestError as exc:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Unable to reach Agent Ops API: {exc}",
+        ) from exc

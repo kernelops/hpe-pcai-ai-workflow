@@ -54,6 +54,56 @@ const AGENT_OPS_PLACEHOLDER = {
       "Output will show alert status, approval requirement, and notification channel details"
     ]
   },
+  dag_analysis_agent: {
+    title: "DAG Analysis Agent",
+    status: "Placeholder",
+    summary:
+      "Will scan the DAG source code, query RAG for correct command syntax, and identify broken SSH commands.",
+    bullets: [
+      "Expected input: DAG Python source file",
+      "Output will include identified issues and corrected source code"
+    ]
+  },
+  dag_patch_agent: {
+    title: "DAG Patch Agent",
+    status: "Placeholder",
+    summary:
+      "Will write the corrected DAG as remediation_workflow.py and trigger it via the Airflow REST API.",
+    bullets: [
+      "Expected input: corrected DAG source from DAG Analysis Agent",
+      "Output will show DAG run outcome and any remaining failed tasks"
+    ]
+  },
+  fix_generator_agent: {
+    title: "Fix Generator Agent",
+    status: "Placeholder",
+    summary:
+      "Will analyse the root cause report, search the fix registry for known patterns, and generate concrete SSH fix commands.",
+    bullets: [
+      "Expected input: root cause report with classification and severity",
+      "Output will include fix commands, risk level, and approval requirement"
+    ]
+  },
+  fix_executor_agent: {
+    title: "Fix Executor Agent",
+    status: "Placeholder",
+    summary:
+      "Will execute the generated fix commands on target worker nodes via SSH and report per-command results.",
+    bullets: [
+      "Expected input: fix strategy with SSH commands and target nodes",
+      "Output will show command outputs, exit codes, and overall execution status"
+    ]
+  },
+  validation_agent: {
+    title: "Validation Agent",
+    status: "Placeholder",
+    summary:
+      "Will verify system health after the fix and check the HPC error queue for lingering failure logs.",
+    bullets: [
+      "Expected input: applied fix context and queue connection",
+      "Output will show verification verdict and any newly escalated errors"
+    ]
+  },
   final_summary: {
     title: "Combined Summary",
     status: "Pending API",
@@ -71,7 +121,12 @@ const AGENT_CARD_ORDER = [
   "monitor_agent",
   "log_analysis_agent",
   "root_cause_agent",
-  "alerting_agent"
+  "alerting_agent",
+  "dag_analysis_agent",
+  "dag_patch_agent",
+  "fix_generator_agent",
+  "fix_executor_agent",
+  "validation_agent"
 ];
 
 const LOG_PATTERNS = [
@@ -1333,7 +1388,7 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
   );
 }
 
-function AgentOpsView({ agentOpsState, onRetry, runId }) {
+function AgentOpsView({ agentOpsState, onRetry, runId, nodes }) {
   const isLoading = agentOpsState.status === "loading";
   const isReady = agentOpsState.status === "ready" && agentOpsState.data;
   const isError = agentOpsState.status === "error";
@@ -1345,6 +1400,88 @@ function AgentOpsView({ agentOpsState, onRetry, runId }) {
   const placeholderCards = Object.entries(AGENT_OPS_PLACEHOLDER)
     .filter(([key]) => key !== "final_summary")
     .map(([key, value]) => ({ key, ...value }));
+
+  // Phase 2: Autofix state per incident
+  const [autofixStates, setAutofixStates] = useState({});
+
+  // Phase 3: Queue status polling
+  const [queueData, setQueueData] = useState({ available: false, errors: [] });
+
+  useEffect(() => {
+    let intervalId;
+    const fetchQueueStatus = async () => {
+      try {
+        const agentApiBase = API_BASE.replace(/:8000\b/, ":8001");
+        const res = await fetch(`${agentApiBase}/api/agents/queue-status`);
+        if (res.ok) {
+          const data = await res.json();
+          setQueueData({ available: data.queue_available, errors: data.queued_errors || [] });
+        }
+      } catch (e) {
+        // silently ignore fetch errors for polling
+      }
+    };
+    fetchQueueStatus();
+    intervalId = setInterval(fetchQueueStatus, 5000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const triggerAutofix = async () => {
+    const firstAnalysis = analyses[0];
+    if (!firstAnalysis) return;
+
+    const failedTask = firstAnalysis?.combined_summary?.failed_task
+      || firstAnalysis?.monitor_agent?.output?.failed_task
+      || firstAnalysis?.analysis_task_id
+      || "task-0";
+    const logText = firstAnalysis?.log_analysis_agent?.output?.error_message
+      || firstAnalysis?.combined_summary?.error_message
+      || `Task ${failedTask} failed`;
+    const dagRunId = firstAnalysis?.workflow_agent?.output?.dag_run_id
+      || agentOpsState.data?.dag_run_id
+      || runId
+      || "mock_run";
+
+    setAutofixStates(prev => ({
+      ...prev,
+      global: { status: "loading", data: null, error: null }
+    }));
+
+    const agentApiBase = API_BASE.replace(/:8000\b/, ":8001");
+
+    try {
+      const response = await fetch(`${agentApiBase}/api/agents/autofix-pipeline`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          dag_id: "deployment_workflow",
+          dag_run_id: dagRunId,
+          failed_task: failedTask,
+          task_state: "failed",
+          log_text: logText,
+          timestamp: new Date().toISOString(),
+          worker_nodes: nodes || [],
+          auto_approve: true,
+          mock: false
+        })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || "Autofix failed");
+
+      setAutofixStates(prev => ({
+        ...prev,
+        global: { status: "ready", data: data, error: null }
+      }));
+    } catch (err) {
+      setAutofixStates(prev => ({
+        ...prev,
+        global: { status: "error", data: null, error: err.message }
+      }));
+    }
+  };
+
+  const globalAutofixState = autofixStates["global"];
+  const globalAutofixData = globalAutofixState?.data;
 
   return (
     <section className="panel">
@@ -1382,6 +1519,7 @@ function AgentOpsView({ agentOpsState, onRetry, runId }) {
           <span>Run Context</span>
           <span>Parsed Logs</span>
           <span>Agent Outputs</span>
+          <span>Autofix</span>
           <span>Final Brief</span>
         </div>
       </div>
@@ -1394,9 +1532,21 @@ function AgentOpsView({ agentOpsState, onRetry, runId }) {
             <div className="agent-summary">
               <div className="agent-summary-header">
                 <h3>Run Summary</h3>
-                <span className="agent-card-status">
-                  {agentOpsState.data?.failed_task_count || analyses.length} failures
-                </span>
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                  <span className="agent-card-status">
+                    {agentOpsState.data?.failed_task_count || analyses.length} failures
+                  </span>
+                  <button
+                    className="autofix-btn"
+                    onClick={() => triggerAutofix()}
+                    disabled={globalAutofixState?.status === "loading"}
+                    style={{ fontSize: '0.85rem', padding: '0.5rem 1.2rem' }}
+                  >
+                    {globalAutofixState?.status === "loading" ? "⏳ Analyzing & Fixing..." :
+                     globalAutofixState?.status === "ready" ? "✅ Autofix Complete" :
+                     "🔧 Apply Autofix (All Errors)"}
+                  </button>
+                </div>
               </div>
               <div className="agent-summary-grid">
                 <div className="agent-output-row">
@@ -1419,20 +1569,119 @@ function AgentOpsView({ agentOpsState, onRetry, runId }) {
             </div>
           </div>
 
+          {/* Global Autofix Error */}
+          {globalAutofixState?.status === "error" && (
+            <div className="error-message autofix-error" style={{ margin: '1rem 0' }}>
+              <span className="error-icon">⚠️</span>
+              Autofix failed: {globalAutofixState.error}
+            </div>
+          )}
+
+          {/* Global Autofix Results — DAG Analysis + DAG Patch + Attempt badges */}
+          {globalAutofixData && (
+            <div className="agentops-autofix-results" style={{ marginBottom: '1.5rem' }}>
+              {/* Attempt Status Badges */}
+              <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                {globalAutofixData.attempt_1 && (
+                  <span className={`agent-card-status ${globalAutofixData.attempt_1.status === 'success' ? 'status-fixed' : globalAutofixData.attempt_1.status === 'skipped' ? '' : 'status-failed'}`}
+                    style={{ padding: '0.4rem 1rem', borderRadius: '6px', fontSize: '0.85rem' }}>
+                    Attempt 1 (DAG Fix): {globalAutofixData.attempt_1.status === 'success' ? '✅ Success' :
+                      globalAutofixData.attempt_1.status === 'skipped' ? 'ℹ️ Skipped' : '❌ ' + (globalAutofixData.attempt_1.status || 'Failed')}
+                  </span>
+                )}
+                {globalAutofixData.attempt_2 && (
+                  <span className={`agent-card-status ${globalAutofixData.attempt_2.status === 'success' ? 'status-fixed' : 'status-failed'}`}
+                    style={{ padding: '0.4rem 1rem', borderRadius: '6px', fontSize: '0.85rem' }}>
+                    Attempt 2 (SSH Fix): {globalAutofixData.attempt_2.status === 'success' ? '✅ Success' : '❌ Failed'}
+                  </span>
+                )}
+              </div>
+
+              {/* Autofix Agent Cards */}
+              <div className="agentops-grid">
+                {["dag_analysis_agent", "dag_patch_agent", "fix_generator_agent", "fix_executor_agent", "validation_agent"].map((key) => {
+                  const cardData = globalAutofixData[key];
+                  if (!cardData) return null;
+                  const title = AGENT_OPS_PLACEHOLDER[key]?.title || key;
+                  return (
+                    <article key={`autofix-${key}`} className="agent-card agent-card-autofix">
+                      <div className="agent-card-header">
+                        <h3>{title}</h3>
+                        <span className="agent-card-status">Live</span>
+                      </div>
+                      <p className="agent-card-summary">{cardData.thinking?.[0] || "Agent completed."}</p>
+                      <ul className="agent-card-list">
+                        {(cardData.thinking || []).map((item, i) => (
+                          <li key={`autofix-${key}-${i}`}>{item}</li>
+                        ))}
+                      </ul>
+                      {cardData.output && (
+                        <div className="agent-output">
+                          {Object.entries(cardData.output).map(([k, v]) => (
+                            <div key={`autofix-${key}-${k}`} className="agent-output-row">
+                              <span>{k.replace(/_/g, " ")}</span>
+                              <strong>
+                                {Array.isArray(v) ? (v.length > 0 ? JSON.stringify(v) : "-") :
+                                 typeof v === 'object' && v !== null ? JSON.stringify(v) :
+                                 v === null || v === undefined || v === "" ? "-" :
+                                 typeof v === 'boolean' ? (v ? "true" : "false") : String(v)}
+                              </strong>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </article>
+                  );
+                })}
+              </div>
+
+              {/* Autofix Summary Card */}
+              {globalAutofixData.autofix_summary && (
+                <div className="agent-summary autofix-summary-card" style={{ marginTop: '1rem' }}>
+                  <div className="agent-summary-header">
+                    <h3>🔧 Autofix Summary</h3>
+                    <span className={`agent-card-status ${globalAutofixData.autofix_summary.final_status === 'fixed' ? 'status-fixed' : 'status-failed'}`}>
+                      {globalAutofixData.autofix_summary.final_status === 'fixed' ? '✅ All Errors Resolved' :
+                       globalAutofixData.autofix_summary.final_status === 'escalated' ? '🚨 Escalated to Human' : '❌ Fix Failed'}
+                    </span>
+                  </div>
+                  <div className="agent-summary-grid">
+                    {Object.entries(globalAutofixData.autofix_summary).map(([key, value]) => (
+                      <div key={`autofix-summary-${key}`} className="agent-output-row">
+                        <span>{key.replace(/_/g, " ")}</span>
+                        <strong>
+                          {value === true ? "Yes" : value === false ? "No" :
+                           value === null || value === undefined || value === "" ? "-" : String(value)}
+                        </strong>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="agentops-incidents">
             {analyses.map((analysis, index) => {
               const analysisTaskId =
                 analysis?.combined_summary?.failed_task ||
                 analysis?.analysis_task_id ||
                 `failure-${index + 1}`;
-              const cards = AGENT_CARD_ORDER.map((key) => ({
-                key,
-                title: AGENT_OPS_PLACEHOLDER[key]?.title || key,
-                status: "Live",
-                summary: analysis[key]?.thinking?.[0] || "No agent summary available.",
-                bullets: analysis[key]?.thinking || ["Agent completed without extra commentary."],
-                output: analysis[key]?.output || null,
-              }));
+
+              // Phase 1 cards only — autofix cards are now global above
+              const cards = AGENT_CARD_ORDER.filter(k =>
+                !["dag_analysis_agent", "dag_patch_agent", "fix_generator_agent", "fix_executor_agent", "validation_agent"].includes(k)
+              ).map((key) => {
+                return {
+                  key,
+                  title: AGENT_OPS_PLACEHOLDER[key]?.title || key,
+                  status: "Live",
+                  summary: analysis[key]?.thinking?.[0] || "No agent summary available.",
+                  bullets: analysis[key]?.thinking || ["Agent completed without extra commentary."],
+                  output: analysis[key]?.output || null,
+                };
+              }).filter(Boolean);
+
               const combinedSummary = analysis?.combined_summary || null;
 
               return (
@@ -1442,7 +1691,9 @@ function AgentOpsView({ agentOpsState, onRetry, runId }) {
                       <div className="agentops-kicker">Failed Task {index + 1}</div>
                       <h3>{analysisTaskId}</h3>
                     </div>
-                    <span className="agent-card-status">{combinedSummary?.severity || "ready"}</span>
+                    <div className="agentops-incident-actions">
+                      <span className="agent-card-status">{combinedSummary?.severity || "ready"}</span>
+                    </div>
                   </div>
 
                   <div className="agentops-grid">
@@ -1504,6 +1755,89 @@ function AgentOpsView({ agentOpsState, onRetry, runId }) {
               );
             })}
           </div>
+          
+          {/* Phase 3: Escalated Incidents from Queue */}
+          {queueData.errors.length > 0 && (
+            <div className="agentops-incidents">
+              <div className="agent-summary-header" style={{ marginTop: '2rem' }}>
+                <h3>Escalated Queue Incidents</h3>
+                <span className="agent-card-status status-failed">{queueData.errors.length} in queue</span>
+              </div>
+              {queueData.errors.map((qErr, idx) => {
+                const analysisTaskId = qErr.task_id || `queue-${idx}`;
+                const autofixState = autofixStates[analysisTaskId];
+                
+                // Create a mock analysis object to pass to triggerAutofix
+                const mockAnalysis = {
+                  combined_summary: {
+                    failed_task: qErr.task_id,
+                    error_message: qErr.log_text,
+                    error_type: "QueueEscalation",
+                    root_cause: "Lingering error in HPC queue"
+                  }
+                };
+
+                return (
+                  <section key={`q-${qErr.job_id}`} className="agentops-incident" style={{ borderColor: '#f59e0b' }}>
+                    <div className="agentops-incident-header">
+                      <div>
+                        <div className="agentops-kicker" style={{ color: '#f59e0b' }}>Lingering HPC Error</div>
+                        <h3>{qErr.task_id}</h3>
+                        <p style={{ fontSize: '0.85rem', color: '#9ca3af', marginTop: '0.5rem' }}>
+                          Job ID: {qErr.job_id} • Enqueued: {new Date(qErr.enqueued_at).toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="agentops-incident-actions">
+                        <button
+                          className="autofix-btn"
+                          onClick={() => triggerAutofix(mockAnalysis, idx)}
+                          disabled={autofixState?.status === "loading"}
+                          style={{ background: '#f59e0b', color: '#0f172a' }}
+                        >
+                          {autofixState?.status === "loading" ? "⏳ Fixing..." :
+                           autofixState?.status === "ready" ? "✅ Fixed" :
+                           "🔧 Re-Fix Escalation"}
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="agentops-grid">
+                      <article className="agent-card">
+                        <div className="agent-card-header">
+                          <h3>Error Log Context</h3>
+                          <span className="agent-card-status">Escalated</span>
+                        </div>
+                        <p className="agent-card-summary">This error was found lingering in the hpc_error_logs queue during Validation check or arrived asynchronously.</p>
+                        <div className="agent-output">
+                          <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '0.8rem' }}>
+                            {qErr.log_text}
+                          </pre>
+                        </div>
+                      </article>
+                      
+                      {/* Show Fix Generator/Executor if it was re-fixed */}
+                      {autofixState?.data && ["fix_generator_agent", "fix_executor_agent", "validation_agent"].map(key => {
+                        const cardData = autofixState.data[key];
+                        if (!cardData) return null;
+                        return (
+                          <article key={key} className="agent-card agent-card-autofix">
+                            <div className="agent-card-header">
+                              <h3>{AGENT_OPS_PLACEHOLDER[key]?.title || key}</h3>
+                              <span className="agent-card-status">Live</span>
+                            </div>
+                            <p className="agent-card-summary">{cardData.thinking?.[0]}</p>
+                            <ul className="agent-card-list">
+                              {cardData.thinking?.map((item, i) => <li key={i}>{item}</li>)}
+                            </ul>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  </section>
+                );
+              })}
+            </div>
+          )}
         </>
       ) : (
         <div className="agentops-grid">
@@ -1663,6 +1997,7 @@ export default function App() {
         agentOpsState={agentOpsState}
         onRetry={() => triggerAgentOpsAnalysis()}
         runId={insightData.runId}
+        nodes={nodesHook.nodes}
       />
     )
   };

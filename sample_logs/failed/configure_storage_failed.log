@@ -1,0 +1,12 @@
+[2024-03-10 09:11:22,341] {taskinstance.py:1280} INFO - Dependencies all met
+[2024-03-10 09:11:23,456] {taskinstance.py:1280} INFO - Starting attempt 1 of 3
+[2024-03-10 09:11:24,789] {configure_storage.py:15} INFO - Connecting to MinIO at 10.0.0.5:9000
+[2024-03-10 09:11:25,123] {configure_storage.py:22} INFO - Using bucket: pcai-data
+[2024-03-10 09:11:26,567] {taskinstance.py:1345} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/opt/airflow/dags/tasks/configure_storage.py", line 34, in configure_storage
+    client.put_object('pcai-data', 'test.txt', data)
+  File "/opt/airflow/dags/utils/minio_client.py", line 56, in put_object
+    raise S3Error('Access Denied: Invalid credentials for bucket pcai-data')
+S3Error: Access Denied: Invalid credentials for bucket pcai-data
+[2024-03-10 09:11:26,890] {taskinstance.py:1280} INFO - Marking task as FAILED

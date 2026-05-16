@@ -1,0 +1,12 @@
+[2024-03-12 08:33:11,234] {taskinstance.py:1280} INFO - Dependencies all met
+[2024-03-12 08:33:12,456] {deploy_spp.py:11} INFO - Starting SPP deployment on server gen10-rack1
+[2024-03-12 08:33:13,678] {deploy_spp.py:19} INFO - Mounting SPP ISO: SPP_2022.09.iso
+[2024-03-12 08:33:14,890] {deploy_spp.py:27} INFO - Verifying SPP compatibility...
+[2024-03-12 08:33:16,123] {taskinstance.py:1345} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/opt/airflow/dags/tasks/deploy_spp.py", line 45, in deploy_spp
+    spp.verify_compatibility(server_gen='Gen10Plus')
+  File "/opt/airflow/dags/utils/spp_handler.py", line 78, in verify_compatibility
+    raise CalledProcessError('SPP version mismatch: SPP_2022.09 is incompatible with Gen10Plus hardware')
+CalledProcessError: SPP version mismatch: SPP_2022.09 is incompatible with Gen10Plus hardware
+[2024-03-12 08:33:16,456] {taskinstance.py:1280} INFO - Marking task as FAILED

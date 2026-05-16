@@ -1,0 +1,12 @@
+[2024-03-13 15:44:22,123] {taskinstance.py:1280} INFO - Starting attempt 1 of 3
+[2024-03-13 15:44:23,345] {configure_network.py:14} INFO - Connecting to worker nodes via Ansible
+[2024-03-13 15:44:24,567] {configure_network.py:21} INFO - Running network playbook on 192.168.2.5
+[2024-03-13 15:44:25,789] {configure_network.py:28} INFO - Configuring VLAN tags on Aruba switch
+[2024-03-13 15:44:55,234] {taskinstance.py:1345} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/opt/airflow/dags/tasks/configure_network.py", line 52, in configure_network
+    ansible.run_playbook('network_config.yml', hosts=['192.168.2.5'])
+  File "/opt/airflow/dags/utils/ansible_runner.py", line 89, in run_playbook
+    raise AnsibleConnectionError('SSH connection failed to 192.168.2.5: No route to host')
+AnsibleConnectionError: SSH connection failed to 192.168.2.5: No route to host
+[2024-03-13 15:44:55,567] {taskinstance.py:1280} INFO - Marking task as FAILED

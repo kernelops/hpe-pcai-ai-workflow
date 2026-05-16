@@ -101,89 +101,28 @@ cd "$REPO_ROOT"
 
 ## Run the Full Stack
 
-Start the services in the order below. Keep each terminal open.
+We have simplified the multi-service architecture startup using a unified launcher script. 
 
-### Terminal 1: Airflow
-
-```bash
-cd "$REPO_ROOT/airflow"
-echo "AIRFLOW_UID=$(id -u)" > .env
-mkdir -p logs config plugins
-docker compose up -d
-docker compose exec airflow-webserver airflow dags unpause deployment_workflow
-docker compose exec airflow-webserver airflow dags list | grep deployment_workflow
-```
-
-Expected result:
-
-- Airflow webserver becomes available on `http://127.0.0.1:8080`
-- `deployment_workflow` appears with `False` in the paused column
-
-Airflow UI credentials:
-
-- Username: `airflow`
-- Password: `airflow`
-
-### Terminal 2: RAG Service
-
-`RAG_FORCE_LOCAL_EMBEDDINGS=1` keeps local development working even without remote embedding downloads.
+Instead of manually starting 5 different terminals for Airflow, RAG, Backend, API, and Frontend, you can now launch everything at once.
 
 ```bash
 cd "$REPO_ROOT"
-source .venv/bin/activate
-RAG_FORCE_LOCAL_EMBEDDINGS=1 python -m uvicorn rag.main:app --host 0.0.0.0 --port 8002
+./start.sh
 ```
 
-Expected health endpoint:
+**What this script does:**
+1. Starts the **Redis** broker via Docker.
+2. Starts the **Airflow** stack via Docker Compose.
+3. Bootstraps the Python `.venv` if it doesn't exist.
+4. Starts the **RAG API** (port 8002).
+5. Starts the **Agent API** (port 8001).
+6. Starts the **Backend API** (port 8000).
+7. Starts the **RQ Worker** for processing passive telemetry logs.
+8. Starts the **React Frontend** (port 5173).
 
-```bash
-curl http://127.0.0.1:8002/health
-```
+The script uses `tmux` or `xterm` (if available) to multiplex logs, or falls back to writing logs directly to the `.service_logs/` directory.
 
-### Terminal 3: Agent API
-
-```bash
-cd "$REPO_ROOT"
-source .venv/bin/activate
-RAG_API_URL=http://127.0.0.1:8002 python -m uvicorn api.main:app --host 0.0.0.0 --port 8001
-```
-
-Expected health endpoint:
-
-```bash
-curl http://127.0.0.1:8001/health
-```
-
-### Terminal 4: Backend API
-
-```bash
-cd "$REPO_ROOT"
-source .venv/bin/activate
-AIRFLOW_BASE_URL=http://127.0.0.1:8080 \
-AIRFLOW_DAG_ID=deployment_workflow \
-AIRFLOW_USERNAME=airflow \
-AIRFLOW_PASSWORD=airflow \
-AGENT_OPS_API_URL=http://127.0.0.1:8001/api/agents/analyze-failure \
-AIRFLOW_LOGS_PATH="$REPO_ROOT/airflow/logs" \
-python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
-```
-
-Expected health endpoint:
-
-```bash
-curl http://127.0.0.1:8000/
-```
-
-### Terminal 5: Frontend
-
-```bash
-cd "$REPO_ROOT/frontend"
-VITE_API_BASE_URL=http://127.0.0.1:8000 npm run dev
-```
-
-Frontend URL:
-
-- `http://127.0.0.1:5173`
+To stop all services, simply press `Ctrl+C` in the terminal where you ran the script, and it will clean up all child PIDs and Docker containers.
 
 ## Quick Verification
 

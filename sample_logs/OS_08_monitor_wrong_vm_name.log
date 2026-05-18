@@ -1,0 +1,49 @@
+[2026-05-18T17:29:40.522+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-05-18T17:29:40.535+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: OS_error_08_monitor_wrong_vm_name.monitor_os_boot manual__2026-05-18T17:29:04.850698 [queued]>
+[2026-05-18T17:29:40.543+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: OS_error_08_monitor_wrong_vm_name.monitor_os_boot manual__2026-05-18T17:29:04.850698 [queued]>
+[2026-05-18T17:29:40.544+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-05-18T17:29:40.556+0000] {taskinstance.py:2330} INFO - Executing <Task(DynamicSSHOperator): monitor_os_boot> on 2026-05-18 17:29:05.312944+00:00
+[2026-05-18T17:29:40.561+0000] {warnings.py:110} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61: DeprecationWarning: This process (pid=2786) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+
+[2026-05-18T17:29:40.563+0000] {standard_task_runner.py:63} INFO - Started process 2788 to run task
+[2026-05-18T17:29:40.563+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'OS_error_08_monitor_wrong_vm_name', 'monitor_os_boot', 'manual__2026-05-18T17:29:04.850698', '--job-id', '894', '--raw', '--subdir', 'DAGS_FOLDER/OS_installation_errors.py', '--cfg-path', '/tmp/tmppjo7us3o']
+[2026-05-18T17:29:40.565+0000] {standard_task_runner.py:91} INFO - Job 894: Subtask monitor_os_boot
+[2026-05-18T17:29:40.631+0000] {task_command.py:426} INFO - Running <TaskInstance: OS_error_08_monitor_wrong_vm_name.monitor_os_boot manual__2026-05-18T17:29:04.850698 [running]> on host ae79589fcbfe
+[2026-05-18T17:29:40.730+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='infra-team' AIRFLOW_CTX_DAG_ID='OS_error_08_monitor_wrong_vm_name' AIRFLOW_CTX_TASK_ID='monitor_os_boot' AIRFLOW_CTX_EXECUTION_DATE='2026-05-18T17:29:05.312944+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-05-18T17:29:04.850698'
+[2026-05-18T17:29:40.732+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-05-18T17:29:40.733+0000] {ssh.py:151} INFO - Creating ssh_client
+[2026-05-18T17:29:40.733+0000] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-05-18T17:29:40.740+0000] {base.py:84} INFO - Using connection ID 'worker_node_192_168_0_27' for task execution.
+[2026-05-18T17:29:40.741+0000] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-05-18T17:29:40.858+0000] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-05-18T17:29:41.190+0000] {transport.py:1909} INFO - Authentication (password) successful!
+[2026-05-18T17:29:41.191+0000] {ssh.py:480} INFO - Running command: set -e; echo '[TELEMETRY] Checking domstate of wrong VM name...'; sudo virsh domstate wrong-vm-name-ilo-sim
+[2026-05-18T17:29:41.354+0000] {ssh.py:526} INFO - [TELEMETRY] Checking domstate of wrong VM name...
+[2026-05-18T17:29:41.435+0000] {ssh.py:526} INFO - error: failed to get domain 'wrong-vm-name-ilo-sim'
+[2026-05-18T17:29:41.436+0000] {ssh.py:526} INFO - 
+[2026-05-18T17:29:41.473+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-05-18T17:29:41.480+0000] {taskinstance.py:2905} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 460, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 432, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py", line 400, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 191, in execute
+    result = self.run_ssh_client_command(ssh_client, self.command, context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 179, in run_ssh_client_command
+    self.raise_for_status(exit_status, agg_stderr, context=context)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 173, in raise_for_status
+    raise AirflowException(f"SSH operator error: exit status = {exit_status}")
+airflow.exceptions.AirflowException: SSH operator error: exit status = 1
+[2026-05-18T17:29:41.483+0000] {taskinstance.py:1206} INFO - Marking task as FAILED. dag_id=OS_error_08_monitor_wrong_vm_name, task_id=monitor_os_boot, run_id=manual__2026-05-18T17:29:04.850698, execution_date=20260518T172905, start_date=20260518T172940, end_date=20260518T172941
+[2026-05-18T17:29:41.493+0000] {standard_task_runner.py:110} ERROR - Failed to execute job 894 for task monitor_os_boot (SSH operator error: exit status = 1; 2788)
+[2026-05-18T17:29:41.500+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 1
+[2026-05-18T17:29:41.514+0000] {taskinstance.py:3498} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-05-18T17:29:41.520+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

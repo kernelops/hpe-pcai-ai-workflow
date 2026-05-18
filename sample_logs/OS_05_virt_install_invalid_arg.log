@@ -1,0 +1,58 @@
+[2026-05-18T17:27:25.768+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-05-18T17:27:25.781+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: OS_error_05_virt_install_invalid_arg.provision_target_vm manual__2026-05-18T17:26:58.750268 [queued]>
+[2026-05-18T17:27:25.791+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: OS_error_05_virt_install_invalid_arg.provision_target_vm manual__2026-05-18T17:26:58.750268 [queued]>
+[2026-05-18T17:27:25.792+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-05-18T17:27:25.807+0000] {taskinstance.py:2330} INFO - Executing <Task(DynamicSSHOperator): provision_target_vm> on 2026-05-18 17:26:59.290417+00:00
+[2026-05-18T17:27:25.815+0000] {warnings.py:110} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61: DeprecationWarning: This process (pid=2654) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+
+[2026-05-18T17:27:25.817+0000] {standard_task_runner.py:63} INFO - Started process 2656 to run task
+[2026-05-18T17:27:25.816+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'OS_error_05_virt_install_invalid_arg', 'provision_target_vm', 'manual__2026-05-18T17:26:58.750268', '--job-id', '871', '--raw', '--subdir', 'DAGS_FOLDER/OS_installation_errors.py', '--cfg-path', '/tmp/tmpldvgqwfe']
+[2026-05-18T17:27:25.819+0000] {standard_task_runner.py:91} INFO - Job 871: Subtask provision_target_vm
+[2026-05-18T17:27:25.896+0000] {task_command.py:426} INFO - Running <TaskInstance: OS_error_05_virt_install_invalid_arg.provision_target_vm manual__2026-05-18T17:26:58.750268 [running]> on host ae79589fcbfe
+[2026-05-18T17:27:26.012+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='infra-team' AIRFLOW_CTX_DAG_ID='OS_error_05_virt_install_invalid_arg' AIRFLOW_CTX_TASK_ID='provision_target_vm' AIRFLOW_CTX_EXECUTION_DATE='2026-05-18T17:26:59.290417+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-05-18T17:26:58.750268'
+[2026-05-18T17:27:26.015+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-05-18T17:27:26.016+0000] {ssh.py:151} INFO - Creating ssh_client
+[2026-05-18T17:27:26.017+0000] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-05-18T17:27:26.031+0000] {base.py:84} INFO - Using connection ID 'worker_node_192_168_0_27' for task execution.
+[2026-05-18T17:27:26.033+0000] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-05-18T17:27:26.065+0000] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_8.9p1)
+[2026-05-18T17:27:26.167+0000] {transport.py:1909} INFO - Authentication (password) successful!
+[2026-05-18T17:27:26.168+0000] {ssh.py:480} INFO - Running command: set -e; echo '[BUILD] Provisioning with invalid memory...'; sudo virt-install --name ilo-sim-vm --memory 999999999 --vcpus 1 --disk size=2,format=qcow2,bus=virtio --cdrom /tmp/alpine-virt.iso --os-variant alpinelinux3.18 --network default --graphics vnc --noautoconsole
+[2026-05-18T17:27:26.339+0000] {ssh.py:526} INFO - [BUILD] Provisioning with invalid memory...
+[2026-05-18T17:27:27.096+0000] {ssh.py:526} INFO - 
+[2026-05-18T17:27:27.097+0000] {ssh.py:526} INFO - Starting install...
+[2026-05-18T17:27:27.263+0000] {ssh.py:526} INFO - 
+[2026-05-18T17:27:27.264+0000] {ssh.py:526} INFO - Allocating 'ilo-sim-vm.qcow2'                               |    0 B  00:00 ... 
+[2026-05-18T17:27:28.904+0000] {ssh.py:526} INFO - 
+[2026-05-18T17:27:28.905+0000] {ssh.py:526} INFO - Removing disk 'ilo-sim-vm.qcow2'                            |    0 B  00:00     
+[2026-05-18T17:27:28.908+0000] {ssh.py:526} INFO - ERROR    internal error: qemu unexpectedly closed the monitor: 2026-05-18T17:27:28.467315Z qemu-system-x86_64: cannot set up guest memory 'pc.ram': Cannot allocate memory
+[2026-05-18T17:27:28.911+0000] {ssh.py:526} INFO - Domain installation does not appear to have been successful.
+[2026-05-18T17:27:28.911+0000] {ssh.py:526} INFO - If it was, you can restart your domain by running:
+[2026-05-18T17:27:28.912+0000] {ssh.py:526} INFO -   virsh --connect qemu:///system start ilo-sim-vm
+[2026-05-18T17:27:28.912+0000] {ssh.py:526} INFO - otherwise, please restart your installation.
+[2026-05-18T17:27:29.018+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-05-18T17:27:29.025+0000] {taskinstance.py:2905} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 460, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 432, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py", line 400, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 191, in execute
+    result = self.run_ssh_client_command(ssh_client, self.command, context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 179, in run_ssh_client_command
+    self.raise_for_status(exit_status, agg_stderr, context=context)
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 173, in raise_for_status
+    raise AirflowException(f"SSH operator error: exit status = {exit_status}")
+airflow.exceptions.AirflowException: SSH operator error: exit status = 1
+[2026-05-18T17:27:29.028+0000] {taskinstance.py:1206} INFO - Marking task as FAILED. dag_id=OS_error_05_virt_install_invalid_arg, task_id=provision_target_vm, run_id=manual__2026-05-18T17:26:58.750268, execution_date=20260518T172659, start_date=20260518T172725, end_date=20260518T172729
+[2026-05-18T17:27:29.039+0000] {standard_task_runner.py:110} ERROR - Failed to execute job 871 for task provision_target_vm (SSH operator error: exit status = 1; 2656)
+[2026-05-18T17:27:29.062+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 1
+[2026-05-18T17:27:29.089+0000] {taskinstance.py:3498} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-05-18T17:27:29.094+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

@@ -1,0 +1,315 @@
+[2026-05-19T08:10:07.996+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-05-19T08:10:08.010+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: env_error_02_dns_failure.install_host_prerequisites manual__2026-05-19T08:09:53.910384 [queued]>
+[2026-05-19T08:10:08.018+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: env_error_02_dns_failure.install_host_prerequisites manual__2026-05-19T08:09:53.910384 [queued]>
+[2026-05-19T08:10:08.019+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-05-19T08:10:08.035+0000] {taskinstance.py:2330} INFO - Executing <Task(DynamicSSHOperator): install_host_prerequisites> on 2026-05-19 08:09:54.414597+00:00
+[2026-05-19T08:10:08.040+0000] {warnings.py:110} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61: DeprecationWarning: This process (pid=2976) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+
+[2026-05-19T08:10:08.042+0000] {standard_task_runner.py:63} INFO - Started process 2978 to run task
+[2026-05-19T08:10:08.042+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'env_error_02_dns_failure', 'install_host_prerequisites', 'manual__2026-05-19T08:09:53.910384', '--job-id', '1058', '--raw', '--subdir', 'DAGS_FOLDER/OS_installation_environmental_errors.py', '--cfg-path', '/tmp/tmpur0_la0d']
+[2026-05-19T08:10:08.044+0000] {standard_task_runner.py:91} INFO - Job 1058: Subtask install_host_prerequisites
+[2026-05-19T08:10:08.114+0000] {task_command.py:426} INFO - Running <TaskInstance: env_error_02_dns_failure.install_host_prerequisites manual__2026-05-19T08:09:53.910384 [running]> on host ae79589fcbfe
+[2026-05-19T08:10:08.228+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='infra-team' AIRFLOW_CTX_DAG_ID='env_error_02_dns_failure' AIRFLOW_CTX_TASK_ID='install_host_prerequisites' AIRFLOW_CTX_EXECUTION_DATE='2026-05-19T08:09:54.414597+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-05-19T08:09:53.910384'
+[2026-05-19T08:10:08.231+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-05-19T08:10:08.232+0000] {ssh.py:151} INFO - Creating ssh_client
+[2026-05-19T08:10:08.239+0000] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-05-19T08:10:08.250+0000] {base.py:84} INFO - Using connection ID 'worker_node_192_168_0_6' for task execution.
+[2026-05-19T08:10:08.254+0000] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-05-19T08:10:08.279+0000] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_10.2p1)
+[2026-05-19T08:10:08.353+0000] {transport.py:1909} INFO - Authentication (password) successful!
+[2026-05-19T08:10:08.354+0000] {ssh.py:480} INFO - Running command: set -e; echo '[INFO] Installing KVM/Libvirt prerequisites on Host Computer...'; echo '[STEP] Stopping timers...'; sudo systemctl stop apt-daily.timer || true; sudo systemctl stop apt-daily-upgrade.timer || true; echo '[STEP] Killing apt/dpkg processes...'; sudo killall -9 apt apt-get dpkg || true; echo '[STEP] Removing locks...'; sudo rm -f /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/dpkg/lock*; echo '[STEP] Running dpkg configure...'; sudo DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a dpkg --configure -a --force-confdef --force-confold || true; echo '[STEP] Running apt-get update...'; sudo DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a apt-get update --allow-releaseinfo-change || true; echo '[STEP] Running apt-get install...'; sudo DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a apt-get install -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients virtinst wget curl bridge-utils; echo '[STEP] Enabling libvirtd...'; sudo systemctl enable --now libvirtd || true; echo '[PASS] Host computer virtualization tools installed successfully.'
+[2026-05-19T08:10:08.807+0000] {ssh.py:526} INFO - [INFO] Installing KVM/Libvirt prerequisites on Host Computer...
+[2026-05-19T08:10:08.813+0000] {ssh.py:526} INFO - [STEP] Stopping timers...
+[2026-05-19T08:10:08.934+0000] {ssh.py:526} INFO - [STEP] Killing apt/dpkg processes...
+[2026-05-19T08:10:08.975+0000] {ssh.py:526} INFO - apt: no process found
+[2026-05-19T08:10:08.978+0000] {ssh.py:526} INFO - apt-get: no process found
+[2026-05-19T08:10:08.979+0000] {ssh.py:526} INFO - dpkg: no process found
+[2026-05-19T08:10:08.980+0000] {ssh.py:526} INFO - [STEP] Removing locks...
+[2026-05-19T08:10:09.013+0000] {ssh.py:526} INFO - [STEP] Running dpkg configure...
+[2026-05-19T08:10:09.089+0000] {ssh.py:526} INFO - [STEP] Running apt-get update...
+[2026-05-19T08:10:09.247+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:09.247+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:09.743+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:09.743+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:10.244+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:10.245+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:10.744+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:10.744+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:11.243+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:11.244+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:11.749+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:11.751+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:12.249+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:12.250+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:12.776+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:12.777+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:13.255+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:13.257+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:13.757+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:13.758+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:14.255+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:14.257+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:14.755+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:14.756+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:15.257+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:15.258+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:15.758+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:15.759+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:16.259+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:16.260+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:16.761+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:16.762+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:17.274+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:17.275+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:17.782+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:17.788+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:18.280+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:18.282+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:18.781+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:18.782+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:19.285+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:19.287+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:19.787+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:19.788+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:20.287+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:20.288+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:20.789+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:20.790+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:21.291+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:21.293+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:21.793+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:21.795+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:22.292+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:22.293+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:22.797+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:22.798+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:23.296+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:23.300+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:23.799+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:23.800+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:24.300+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:24.300+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:24.799+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:24.800+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:25.302+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:25.303+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:25.802+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:25.803+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:26.304+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:26.305+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:26.803+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:26.803+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:27.307+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:27.307+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:27.805+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:27.806+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:28.312+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:28.313+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:28.809+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:28.811+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:29.254+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:29.256+0000] {ssh.py:526} INFO -                                                                          
+[2026-05-19T08:10:29.258+0000] {ssh.py:526} INFO - Ign:1 http://archive.ubuntu.com/ubuntu resolute InRelease
+[2026-05-19T08:10:29.260+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:29.263+0000] {ssh.py:526} INFO -                                                                          
+[2026-05-19T08:10:29.264+0000] {ssh.py:526} INFO - Ign:2 http://security.ubuntu.com/ubuntu resolute-security InRelease
+[2026-05-19T08:10:29.265+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:29.267+0000] {ssh.py:526} INFO -                                                                          
+[2026-05-19T08:10:29.271+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:29.756+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:29.757+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:30.261+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:30.263+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:30.264+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:30.757+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:30.759+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:31.259+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:31.260+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:31.759+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:31.759+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:32.263+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:32.265+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:32.766+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:32.767+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:33.267+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:33.268+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:33.772+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:33.773+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:34.282+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:34.284+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:34.785+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:34.786+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:35.287+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:35.288+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:35.791+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:35.792+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:36.295+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:36.296+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:36.801+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:36.801+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:37.303+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:37.304+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:37.806+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:37.807+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:38.310+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:38.311+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:38.813+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:38.813+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:39.313+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:39.316+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com]
+[2026-05-19T08:10:39.814+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:39.815+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com]
+[2026-05-19T08:10:40.316+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:40.317+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:40.819+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:40.819+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:41.325+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:41.328+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:41.826+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:41.827+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:42.329+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:42.329+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:42.831+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:42.832+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:43.335+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:43.336+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:43.837+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:43.838+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:44.339+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:44.341+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:44.843+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:44.847+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:45.343+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:45.344+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:45.847+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:45.848+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:46.347+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:46.349+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:46.849+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:46.852+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:47.352+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:47.354+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:47.852+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:47.854+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:48.356+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:48.358+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:48.858+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:48.859+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:49.301+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:49.301+0000] {ssh.py:526} INFO -                                                                          
+[2026-05-19T08:10:49.302+0000] {ssh.py:526} INFO - Ign:3 http://archive.ubuntu.com/ubuntu resolute-updates InRelease
+[2026-05-19T08:10:49.302+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:49.303+0000] {ssh.py:526} INFO -                                                                          
+[2026-05-19T08:10:49.303+0000] {ssh.py:526} INFO - 0% [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:49.803+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:49.803+0000] {ssh.py:526} INFO - 0% [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:50.307+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:50.309+0000] {ssh.py:526} INFO - 0% [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:50.310+0000] {ssh.py:526} INFO - 0% [Connecting to security.ubuntu.com]
+[2026-05-19T08:10:50.311+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:50.311+0000] {ssh.py:526} INFO -                                       
+[2026-05-19T08:10:50.312+0000] {ssh.py:526} INFO - Ign:2 http://security.ubuntu.com/ubuntu resolute-security InRelease
+[2026-05-19T08:10:50.312+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:50.312+0000] {ssh.py:526} INFO -                                       
+[2026-05-19T08:10:50.313+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:50.816+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:50.816+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:51.315+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:51.316+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:51.816+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:51.817+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:52.315+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:52.316+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:52.316+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:52.819+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:52.821+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:53.322+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:53.323+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:53.825+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:53.827+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:54.327+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:54.328+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:54.826+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:54.827+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:55.328+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:55.329+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:55.833+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:55.834+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:56.333+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:56.334+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:56.835+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:56.836+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:57.336+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:57.337+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:57.839+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:57.840+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:58.339+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:58.340+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:58.848+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:58.850+0000] {ssh.py:526} INFO - 0% [Working]
+[2026-05-19T08:10:59.353+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:59.354+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com]
+[2026-05-19T08:10:59.854+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:10:59.856+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com]
+[2026-05-19T08:11:00.357+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:11:00.358+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com]
+[2026-05-19T08:11:00.861+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:11:00.862+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com]
+[2026-05-19T08:11:01.362+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:11:01.363+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com]
+[2026-05-19T08:11:01.864+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:11:01.867+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com]
+[2026-05-19T08:11:02.364+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:11:02.365+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:11:02.867+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:11:02.868+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:11:03.369+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:11:03.371+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:11:03.873+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:11:03.874+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:11:04.374+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:11:04.376+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:11:04.878+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:11:04.879+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:11:05.380+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:11:05.381+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:11:05.880+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:11:05.882+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:11:06.383+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:11:06.384+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:11:06.887+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:11:06.888+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:11:07.389+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:11:07.390+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:11:07.891+0000] {ssh.py:526} INFO - 
+[2026-05-19T08:11:07.892+0000] {ssh.py:526} INFO - 0% [Connecting to archive.ubuntu.com] [Connecting to security.ubuntu.com]
+[2026-05-19T08:11:08.243+0000] {timeout.py:68} ERROR - Process timed out, PID: 2978
+[2026-05-19T08:11:08.246+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-05-19T08:11:08.263+0000] {taskinstance.py:2905} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 460, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 432, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py", line 400, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 191, in execute
+    result = self.run_ssh_client_command(ssh_client, self.command, context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 176, in run_ssh_client_command
+    exit_status, agg_stdout, agg_stderr = self.hook.exec_ssh_client_command(
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/hooks/ssh.py", line 518, in exec_ssh_client_command
+    readq, _, _ = select([channel], [], [], cmd_timeout)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/utils/timeout.py", line 69, in handle_timeout
+    raise AirflowTaskTimeout(self.error_message)
+airflow.exceptions.AirflowTaskTimeout: Timeout, PID: 2978
+[2026-05-19T08:11:08.275+0000] {taskinstance.py:1206} INFO - Marking task as FAILED. dag_id=env_error_02_dns_failure, task_id=install_host_prerequisites, run_id=manual__2026-05-19T08:09:53.910384, execution_date=20260519T080954, start_date=20260519T081008, end_date=20260519T081108
+[2026-05-19T08:11:08.338+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 2
+[2026-05-19T08:11:08.371+0000] {taskinstance.py:3498} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-05-19T08:11:08.380+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

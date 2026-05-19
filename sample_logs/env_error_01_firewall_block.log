@@ -1,0 +1,54 @@
+[2026-05-19T08:09:10.728+0000] {local_task_job_runner.py:120} INFO - ::group::Pre task execution logs
+[2026-05-19T08:09:10.746+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: env_error_01_firewall_block.download_os_image manual__2026-05-19T08:08:45.684477 [queued]>
+[2026-05-19T08:09:10.755+0000] {taskinstance.py:2076} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: env_error_01_firewall_block.download_os_image manual__2026-05-19T08:08:45.684477 [queued]>
+[2026-05-19T08:09:10.757+0000] {taskinstance.py:2306} INFO - Starting attempt 1 of 1
+[2026-05-19T08:09:10.775+0000] {taskinstance.py:2330} INFO - Executing <Task(DynamicSSHOperator): download_os_image> on 2026-05-19 08:08:46.344388+00:00
+[2026-05-19T08:09:10.782+0000] {warnings.py:110} WARNING - /home/***/.local/lib/python3.12/site-packages/***/task/task_runner/standard_task_runner.py:61: DeprecationWarning: This process (pid=2940) is multi-threaded, use of fork() may lead to deadlocks in the child.
+  pid = os.fork()
+
+[2026-05-19T08:09:10.783+0000] {standard_task_runner.py:63} INFO - Started process 2942 to run task
+[2026-05-19T08:09:10.783+0000] {standard_task_runner.py:90} INFO - Running: ['***', 'tasks', 'run', 'env_error_01_firewall_block', 'download_os_image', 'manual__2026-05-19T08:08:45.684477', '--job-id', '1051', '--raw', '--subdir', 'DAGS_FOLDER/OS_installation_environmental_errors.py', '--cfg-path', '/tmp/tmpeb_ggt7a']
+[2026-05-19T08:09:10.786+0000] {standard_task_runner.py:91} INFO - Job 1051: Subtask download_os_image
+[2026-05-19T08:09:10.843+0000] {task_command.py:426} INFO - Running <TaskInstance: env_error_01_firewall_block.download_os_image manual__2026-05-19T08:08:45.684477 [running]> on host ae79589fcbfe
+[2026-05-19T08:09:10.933+0000] {taskinstance.py:2648} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='infra-team' AIRFLOW_CTX_DAG_ID='env_error_01_firewall_block' AIRFLOW_CTX_TASK_ID='download_os_image' AIRFLOW_CTX_EXECUTION_DATE='2026-05-19T08:08:46.344388+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2026-05-19T08:08:45.684477'
+[2026-05-19T08:09:10.935+0000] {taskinstance.py:430} INFO - ::endgroup::
+[2026-05-19T08:09:10.936+0000] {ssh.py:151} INFO - Creating ssh_client
+[2026-05-19T08:09:10.936+0000] {ssh.py:124} INFO - ssh_hook is not provided or invalid. Trying ssh_conn_id to create SSHHook.
+[2026-05-19T08:09:10.944+0000] {base.py:84} INFO - Using connection ID 'worker_node_192_168_0_6' for task execution.
+[2026-05-19T08:09:10.945+0000] {ssh.py:301} WARNING - No Host Key Verification. This won't protect against Man-In-The-Middle attacks
+[2026-05-19T08:09:10.970+0000] {transport.py:1909} INFO - Connected (version 2.0, client OpenSSH_10.2p1)
+[2026-05-19T08:09:11.032+0000] {transport.py:1909} INFO - Authentication (password) successful!
+[2026-05-19T08:09:11.040+0000] {ssh.py:480} INFO - Running command: set -e; echo '[INFO] Downloading Alpine Linux Virt ISO via wget...'; echo '[STEP] Removing any previous partial downloads...'; rm -f /tmp/alpine-virt.iso || true; echo '[STEP] Starting wget download...'; wget --progress=dot:giga -O /tmp/alpine-virt.iso https://dl-cdn.alpinelinux.org/alpine/v3.19/releases/x86_64/alpine-virt-3.19.1-x86_64.iso; echo '[STEP] Virtual Media file size:'; ls -lh /tmp/alpine-virt.iso; echo '[PASS] Targeted OS Image available locally on Host.'
+[2026-05-19T08:09:11.481+0000] {ssh.py:526} INFO - [INFO] Downloading Alpine Linux Virt ISO via wget...
+[2026-05-19T08:09:11.483+0000] {ssh.py:526} INFO - [STEP] Removing any previous partial downloads...
+[2026-05-19T08:09:11.486+0000] {ssh.py:526} INFO - [STEP] Starting wget download...
+[2026-05-19T08:09:11.501+0000] {ssh.py:526} INFO - --2026-05-19 08:09:11--  https://dl-cdn.alpinelinux.org/alpine/v3.19/releases/x86_64/alpine-virt-3.19.1-x86_64.iso
+[2026-05-19T08:09:11.520+0000] {ssh.py:526} INFO - Resolving dl-cdn.alpinelinux.org (dl-cdn.alpinelinux.org)... 
+[2026-05-19T08:09:11.635+0000] {ssh.py:526} INFO - 167.82.26.132, 2a04:4e42:7000::644
+[2026-05-19T08:09:11.636+0000] {ssh.py:526} INFO - Connecting to dl-cdn.alpinelinux.org (dl-cdn.alpinelinux.org)|167.82.26.132|:443... 
+[2026-05-19T08:09:41.677+0000] {taskinstance.py:441} INFO - ::group::Post task execution logs
+[2026-05-19T08:09:41.688+0000] {taskinstance.py:2905} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 460, in _execute_task
+    result = _execute_callable(context=context, **execute_callable_kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/taskinstance.py", line 432, in _execute_callable
+    return execute_callable(context=context, **execute_callable_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py", line 400, in wrapper
+    return func(self, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 191, in execute
+    result = self.run_ssh_client_command(ssh_client, self.command, context=context)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/operators/ssh.py", line 176, in run_ssh_client_command
+    exit_status, agg_stdout, agg_stderr = self.hook.exec_ssh_client_command(
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/providers/ssh/hooks/ssh.py", line 551, in exec_ssh_client_command
+    raise AirflowException("SSH command timed out")
+airflow.exceptions.AirflowException: SSH command timed out
+[2026-05-19T08:09:41.701+0000] {taskinstance.py:1206} INFO - Marking task as FAILED. dag_id=env_error_01_firewall_block, task_id=download_os_image, run_id=manual__2026-05-19T08:08:45.684477, execution_date=20260519T080846, start_date=20260519T080910, end_date=20260519T080941
+[2026-05-19T08:09:41.717+0000] {standard_task_runner.py:110} ERROR - Failed to execute job 1051 for task download_os_image (SSH command timed out; 2942)
+[2026-05-19T08:09:41.763+0000] {local_task_job_runner.py:240} INFO - Task exited with return code 1
+[2026-05-19T08:09:41.786+0000] {taskinstance.py:3498} INFO - 0 downstream tasks scheduled from follow-on schedule check
+[2026-05-19T08:09:41.795+0000] {local_task_job_runner.py:222} INFO - ::endgroup::

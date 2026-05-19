@@ -11,7 +11,7 @@ import re
 import requests
 from groq import Groq
 from common.config import GROQ_API_KEY, GROQ_MODEL
-from common.models import DagAnalysisReport
+from common.models import DagAnalysisReport, RagContext, RagMatch
 
 RAG_BASE = os.getenv("RAG_SERVICE_URL", "http://localhost:8002")
 DAGS_DIR = os.path.join(os.path.dirname(__file__), "..", "airflow", "dags")
@@ -38,12 +38,12 @@ class DagAnalysisAgent:
             print("[DagAnalysis] ⚠️  Could not read DAG source — reporting no issues")
             return DagAnalysisReport(has_dag_issues=False)
 
-        # 2. Extract SSH commands for RAG lookup
+        # 2. Extract SSH commands
         ssh_commands = self._extract_ssh_commands(source)
         print(f"[DagAnalysis]   Found {len(ssh_commands)} SSHOperator command blocks")
 
         # 3. Query RAG for relevant context
-        rag_context = self._query_rag_for_commands(ssh_commands)
+        rag_context = self._query_rag_with_full_dag(source)
         print(f"[DagAnalysis]   Retrieved {len(rag_context)} RAG context entries")
 
         # 4. Ask LLM to analyse and produce corrected source
@@ -85,37 +85,29 @@ class DagAnalysisAgent:
 
     # ── RAG context retrieval ─────────────────────────────────
 
-    def _query_rag_for_commands(self, commands: list[dict]) -> list[str]:
-        """Query the RAG service for relevant fix context for each command."""
-        context_entries = []
-        for cmd in commands:
-            query = cmd["command"][:200]  # First 200 chars as search query
-            try:
-                resp = requests.post(
-                    f"{RAG_BASE}/query",
-                    json={"query": query, "top_k": 2},
-                    timeout=10,
-                )
-                if resp.status_code == 200:
-                    data = resp.json()
-                    results = data.get("results", [])
-                    for r in results:
-                        text = r.get("text", "")
-                        if text and text not in context_entries:
-                            context_entries.append(text)
-            except Exception as exc:
-                print(f"[DagAnalysis] RAG query failed for {cmd['task_id']}: {exc}")
-        return context_entries
+    def _query_rag_with_full_dag(self, source: str) -> RagContext:
+        try:
+            response = requests.post(
+                f"{RAG_BASE}/analyze-dag",
+                json={"dag_source": source},
+                timeout=30,
+            )
+            response.raise_for_status()
+            data = response.json()
+            return RagContext(**data)  # Convert dict to RagContext
+        except Exception as e:
+            print(f"[RAG] call failed: {e}")
+            return RagContext(commands_found=[], matches=[])
 
     # ── LLM analysis ─────────────────────────────────────────
 
     def _analyse_with_llm(self, source: str, ssh_commands: list[dict],
-                           rag_context: list[str]) -> DagAnalysisReport:
+                           rag_context: RagContext) -> DagAnalysisReport:
         """Ask the LLM to identify issues and produce corrected DAG source."""
         if not self.client:
             return self._fallback_analysis(source, ssh_commands)
 
-        rag_text = "\n---\n".join(rag_context[:6]) if rag_context else "No RAG context available."
+        rag_text = json.dumps(rag_context, indent=2)
 
         prompt = f"""You are a senior HPE PCAI infrastructure engineer reviewing an Apache Airflow DAG.
 
@@ -202,7 +194,7 @@ Here is the full DAG source code to analyse:
                 has_dag_issues=parsed.get("has_dag_issues", len(issues) > 0),
                 issues=issues,
                 corrected_source=corrected if corrected else None,
-                rag_context_used=[ctx[:100] for ctx in rag_context],
+                rag_context_used=rag_context,
             )
 
         except Exception as exc:
@@ -289,7 +281,7 @@ Here is the full DAG source code to analyse:
             has_dag_issues=len(issues) > 0,
             issues=issues,
             corrected_source=corrected if issues else None,
-            rag_context_used=[],
+            rag_context_used=RagContext(commands_found=[], matches=[]),
         )
 
     # ── Helpers ───────────────────────────────────────────────

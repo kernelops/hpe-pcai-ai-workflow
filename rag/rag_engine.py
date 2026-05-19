@@ -17,10 +17,18 @@ from typing import List, Dict, Optional
 
 try:
     from .log_parser import ParsedError, format_error_location
-    from .knowledge_base import get_embedding_function, ERRORS_COLLECTION
+    from .knowledge_base import (
+        get_embedding_function,
+        ERRORS_COLLECTION,
+        COMMANDS_COLLECTION,
+    )
 except ImportError:
     from log_parser import ParsedError, format_error_location
-    from knowledge_base import get_embedding_function, ERRORS_COLLECTION
+    from knowledge_base import (
+        get_embedding_function,
+        ERRORS_COLLECTION,
+        COMMANDS_COLLECTION,
+    )
 
 
 # Cosine similarity is stored as distance in ChromaDB (hnsw:space=cosine).
@@ -28,6 +36,7 @@ except ImportError:
 # We convert: similarity = 1 - distance.
 # Only keep matches where similarity >= this threshold.
 SIMILARITY_THRESHOLD = 0.7
+COMMAND_MATCH_THRESHOLD = 0.95
 
 
 def _distance_to_similarity(distance: float) -> float:
@@ -114,6 +123,58 @@ def retrieve_matches(
     ranked = sorted(best_per_document.values(), key=lambda x: x["similarity"], reverse=True)
     return ranked
 
+def retrieve_command_matches(
+    commands: List[str],
+    chroma_client: chromadb.ClientAPI,
+) -> List[Dict]:
+    """
+    Retrieves exact command matches from COMMANDS_COLLECTION.
+    Only returns matches where similarity == 1.0.
+    """
+    if not commands:
+        return []
+
+    ef = get_embedding_function()
+
+    try:
+        col = chroma_client.get_collection(
+            name=COMMANDS_COLLECTION,
+            embedding_function=ef,
+        )
+    except Exception as exc:
+        print(f"[RAGEngine] Could not access collection '{COMMANDS_COLLECTION}': {exc}")
+        return []
+
+    matched_commands = {}
+
+    for command in commands:
+        try:
+            results = col.query(
+                query_texts=[command],
+                n_results=1,
+                include=["documents", "metadatas", "distances"],
+            )
+        except Exception as exc:
+            print(f"[RAGEngine] Command query failed for '{command}': {exc}")
+            continue
+
+        documents = results.get("documents", [[]])[0]
+        metadatas = results.get("metadatas", [[]])[0]
+        distances = results.get("distances", [[]])[0]
+
+        for doc, meta, dist in zip(documents, metadatas, distances):
+            similarity = _distance_to_similarity(dist)
+            # Only exact matches
+            if similarity < COMMAND_MATCH_THRESHOLD:
+                continue
+            matched_commands[doc] = {
+                "command": doc,
+                "description": meta.get("description", ""),
+                "flags": meta.get("flags", ""),
+                "usage": meta.get("usage", ""),
+            }
+
+    return list(matched_commands.values())
 
 def run_rag_pipeline(
     parsed_error: ParsedError,
@@ -177,4 +238,23 @@ def run_rag_pipeline(
             for m in matches
         ],
         "retrieved_sources": list({m["source"] for m in matches}),
+    }
+
+def run_dag_command_pipeline(
+    commands: List[str],
+    chroma_client: chromadb.ClientAPI,
+) -> Dict:
+    """
+    DAG command analysis pipeline.
+    - Takes extracted commands from dag_parser.py
+    - Queries COMMANDS_COLLECTION
+    - Returns exact command matches only
+    """
+    matches = retrieve_command_matches(
+        commands=commands,
+        chroma_client=chroma_client,
+    )
+    return {
+        "commands_found": commands,
+        "matches": matches,
     }

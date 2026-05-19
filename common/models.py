@@ -75,11 +75,21 @@ class ValidationReport(BaseModel):
 
 # ── Phase 2 Hybrid: DAG Analysis + Patching models ───────────
 
+class RagMatch(BaseModel):
+    command: str
+    description: str
+    flags: str
+    usage: str
+
+class RagContext(BaseModel):
+    commands_found: list[str]
+    matches: list[RagMatch]
+
 class DagAnalysisReport(BaseModel):
     has_dag_issues: bool                                       # True if DAG source code has problems
     issues: list[dict] = Field(default_factory=list)           # [{task_id, broken_command, explanation, suggested_fix}]
     corrected_source: Optional[str] = None                     # Full corrected Python source code
-    rag_context_used: list[str] = Field(default_factory=list)  # RAG entries that were consulted
+    rag_context_used: Optional[RagContext] = None              # RAG entries that were consulted
 
 class DagPatchResult(BaseModel):
     dag_written: bool                                          # Whether remediation_workflow.py was written

@@ -16,6 +16,7 @@ from typing import List, Dict
 
 # Collection names
 ERRORS_COLLECTION = "past_errors"
+COMMANDS_COLLECTION = "valid_commands"
 
 
 def _normalize_embedding_input(input_data) -> List[str]:
@@ -452,51 +453,334 @@ MOCK_PAST_ERRORS = [
     },
 ]
 
-
-# --- Phase 2: Autofix fix patterns ---
-MOCK_AUTOFIX_PATTERNS = [
+# Phase 2 Attempt 1 - Add commands, their valid flags and usage
+VALID_COMMANDS = [
+    # from NFS_correct.py
     {
-        "id": "fix_001",
-        "text": "Autofix: OS baseline validation failed because /etc/redhat-release is missing on a non-RHEL host. "
-                "Fix: Create the file with appropriate RHEL release content. "
-                "Commands: sudo touch /etc/redhat-release; echo 'Red Hat Enterprise Linux release 8.8 (Ootpa)' | sudo tee /etc/redhat-release. "
-                "Verification: cat /etc/redhat-release. "
-                "Risk: Low — creates a single file, does not modify system behaviour.",
-        "source": "Autofix Patterns"
+        "id": "cmd_001",
+        "command":"mkdir",
+        "description":"Creates files with the specified name",
+        "flags":"-m <MODE>, -p P/Q, --parent P/Q, -v, --verbose, -Z, --context[=context], --help, --version",
+        "usage":"mkdir [OPTION]... DIRECTORY...",
+        "source": "https://www.man7.org/linux/man-pages/man1/mkdir.1.html"
     },
     {
-        "id": "fix_002",
-        "text": "Autofix: NFS configuration failed due to broken_option in /etc/exports. "
-                "The exportfs command rejected an unknown keyword in the NFS export options. "
-                "Fix: Replace the broken option with valid NFS export flags. "
-                "Commands: printf '/srv/nfs/share *(rw,sync,no_subtree_check)' | sudo tee /etc/exports > /dev/null; sudo exportfs -ra. "
-                "Verification: cat /etc/exports; sudo exportfs -v. "
-                "Risk: Low — corrects a known misconfiguration.",
-        "source": "Autofix Patterns"
+        "id": "cmd_002",
+        "command":"chmod",
+        "description":"Changes the mode of each file to the specified mode",
+        "flags":"-c, --changes, -f, --silent, --quiet, -v, --verbose,--deference, -h, --no-dereference, --no-preserve-root, --preserve-root, --reference=<RFILE>, --R, --recursive, -H, -L, -P, --help, --version, Each MODE is of the form '[ugoa]*([-+=]([rwxXst]*|[ugo]))+|[-+=][0-7]+'.",
+        "usage": "chmod [OPTION]... MODE[,MODE]... FILE..., chmod [OPTION]... OCTAL-MODE FILE..., chmod [OPTION]... --reference=RFILE FILE...",
+        "source": "https://man7.org/linux/man-pages/man1/chmod.1.html"
     },
     {
-        "id": "fix_003",
-        "text": "Autofix: MinIO service failed to start because minio-broken.service systemd unit file does not exist. "
-                "Fix: Create a minimal systemd unit file, reload the daemon, and enable the service. "
-                "Commands: Create /etc/systemd/system/minio-broken.service with [Unit], [Service], [Install] sections; "
-                "sudo systemctl daemon-reload; sudo systemctl enable --now minio-broken. "
-                "Verification: systemctl list-unit-files | grep minio. "
-                "Risk: Low — creates a stub service file.",
-        "source": "Autofix Patterns"
+        "id": "cmd_003",
+        "command": "docker rm",
+        "description": "Removes one or more containers",
+        "flags":"-f, --force, -l, --link, -v, --volumes, --link",
+        "usage": "docker rm [OPTIONS] CONTAINER [CONTAINER...]",
+        "source": "https://docs.docker.com/reference/cli/docker/container/rm/"
     },
     {
-        "id": "fix_004",
-        "text": "Autofix: Post-deployment health check failed because no service is listening on port 9005. "
-                "curl -fsS http://127.0.0.1:9005/minio/health/live returned connection refused. "
-                "Fix: Start a lightweight HTTP server on port 9005 to respond to health check requests. "
-                "Commands: nohup python3 -c 'import http.server,socketserver; "
-                "h=http.server.SimpleHTTPRequestHandler; s=socketserver.TCPServer((str(),9005),h); s.serve_forever()' &>/dev/null &; sleep 2. "
-                "Verification: ss -tuln | grep 9005. "
-                "Risk: Low — starts a temporary process.",
-        "source": "Autofix Patterns"
+        "id": "cmd_004",
+        "command": "docker run",
+        "description": "Runs a command in a new container, pulling the image if needed and starting the container",
+        "flags":"--add-host, --annotation, -a, --attach, --blkio-weight, --blkio-weight-device, --cap-add, --cap-drop, --cgroup-parent, --cgroupns, --cidfile, --cpu-count, --cpu-percent, --cpu-period"
+                "-c, --cpu-quota, --cpu-rt-period, --cpu-rt-runtime, --cpu-shares, --cpus, --cpuset-cpus, --cpuset-mems, --detach, -d, --detach-keys, --device, --device-cgroup-rule, --device-read-bps, --device-read-iops, --device-write-bps"
+                "--dns, --dns-option, --dns-search, --domainname, --entrypoint, -e, --env, --env-file, --expose, --gpus, --health-cmd, --health-interval, --health-retries, --health-start-interval, --health-start-period"
+                "--help, -h, --hostname, --init, --interactive, -i, --io-maxbandwidth, --io-maxiops, --ip, --ip6, --ipc, --isolation, --l, --label, --label-file, --link, --link-local-ip, --log-driver, --log-opt"
+                "--mac-address, --m, --memory, --memory-reservation, --memory-swap, --memory-swappiness, --mount, --name, --network, --network-alias, --no-healthcheck, --oom-kill-disable, --oom-score-adj"
+                "--pid, --pids-limit, --platform, --privileged, -p, --publish, -P, --publish-all, --pull,-q, --quiet, --read-only, --restart, --rm, --runtime, --security-opt, --shm-size, --sig-proxy"
+                "--address, --console-address, --stop-signal, --stop-timeout, --storage-opt, --sysctl, --tmpfs, --tty, -t, --ulimit, --use-api-socket, -u, --user, --userns, --uts, --volume, -v, --volume-driver, --volumes-from, -w, --workdir",
+        "usage": "docker run [OPTIONS] IMAGE [COMMAND] [ARG...]",
+        "source": "https://docs.docker.com/reference/cli/docker/container/run/"
     },
+    {
+        "id": "cmd_005",
+        "command":"modprobe",
+        "description": "Adds or removes a module from the Linux kernel",
+        "flags":"-a, --all, -b, --use-blacklist, -C <DIRECTORY>, --config <DIRECTORY>, -c, --show-config, --show-modversions, --show-exports, -d, --dirname, --first-time, --force-vermagic, --force-modversion, -f, --force, i, --ignore-install, --ignore-remove, -n, --dry-run, -q, --quiet, -R, --show-alias, -r, --remove, --remove-holders, -w <TIMEOUT_MSEC>, --wait <TIMEOUT_MSEC>, -S <VERSION>, --set-version, --show-depends, -s, --syslog, -V, --version, -v, --verbose",
+        "usage": " modprobe [-v] [-V] [-C config-file] [-n] [-i] [-q] [-b] [modulename] [module parameters...], modprobe [-r] [-v] [-n] [-i] [modulename...], modprobe [-c], modprobe [--show-modversions] [filename]",
+        "source":"https://man7.org/linux/man-pages/man8/modprobe.8.html"
+    },
+    {
+        "id":"cmd_006",
+        "command":"docker ps",
+        "description":"Lists containers",
+        "flags":"-a, --all, -f, --filter, --format, -n, --last, -l, --latest, --no-trunc, -q, --quiet, -s, --size",
+        "usage":"docker ps [OPTIONS]",
+        "source":"https://docs.docker.com/reference/cli/docker/container/ls/"
+    },
+    {
+        "id":"cmd_007",
+        "command":"docker logs",
+        "description":"Fetches the logs of a container",
+        "flags":"--details, --follow, -f, -n, --since, --tail, --timestamps, -t, --until",
+        "usage":"docker logs [OPTIONS] CONTAINER",
+        "source":"https://manpages.ubuntu.com/manpages/questing/man1/docker-logs.1.html"
+    },
+    {
+        "id":"cmd_008",
+        "command":"docker volume rm",
+        "description":"Removes one or more volumes, cannot remove a volume that is in use by a container",
+        "flags":"-f, --force",
+        "usage":"docker volume rm [OPTIONS] VOLUME [VOLUME...]",
+        "source":"https://docs.docker.com/reference/cli/docker/volume/rm/"
+    },
+    {
+        "id":"cmd_009",
+        "command":"docker volume create",
+        "description":"Creates a new volume that containers can consume and store data in. If a name is not specified, Docker generates a random name",
+        "flags":"--availability, -d, --driver, --group, --label, --limit-bytes, -o, --opt, --required-bytes, --scope, --secret, --sharing, --topology-preferred, --topology-required, --type",
+        "usage":"docker volume create [OPTIONS] [VOLUME]",
+        "source":"https://docs.docker.com/reference/cli/docker/volume/create/"
+    },
+    {
+        "id":"cmd_010",
+        "command":"docker exec",
+        "description":"Executes a command inside a running container",
+        "flags":"-d, --detach, --detach-keys, -e, --env, --env-file, -i, --interactive, --privileged, -t, --tty, -u, --user, -w, --workdir",
+        "usage": "docker exec [OPTIONS] CONTAINER COMMAND [ARG...]",
+        "source":"https://docs.docker.com/reference/cli/docker/container/exec/"
+    },
+    # from deployment_workflow.py
+    {
+        "id":"cmd_011",
+        "command":"uname",
+        "description":"Prints certain system information. With no options, same as -s",
+        "flags":"-a, --all, -s, --kernel-name, -n, --nodename, -r, --kernel-release, -v, --kernel-version, -m, --machine, -p, --processor, -i, --hardware-platform, -o, --operating-system, --help, --version",
+        "usage":"uname [OPTION]...",
+        "source":"https://man7.org/linux/man-pages/man1/uname.1.html"
+    },
+    {
+        "id":"cmd_012",
+        "command":"id ",
+        "description":"Prints user and group information for each specified user, or (when user omitted) for the current process",
+        "flags":"-a, -Z, --context, -G, --groups, -g, --group, -n, --name, -r, --real, -u, --user, -z, --zero, --help, --version",
+        "usage":"id [OPTION]... [USER]...",
+        "source":"https://man7.org/linux/man-pages/man1/id.1.html"
+    },
+    {
+        "id":"cmd_013",
+        "command":"test",
+        "description":"Checks file types and compare values",
+        "flags":"--help, --version, -b FILE, -c FILE, -d FILE, -e FILE, -f FILE, -g FILE, -G FILE,  -h FILE, -k file, -L FILE, -N FILE, -O FILE, -p FILE, -r FILE, -s FILE, -S FILE, -t FD, -u FILE, -w FILE, -x FILE, ! EXPR1, EXPR1 && EXPR2, EXPR1 || EXPR2, -n STRING, -z STRING",
+        "usage":"test EXPRESSION, test [ EXPRESSION ]/[ ]/[ OPTION]",
+        "source":"https://man7.org/linux/man-pages/man1/test.1.html"
+    },
+    {
+        "id":"cmd_014",
+        "command":"exportfs",
+        "description":"Maintains table of exported NFS file systems for the NFS server",
+        "flags":"-d kind, --debug kind (valid kinds are: all, auth, call, general and parse), -a, -o options..., -i, -r, -u, -f, -v, -s",
+        "usage":"exportfs [-avi] [-o options,..] [client:/path ..], exportfs -r [-v], exportfs [-av] -u [client:/path ..], exportfs [-v], exportfs -f, exportfs -s",
+        "source":"https://man7.org/linux/man-pages/man8/exportfs.8.html"
+    },
+    {
+        "id":"cmd_015",
+        "command":"systemctl enable",
+        "description":"Enable one or more units or unit instances",
+        "flags":"--now, --force, --global, --runtime, --no-reload, -q, --quiet, --no-pager, -h, --help, --version",
+        "usage":"systemctl enable [OPTIONS] UNIT...",
+        "source":"https://man7.org/linux/man-pages/man1/systemctl.1.html#OPTIONS"
+    },
+    {
+        "id":"cmd_016",
+        "command":"curl",
+        "description":"It is a tool for transferring data from or to a server using URLs",
+        "flags":"--abstract-unix-socket <path>, --anyauth, --basic, --compressed, -b, --cookie <data|filename>, -c, --cookie-jar <filename>, --data-ascii <data>, --data-binary <data>, --data-raw <data>, --data-urlencode <data>, --digest, --etag-compare <file>, --etag-save <file>, --expect100-timeout <seconds>, --connect-timeout"
+                "-f, --fail, --fail-with-body, --form-escape, -G, --get, --ignore-content-length, --json <data>, -j, --junk-session-cookies, -L, --location, --location-trusted, --max-redirs <num>, --negotiate, --ntlm, --ntlm-wb, --post301, --post302, --post303, --proxy-header <header|@file>, --proxy-http2, --raw, -e, --referer <URL>, -J, --remote-header-name, --request-target <PATH>"
+                "--tr-encoding, --unix-socket <PATH>, -A, --user-agent <NAME>, --fail-early, --libcurl, --parallel-immediate, -Z, --parallel, -#, --progress-bar, --rate, -S, --show-error, --stderr, --styled-output, --trace-ascii, --trace-config, --trace-ids, --trace-time, --trace, -v, --verbose, -I, --head, -o, --output, -s, --silent, -f, -m, --max-time, -w, --erite-out, -k, --insecure",
+        "usage": "curl [options / URLs]", 
+        "source":"https://man7.org/linux/man-pages/man1/curl.1.html"
+    },
+    # from os_installation_correct.py
+    {
+        "id":"cmd_017",
+        "command":"apt-get update",
+        "description":"Used to resynchronize the package index files from their sources",
+        "flags":"--qq, --list-cleanup, --print-urls, --allow-insecure-repositories, --allow-releaseinfo-change, -q, -qq, --quiet, -c, --config-file, -o, --option, --show-progress, -s, --simulate,--no-install-recommends, --install-suggests, -d, --download-only, -f, --fix-broken, -m, --ignore-missing, --fix-missing, --no-download, --dry-runn, --just-print, --recon, --no-act, -y, --yes, --assume-yes, --assume-no"
+                "--no-show-upgraded, -V, --verbose-versions, -a, --host-architecture, -P, --build-profiles, -b, --compile, --build, --ignore-hold, --with-new-pkgs, --no-upgrade, --only-upgrade, --allow-downgrades, --allow-change-held-packages, --force-yes, --purge, --reinstall, -S, --snapshot, -t, --target-release, --default-release, --trivial-only, --no-remove, --auto-remove, --autoremove, --only-source"
+                "--diff-only, --dsc-only, --tar-only, --arch-only, --indep-only, --show-progress, --with-source <FILENAME>, -e any, --error-on=any, -h, --help, -v, --version",
+        "usage": "apt-get [-asqdyfmubV] [-o=config_string] [-c=config_file] [-t=target_release] [-a=architecture] update",
+        "source":"https://manpages.ubuntu.com/manpages/focal/man8/apt-get.8.html"
+    },
+    {
+        "id":"cmd_018",
+        "command":"apt-get install",
+        "description":"All packages specified for installation will be retrieved and installed",
+        "flags":"--qq, --list-cleanup, --print-urls, --allow-insecure-repositories, --allow-releaseinfo-change, -q, -qq, --quiet, -c, --config-file, -o, --option, --show-progress, -s, --simulate,--no-install-recommends, --install-suggests, -d, --download-only, -f, --fix-broken, -m, --ignore-missing, --fix-missing, --no-download, --dry-runn, --just-print, --recon, --no-act, -y, --yes, --assume-yes, --assume-no"
+                "--no-show-upgraded, -V, --verbose-versions, -a, --host-architecture, -P, --build-profiles, -b, --compile, --build, --ignore-hold, --with-new-pkgs, --no-upgrade, --only-upgrade, --allow-downgrades, --allow-change-held-packages, --force-yes, --purge, --reinstall, -S, --snapshot, -t, --target-release, --default-release, --trivial-only, --no-remove, --auto-remove, --autoremove, --only-source"
+                "--diff-only, --dsc-only, --tar-only, --arch-only, --indep-only, --show-progress, --with-source <FILENAME>, -e any, --error-on=any, -h, --help, -v, --version",
+        "usage": "apt-get [-asqdyfmubV] [-o=config_string] [-c=config_file] [-t=target_release] [-a=architecture] install pkg [{=pkg_version_number | /target_release}]...",
+        "source":"https://manpages.ubuntu.com/manpages/focal/man8/apt-get.8.html"
+    },
+    {
+        "id":"cmd_019",
+        "command":"wget",
+        "description":"Used for non-interactive download of files from the Web",
+        "flags":"-V, --version, -h, --help, -b, --background, -e <COMMAND>, --execute-command, -o <LOGFILE>, --append-output=<LOGFILE>, -d, --debug, -q, --quiet, -v, --verbose, --nv, --no-verbose, --report-speed=<TYPE>, -i <FILE>, --input-file=<FILE>, -O, --output-document, -o, --output-file, -P, --directory-prefix, --progress, -t, --tries, --timeout, --retry-connrefused, -c, --continue, -N, --timestamping, -r, --recursive"
+                "-l, --level, -np, --no-parent, -A, --accept, -R, --reject, --spider, -S, --server-response, --header, --no-check-certificate, -U, --user-agent, --limit-rate",
+        "usage": "wget [option]... [URL]...",
+        "source":"https://www.gnu.org/software/wget/manual/wget.html"
+    },
+    {
+        "id":"cmd_020",
+        "command":"virsh destroy",
+        "description":"Immediately terminates the specified domain",
+        "flags":"-c, --connect <URI>, -d, --debug <LEVEL>, -e, --escape <STRING>, -h, --help, -k, --keepaalive-interval <INTERVAL>, -K, --keepalive-count, -l, --log <FILE>, -q, --quiet, -r, --readonly, -t, --timing, --no-pkttyagent, -v, --version=short, -V, --version=long, --graceful, --remove-logs",
+        "usage":"virsh destroy domain [--graceful] [--remove-logs]",
+        "source":"https://www.libvirt.org/manpages/virsh.html#description"
+    },
+    {
+        "id":"cmd_021",
+        "command":"virsh undefine",
+        "description":"Removes the configuration file of a domain from libvirt",
+        "flags":"-c, --connect <URI>, -d, --debug <LEVEL>, -e, --escape <STRING>, -h, --help, -k, --keepaalive-interval <INTERVAL>, -K, --keepalive-count, -l, --log <FILE>, -q, --quiet, -r, --readonly, -t, --timing, --no-pkttyagent, -v, --version=short, -V, --version=long, --managed-save, --snapshots-metadata, --checkpoints-metadata, --nvram, --keep-nvram, --storage volumes, --remove-all-storage, --delete-storage-volume-snapshots, --wipe-storage, --tpm, --keep-tpm",
+        "usage": "virsh undefine domain [--managed-save] [--snapshots-metadata][--checkpoints-metadata] [--nvram] [--keep-nvram][ {--storage volumes | --remove-all-storage [--delete-storage-volume-snapshots]} --wipe-storage] [--tpm] [--keep-tpm]",
+        "source":"https://www.libvirt.org/manpages/virsh.html#description"
+    },
+    {
+        "id":"cmd_022",
+        "command":"virt-install",
+        "description":"Provisions new virtual machines",
+        "flags":"-q, --quiet, -d, --debug, -h, --help, --connect, -n, --name, -r, --ram, --os-variant, --arch, --machine, -u, --uuid, --vcpus, --disk, --cdrom, --location, -pxe, --import, --livecd, --unattended, --osinfo, --os-variant, --cpu, --metadata, --network, --graphics, --nographics, --console, --init, --filesystem, --nodisks, --noautoconsole, --cpuset,--nonetworks, -p, --paravirt, --container, --accelerate, --channel, --console, --autostart, --wait, --noreboot, --force",
+        "usage":"virt-install [ OPTION ]...",
+        "source":"https://linux.die.net/man/1/virt-install"
+    },
+    {
+        "id":"cmd_023",
+        "command":"virsh domstate",
+        "description":"Returns state about a domain",
+        "flags":"-c, --connect <URI>, -d, --debug <LEVEL>, -e, --escape <STRING>, -h, --help, -k, --keepaalive-interval <INTERVAL>, -K, --keepalive-count, -l, --log <FILE>, -q, --quiet, -r, --readonly, -t, --timing, --no-pkttyagent, -v, --version=short, -V, --version=long, --reason",
+        "usage":"virsh domstate domain [--reason]",
+        "source":"https://www.libvirt.org/manpages/virsh.html#domstate"
+    },
+    {
+        "id":"cmd_024",
+        "command":"virsh dominfo",
+        "description":"Returns basic information about the domain",
+        "flags":"-c, --connect <URI>, -d, --debug <LEVEL>, -e, --escape <STRING>, -h, --help, -k, --keepaalive-interval <INTERVAL>, -K, --keepalive-count, -l, --log <FILE>, -q, --quiet, -r, --readonly, -t, --timing, --no-pkttyagent, -v, --version=short, -V, --version=long, --full-seclabels",
+        "usage":"virsh dominfo domain",
+        "source":"https://www.libvirt.org/manpages/virsh.html#domstate"
+    },   
+    #from local_os_validation_correct.py
+    {
+        "id":"cmd_025",
+        "command":"lsb_release",
+        "description":"Provides certain Linux Standard Base (LSB) and distribution-specific information",
+        "flags":"-v, --version, -i, --id, -d, --description, -r, --release, -c, --codename, -a, -all, -s, --short, -h, --help",
+        "usage":"lsb_release [options]",
+        "source":"https://manpages.ubuntu.com/manpages/jammy/man1/lsb_release.1.html"
+    },
+    #from OS_installation_environmental_errors.py
+    {
+        "id":"cmd_026",
+        "command":"systemctl stop",
+        "description":"Deactivate one or more units on the command line",
+        "flags":"--no-warn, --no-block, --no-reload, -q, --quiet, --when=<TIMESTAMP>, -h, --help, --version, --no-pager",
+        "usage":"systemctl stop [OPTIONS] [UNIT]...",
+        "source":"https://man7.org/linux/man-pages/man1/systemctl.1.html"
+    },
+    {
+        "id":"cmd_027",
+        "command":"killall",
+        "description":"Sends a signal to all processes running any of the specified commands",
+        "flags":"-e, --exact, -I, --ignore-case, -g, --process-group, -i, --interactive, -l, --list, -n, --ns, -o, --older-than, -q, --quiet, -r, --regexp, -s, --signal, -u, --user, -v, --verbose, -V, --version, -w, --wait, -y, --younger-than, -Z, --context",
+        "usage":"killall [OPTIONS], killall [-l | --list], killall [-V, --version]",
+        "source":"https://man7.org/linux/man-pages/man1/killall.1.html"
+    },
+    {
+        "id":"cmd_028",
+        "command":"dpkg",
+        "description":"Used to install, build, remove and manage Debian packages",
+        "flags":"-i, --install, --unpack, --configure, --no-triggers, --triggers-only, -r, --remove, -P, --purge, -V, --verify, -C, --audit, --update-avail, --merge-avail, -a, --record-avail, --forget-old-unavail, --clear-avail, --get-selections, --clear-selections, --yet-to-unpack"
+                 "--predep-package, --add-architecture, --remove-architecture, --print-architecture, --assert-help, --assert, --compare-versions, --help, --force-confdef, --force-confold",
+        "usage":"dpkg [option...] command",
+        "source":"https://man7.org/linux/man-pages/man1/dpkg.1.html"
+    },
+    #from minio_correct.py
+    {
+        "id":"cmd_029",
+        "command":"openssl req",
+        "description":"Primarily creates and processes certificate requests (CSRs) in PKCS#10 format",
+        "flags":"-help, -inform, -outform, -cipher, -in, -passin, -out, -passout, -text, -pubkey, -noout, -verify, -modulus, -new, -newkey, -pkeyopt, -noenc, -nodes, -key, -keyform, -keyout, -keygen, -digest, -config, -section, -CA, -CAkey, -not_before, -not_after, -days,- set_serial, -newhdr, -copy_extensions, -extensions, -reqexts, -addext"
+                "-x509, -x509v1, -precert, -utf8, -reqopt, -subject, -subj, -multivalue-rdn, -sigopt, vfyopt, -batch, -verbose, -quiet, -nameopt, -rand, -writerand, -engine, -provider, -provider-path, -provparam, -propquery",
+        "usage":"openssl req [OPTIONS]",
+        "source":"https://docs.openssl.org/3.5/man1/openssl-req/#synopsis"
+    },
+    {
+        "id":"cmd_030",
+        "command":"mc",
+        "description":"Used to manage, configure, and interact with MinIO and other s3-compatible object storage devices",
+        "flags":"--config-dir, --custom-header, --debug, --dtrace, --disable-pager, --insecure, --json, --no-color, --quiet, --resolve, --version, --help",
+        "usage":"mc [GLOBALFLAGS] COMMAND --help",
+        "source":"https://docs.min.io/aistor/reference/cli/"
+    },
+    {
+        "id":"cmd_031",
+        "command":"mc alias set",
+        "description":"Sets or updates an alias in the configuration",
+        "flags":"--api, --path",
+        "usage":"mc [GLOBALFLAGS] alias set ALIAS URL ACCESSKEY SECRETKEY",
+        "source":"https://docs.min.io/aistor/reference/cli/mc-alias/mc-alias-set/?tab=example-syntax-syntax"
+    },
+    {
+        "id":"cmd_032",
+        "command":"mc admin user add",
+        "description":"Adds a new user to the target deployment",
+        "flags":" ",
+        "usage":"mc [GLOBALFLAGS] admin user add ALIAS ACCESSKEY SECRETKEY",
+        "source":"https://docs.min.io/aistor/reference/cli/admin/mc-admin-user/mc-admin-user-add/?tab=add-examples-syntax"
+    },
+    {
+        "id":"cmd_033",
+        "command":"mc admin policy create",
+        "description":"Creates a new policy on the target deployment",
+        "flags":" ",
+        "usage":"mc admin policy create TARGET POLICYNAME POLICYPATH",
+        "source":"https://docs.min.io/aistor/reference/cli/admin/mc-admin-policy/mc-admin-policy-create/?tab=create-examples-syntax"
+    },
+    {
+        "id":"cmd_034",
+        "command":"mc admin policy attach",
+        "description":"Attaches one or more IAM policies to either a user or a group",
+        "flags":"--user, --group",
+        "usage":"mc admin policy attach TARGET POLICY [POLICY...][--user USER | --group GROUP]",
+        "source":"https://docs.min.io/aistor/reference/cli/admin/mc-admin-policy/mc-admin-policy-attach/?tab=attach-examples-syntax"
+    },
+    {
+        "id":"cmd_035",
+        "command":"mc mb",
+        "description":"Creates a new bucket on a deployment or other S3-compatible services",
+        "flags":"--ignore-existing, --region, --with-lock, --with-versioning",
+        "usage":"mc [GLOBALFLAGS] mb [--ignore-existing][--region 'string'][--with-lock][--with-versioning] ALIAS",
+        "source":"https://docs.min.io/aistor/reference/cli/mc-mb/?tab=mc-mb-syntax"
+    },
+    {
+        "id":"cmd_036",
+        "command":"mc version enable",
+        "description":"Enables versioning on the specified bucket",
+        "flags":"--exclude-folders, --excluded-prefixes, --purge-on-delete",
+        "usage":"mc [GLOBALFLAGS] version enable ALIAS --exclude-folders --excluded-prefixes <string> --purge-on-delete <string>",
+        "source":"https://docs.min.io/aistor/reference/cli/mc-version/mc-version-enable/?tab=mc-version-enable-syntax"
+    },
+    {
+        "id":"cmd_037",
+        "command":"mc ilm rule add",
+        "description":"Adds an object lifecycle management rule to a bucket",
+        "flags":"--prefix, --tags, --expire-days, --expire-delete-marker, --transition-days, --transition-tier, --noncurrent-expire-days, --noncurrent-transition-days, --noncurrent-transition-tier, --noncurrent-expire-newer, --size-gt, --size-lt, --purge-all-object-versions-days, --purge-all-object-versions-delete-marker",
+        "usage":"mc [GLOBALFLAGS] ilm rule add [--prefix string][--tags string][--expire-days 'integer'][--expire-delete-marker][--transition-days 'string'][--transition-tier 'string'][--noncurrent-expire-days 'integer'][--noncurrent-expire-newer 'integer'][--noncurrent-transition-days 'integer'][--noncurrent-transition-tier 'string'][--site-gt 'string'][--size-lt 'string'][--purge-all-object-versions-days 'integer'][--purge-all-object-versions-delete-marker] ALIAS",
+        "source":"https://docs.min.io/aistor/reference/cli/mc-ilm-rule/mc-ilm-rule-add/?tab=mc-ilm-rule-add-syntax"
+    },
+    {
+        "id":"cmd_038",
+        "command":"mc retention set",
+        "description":"Configures the Write-Once-Read-Many (WORM) locking settings for an object or objects in a bucket",
+        "flags":"--bypass, --default, --recursive, --r, --rewind, --version-id, --versions",
+        "usage":"mc [GLOBALFLAGS] retention set [--bypass][--default][--recursive][--rewind 'string'][--versions][--version-id 'string']* MODE 'VALIDITY' ALIAS",
+        "source":"https://docs.min.io/aistor/reference/cli/mc-retention/mc-retention-set/?tab=a68b53a2-syntax"
+    }
 ]
-
 
 def get_embedding_function():
     """Returns an embedding function for ChromaDB with offline fallback."""
@@ -530,8 +814,8 @@ def build_knowledge_base(persist_dir: str = "./chroma_db") -> chromadb.ClientAPI
     )
 
     if errors_col.count() == 0:
-        all_errors = MOCK_PAST_ERRORS + MOCK_AUTOFIX_PATTERNS
-        print("[KnowledgeBase] Ingesting past error logs + autofix patterns...")
+        all_errors = MOCK_PAST_ERRORS
+        print("[KnowledgeBase] Ingesting past error logs...")
         errors_col.add(
             ids=[e["id"] for e in all_errors],
             documents=[e["text"] for e in all_errors],
@@ -545,8 +829,31 @@ def build_knowledge_base(persist_dir: str = "./chroma_db") -> chromadb.ClientAPI
                 "retrieved_sources": e.get("retrieved_sources", ""),
             } for e in all_errors],
         )
-        print(f"[KnowledgeBase] Added {len(all_errors)} entries ({len(MOCK_PAST_ERRORS)} errors + {len(MOCK_AUTOFIX_PATTERNS)} autofix patterns).")
+        print(f"[KnowledgeBase] Added {len(all_errors)} entries ({len(MOCK_PAST_ERRORS)} errors autofix patterns).")
     else:
         print(f"[KnowledgeBase] Past errors collection already has {errors_col.count()} entries.")
 
+    # --- Commands Collection ---
+    commands_col = client.get_or_create_collection(
+        name=COMMANDS_COLLECTION,
+        embedding_function=ef,
+        metadata={"hnsw:space": "cosine"}
+    )
+
+    if commands_col.count() == 0:
+        print("[KnowledgeBase] Ingesting valid commands...")
+        commands_col.add(
+            ids=[c["id"] for c in VALID_COMMANDS],
+            documents=[c["command"] for c in VALID_COMMANDS],  # only command gets embedded
+            metadatas=[{
+                "description": c.get("description", ""),
+                "flags": c.get("flags", ""),
+                "usage": c.get("usage", ""),
+                "source": c.get("source"), 
+            } for c in VALID_COMMANDS],
+        )
+        print(f"[KnowledgeBase] Added {len(VALID_COMMANDS)} command entries.")
+    else:
+        print(f"[KnowledgeBase] Commands collection already has {commands_col.count()} entries.")
+    
     return client

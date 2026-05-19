@@ -5,6 +5,7 @@ Exposes:
   POST /analyze  → receives Airflow log, returns error location + KB-matched solutions
   GET  /health   → health check
   POST /ingest   → add new error+fix to knowledge base at runtime
+  POST /analyze-dag - receives DAG source code and returns commands with their flags
 """
 
 import os
@@ -16,12 +17,20 @@ from dotenv import load_dotenv
 
 try:
     from .log_parser import parse_airflow_log
+    from .dag_parser import extract_commands_from_dag
     from .knowledge_base import build_knowledge_base, ERRORS_COLLECTION, get_embedding_function
-    from .rag_engine import run_rag_pipeline
+    from .rag_engine import (
+        run_rag_pipeline,
+        run_dag_command_pipeline,
+    )
 except ImportError:
     from log_parser import parse_airflow_log
+    from dag_parser import extract_commands_from_dag
     from knowledge_base import build_knowledge_base, ERRORS_COLLECTION, get_embedding_function
-    from rag_engine import run_rag_pipeline
+    from rag_engine import (
+        run_rag_pipeline,
+        run_dag_command_pipeline,
+    )
 
 load_dotenv()
 
@@ -99,7 +108,6 @@ class IngestRequest(BaseModel):
     severity: str = "Medium"
     source_label: str = "User Submitted"
     retrieved_sources: str = ""
-
     class Config:
         json_schema_extra = {
             "example": {
@@ -113,6 +121,25 @@ class IngestRequest(BaseModel):
                 "retrieved_sources": ""
             }
         }
+class AnalyzeDAGRequest(BaseModel):
+    dag_source: str
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "dag_source": "docker run -d minio/minio server /data"
+            }
+        }
+
+class CommandMatch(BaseModel):
+    command: str
+    description: str
+    flags: str
+    usage: str
+
+class AnalyzeDAGResponse(BaseModel):
+    commands_found: list[str]
+    matches: list[CommandMatch]
 
 
 # --- Endpoints ---
@@ -167,6 +194,29 @@ def analyze_log(request: AnalyzeRequest):
         retrieved_sources=result["retrieved_sources"],
     )
 
+@app.post("/analyze-dag", response_model=AnalyzeDAGResponse)
+def analyze_dag(request: AnalyzeDAGRequest):
+    #Analyze DAG source code and retrieve matching command documentation.
+
+    if not request.dag_source.strip():
+        raise HTTPException(status_code=400, detail="dag_source cannot be empty")
+
+    # Extract commands from DAG source
+    found_commands = extract_commands_from_dag(request.dag_source)
+
+    # Query command knowledge base
+    try:
+        result = run_dag_command_pipeline(
+            commands=found_commands,
+            chroma_client=chroma_client,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"DAG analysis error: {str(e)}")
+
+    return AnalyzeDAGResponse(
+        commands_found=result["commands_found"],
+        matches=result["matches"],
+    )
 
 @app.post("/ingest")
 def ingest_new_error(request: IngestRequest):

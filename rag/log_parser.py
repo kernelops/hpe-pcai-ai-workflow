@@ -53,6 +53,15 @@ _NOISE_PATTERNS = [
     r"Using connection ID",
     r"No Host Key Verification",
     r"ssh_conn_id to create SSHHook",
+    r"Task failed with exception",
+    r"Running:\s*\[",
+    r"Running command:.*set -e",
+    r"^\d+%\s*\[",                    # apt progress lines: 0% [Working], 0% [Connecting to ...]
+    r"^\[STEP\]",                     # deployment step banners
+    r"^\[INFO\]",                     # deployment info banners  
+    r"^\[PASS\]",                     # deployment pass banners
+    r"apt(?:-get)?: no process found",# killall output when nothing to kill
+    r"dpkg: no process found",
 ]
 
 _NOISE_RE = re.compile("|".join(_NOISE_PATTERNS), re.IGNORECASE)
@@ -101,8 +110,15 @@ def extract_candidate_lines(log_text: str) -> List[str]:
             continue
 
         message = _extract_log_message(raw_line)
+        
         if not message:
             continue
+
+        if "error: failed to get domain" in message.lower():
+            candidate_lines.append("virsh domstate failed error failed to get domain")
+            continue
+
+        message = re.sub(r'/root/[^:]+:', '/root/:', message)
 
         # Drop noise
         if _NOISE_RE.search(message):
@@ -149,7 +165,7 @@ def parse_airflow_log(log_text: str) -> ParsedError:
 
     if raw_traceback:
         # Use findall to get ALL matches and take the last one (most specific)
-        all_matches = re.findall(r"(\w+(?:Error|Exception|Warning)[^\n]*)", raw_traceback)
+        all_matches = re.findall(r"(\w+(?:Error|Exception|Warning|Timeout)[^\n]*)", raw_traceback)
         if all_matches:
             full_error = all_matches[-1]
             if ":" in full_error:
@@ -179,8 +195,9 @@ def parse_airflow_log(log_text: str) -> ParsedError:
     candidate_lines = extract_candidate_lines(log_text)
 
     if error_message and error_message != "Unknown error":
+        full_error_string = f"{error_type}: {error_message}" if error_type else error_message
         if error_message not in candidate_lines:
-            candidate_lines.append(error_message)
+            candidate_lines.append(full_error_string)
 
     return ParsedError(
         task_id=task_id,

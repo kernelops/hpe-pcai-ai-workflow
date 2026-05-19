@@ -451,6 +451,144 @@ MOCK_PAST_ERRORS = [
         "severity": "Medium - Task failed, but reason is not present in the error message itself ",
         "retrieved_sources": "https://stackoverflow.com/questions/20965762/meaning-of-exit-status-1-returned-by-linux-command"
     },
+    {
+        "id": "err_036", #env error 2
+        "text": "Ign:<N> http://archive.ubuntu.com/ubuntu <CODENAME> InRelease",
+        "source": "OS Installation Logs",
+        "diagnosis": (
+            "apt-get update cannot reach the Ubuntu package repository. The 'Ign' prefix means "
+            "apt attempted to fetch the InRelease file but got no valid response and silently "
+            "skipped it. When combined with repeated '0% [Connecting to archive.ubuntu.com]' "
+            "lines in the log, this indicates a DNS resolution failure or network unreachability "
+            "on the worker node — the hostname cannot be resolved to an IP address. Possible "
+            "causes: DNS server not configured or unreachable, incorrect/empty /etc/resolv.conf, "
+            "firewall blocking DNS (UDP/TCP port 53), no internet connectivity on the worker, "
+            "or proxy not configured for apt."
+        ),
+        "solution": (
+            "On the worker node: "
+            "1. Test basic connectivity: ping -c 3 8.8.8.8. "
+            "2. Test DNS resolution: nslookup archive.ubuntu.com. "
+            "3. If DNS fails, add reliable nameservers: "
+            "echo 'nameserver 8.8.8.8' | sudo tee /etc/resolv.conf && "
+            "echo 'nameserver 1.1.1.1' | sudo tee -a /etc/resolv.conf. "
+            "4. Restart DNS service: sudo systemctl restart systemd-resolved. "
+            "5. If behind a proxy, configure apt proxy: "
+            "echo 'Acquire::http::Proxy \"http://proxy:port\";' | sudo tee /etc/apt/apt.conf.d/01proxy. "
+            "6. Retry: sudo apt-get update. "
+            "Also increase Airflow task execution_timeout if the network fix adds latency."
+        ),
+        "prevention": (
+            "Ensure stable DNS is configured on all worker nodes before deployment. "
+            "Add a pre-flight network check task in the DAG (ping 8.8.8.8 and nslookup archive.ubuntu.com) "
+            "before any apt-get operations. Set Airflow execution_timeout generously for install tasks "
+            "to distinguish true hangs from slow networks. Configure /etc/resolv.conf with reliable "
+            "nameservers (8.8.8.8, 1.1.1.1) as part of node provisioning."
+        ),
+        "error_type": "Network configuration error",
+        "severity": "High - blocks all package installation; apt-get hangs indefinitely causing Airflow task timeout",
+        "retrieved_sources": "https://oneuptime.com/blog/post/2026-03-02-how-to-fix-apt-get-update-failed-errors-on-ubuntu/view"
+    },
+    {
+        "id": "err_037", # os error 4
+        "text": "airflow.exceptions.AirflowTaskTimeout: Timeout, PID: <PID>",
+        "source": "OS Installation Logs",
+        "diagnosis": (
+            "Airflow's execution_timeout was breached. The task process did not complete within "
+            "the configured time limit, so Airflow sent SIGALRM and raised AirflowTaskTimeout. "
+            "This is a symptom, not a root cause — look earlier in the log for what the task was "
+            "blocked on. Common causes: a network operation hung (e.g. apt-get update with DNS "
+            "failure, wget, curl stalling), a long-running install or compile step, or a remote "
+            "SSH command that never returned."
+        ),
+        "solution": (
+            "1. Identify the blocking operation: scan the log above the timeout for repeated "
+            "'0% [Connecting...]', 'Resolving failed', or stalled progress lines. "
+            "2. Fix the underlying issue (DNS, network, firewall, slow mirror). "
+            "3. If the operation is legitimately slow (large package install, slow network), "
+            "increase execution_timeout on the Airflow task: "
+            "execution_timeout=timedelta(minutes=30). "
+            "4. Add retries=1 or retries=2 to the task so transient failures auto-recover."
+        ),
+        "prevention": (
+            "Always set execution_timeout conservatively based on measured task duration. "
+            "Add a pre-flight connectivity check before long-running network operations. "
+            "Use || true on non-critical steps so a single failure does not block the whole script. "
+            "Monitor task duration trends to catch regressions early."
+        ),
+        "error_type": "Task execution timeout",
+        "severity": "High - task fails completely; all commands after the hung step are skipped",
+        "retrieved_sources": "https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/tasks.html"
+    },
+
+    {
+        "id": "err_038", # os error 4
+        "text": "/root/: Permission denied",
+        "source": "OS Installation Logs",
+        "diagnosis": (
+            "A command (like wget or curl) attempted to write to a protected root-owned system directory "
+            "(/root/) without sudo privileges. This is a common failure when downloading files to root "
+            "home directories in automated pipelines."
+        ),
+        "solution": (
+            "1. Change the output path in the script/DAG to a user-writable directory like /tmp/.\n"
+            "2. If you must write to /root/, use 'sudo wget' to gain necessary file system permissions."
+        ),
+        "prevention": (
+            "Staging downloads to /tmp/ is the standard for non-root automated tasks. Audit scripts to "
+            "ensure write targets are in the user's home or /tmp/."
+        ),
+        "error_type": "Filesystem Permission error",
+        "severity": "Medium",
+        "retrieved_sources": "https://askubuntu.com/questions/1165604/wget-permission-denied"
+    },
+    {
+        "id": "err_039", #os error 8
+        "text": "/root/: Permission denied. SSH operator error: exit status = 1.",
+        "source": "OS Installation Logs",
+        "diagnosis": (
+            "An SSH task (like wget or curl) attempted to write a file to a protected system directory "
+            "(such as /root or /etc) without elevated privileges. Standard users do not have write access "
+            "to these directories, resulting in a 'Permission denied' filesystem error."
+        ),
+        "solution": (
+            "1. Best Practice: Change the download destination in the DAG to a universally writable directory "
+            "used for staging, such as /tmp/ (e.g., wget -O /tmp/alpine-virt.iso). "
+            "2. Alternative: If the file must strictly reside in /root/, execute the command with elevated "
+            "privileges by adding sudo (e.g., sudo wget -O /root/alpine-virt.iso)."
+        ),
+        "prevention": (
+            "Always use standard user-writable directories (like /tmp) for staging temporary downloads in automated scripts. "
+            "Only escalate privileges with sudo when absolutely necessary."
+        ),
+        "error_type": "Command execution failure",
+        "severity": "Medium - remote shell task returned a generic error status",
+        "retrieved_sources": "https://askubuntu.com/questions/1165604/wget-permission-denied"
+    },
+
+    {
+        "id": "err_040", # os error 8
+        # Keep only the static, repeating parts of the error message
+        "text": "virsh domstate failed error failed to get domain", 
+        "source": "OS Validation Logs",
+        "diagnosis": (
+            "virsh domstate was called on a VM name that does not exist in libvirt. "
+            "This indicates the VM name is misspelled, not defined, or the VM has been destroyed. "
+            "The error is typically: 'error: failed to get domain <NAME>'."
+        ),
+        "solution": (
+            "1. Run 'sudo virsh list --all' to see all defined VMs and verify the correct name.\n"
+            "2. Ensure the VM name in your DAG/script matches the registered libvirt domain name exactly.\n"
+            "3. If this is a cleanup script, wrap the command in a check: '(virsh dominfo <NAME> &>/dev/null && sudo virsh domstate <NAME> || echo 'VM not found, skipping.')'."
+        ),
+        "prevention": (
+            "Always guard virsh commands with a domain existence check. "
+            "Validate VM names as pipeline parameters before the DAG run begins."
+        ),
+        "error_type": "Runtime error",
+        "severity": "Low - domain interaction failed",
+        "retrieved_sources": "https://lists.libvirt.org/archives/list/users@lists.libvirt.org/thread/PLUM4LMGJNOB7FQ4NHLN7CPPQEHLGX2G/"
+    },
 ]
 
 # Phase 2 Attempt 1 - Add commands, their valid flags and usage

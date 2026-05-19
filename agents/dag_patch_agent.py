@@ -246,8 +246,16 @@ class DagPatchAgent:
             resp = requests.get(url, auth=self._auth(), timeout=10)
             if resp.status_code == 200:
                 tasks = resp.json().get("task_instances", [])
-                return [t["task_id"] for t in tasks
-                        if t.get("state") in ("failed", "upstream_failed")]
+                failed = []
+                for task in tasks:
+                    if task.get("state") not in ("failed", "upstream_failed"):
+                        continue
+                    task_id = task["task_id"]
+                    map_index = task.get("map_index")
+                    if isinstance(map_index, int) and map_index >= 0:
+                        task_id = f"{task_id}/map_index={map_index}"
+                    failed.append(task_id)
+                return failed
         except Exception:
             pass
         return []

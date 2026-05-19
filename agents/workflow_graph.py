@@ -1,5 +1,6 @@
 # agents/workflow_graph.py
 import json
+from datetime import datetime
 from typing import TypedDict, Optional
 from langgraph.graph import StateGraph, END
 
@@ -163,6 +164,53 @@ def node_dag_patch(state: PipelineState) -> PipelineState:
     return state
 
 
+def node_reanalyse_remediation_failure(state: PipelineState) -> PipelineState:
+    print("\n[Graph] 🔁 Node: Re-analyse Remediation Failure")
+    result = state.get("dag_patch_result")
+    previous_failure = state.get("task_failure")
+
+    if not result:
+        print("  No DAG patch result available — keeping previous RCA")
+        return state
+
+    task_id = (
+        result.failed_tasks[0]
+        if result.failed_tasks
+        else previous_failure.task_id if previous_failure else "remediation_workflow"
+    )
+    dag_run_id = result.dag_run_id or (previous_failure.dag_run_id if previous_failure else "")
+    dag_id = result.remediation_dag_id or "remediation_workflow"
+
+    if result.dag_run_id and task_id:
+        try:
+            print(f"  Fetching fresh logs from {dag_id}/{result.dag_run_id}/{task_id}")
+            log_text = _monitor.get_task_log(result.dag_run_id, task_id, dag_id=dag_id)
+        except Exception as exc:
+            print(f"  Could not fetch remediation logs — using previous failure log: {exc}")
+            log_text = previous_failure.log_text if previous_failure else "Log unavailable"
+    else:
+        print("  Remediation DAG run id unavailable — using previous failure log")
+        log_text = previous_failure.log_text if previous_failure else "Log unavailable"
+
+    fresh_failure = TaskFailure(
+        dag_run_id=dag_run_id,
+        task_id=task_id,
+        state="failed" if result.run_outcome != "timeout" else "stalled",
+        log_text=log_text,
+        timestamp=datetime.now().isoformat(),
+    )
+
+    error_report = _log.analyse(fresh_failure)
+    rca_report = _rca.analyse(error_report)
+
+    state["task_failure"] = fresh_failure
+    state["error_report"] = error_report
+    state["rca_report"] = rca_report
+    state["current_attempt"] = 2
+    state["pipeline_status"] = "reanalyzed"
+    return state
+
+
 def node_fix_generator(state: PipelineState) -> PipelineState:
     print("\n[Graph] 🔧 Node: Fix Generator Agent")
     rca = state["rca_report"]
@@ -294,10 +342,9 @@ def route_after_dag_patch(state: PipelineState) -> str:
     result = state.get("dag_patch_result")
     if result and result.run_outcome == "success":
         return "end"               # → DAG fix worked, done!
-    # DAG fix failed — escalate to SSH healing
-    print("[Graph] ⚠️  DAG correction alone did not resolve all errors — escalating to SSH healing")
-    state["current_attempt"] = 2
-    return "fix_generator"         # → Attempt 2: SSH infrastructure fix
+    # DAG fix failed — fetch the new remediation failure logs before SSH healing.
+    print("[Graph] ⚠️  DAG correction alone did not resolve all errors — re-analysing remediation failure")
+    return "reanalyse_remediation_failure"
 
 
 def route_after_retry_check(state: PipelineState) -> str:
@@ -327,6 +374,7 @@ def build_graph() -> StateGraph:
     # Phase 2 Hybrid nodes
     graph.add_node("dag_analysis",  node_dag_analysis)
     graph.add_node("dag_patch",     node_dag_patch)
+    graph.add_node("reanalyse_remediation_failure", node_reanalyse_remediation_failure)
     graph.add_node("fix_generator", node_fix_generator)
     graph.add_node("fix_executor",  node_fix_executor)
     graph.add_node("validation_agent", node_validation_agent)
@@ -342,6 +390,7 @@ def build_graph() -> StateGraph:
     graph.add_edge("fix_generator", "fix_executor")
     graph.add_edge("fix_executor",  "validation_agent")
     graph.add_edge("validation_agent", "retry_check")
+    graph.add_edge("reanalyse_remediation_failure", "fix_generator")
 
     # Conditional edges
     graph.add_conditional_edges(
@@ -388,7 +437,7 @@ def build_graph() -> StateGraph:
         route_after_dag_patch,
         {
             "end"           : END,
-            "fix_generator" : "fix_generator"
+            "reanalyse_remediation_failure" : "reanalyse_remediation_failure"
         }
     )
 

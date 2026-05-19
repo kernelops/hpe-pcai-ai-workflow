@@ -2,6 +2,7 @@
 import requests
 import time
 import os
+import re
 from datetime import datetime
 from common.config import (AIRFLOW_BASE_URL, AIRFLOW_USERNAME,
                            AIRFLOW_PASSWORD, POLL_INTERVAL_SEC,
@@ -20,32 +21,44 @@ class MonitorWorkflowAgent:
         self.base_url = AIRFLOW_BASE_URL
         self.auth     = (AIRFLOW_USERNAME, AIRFLOW_PASSWORD)
 
-    def get_task_instances(self, dag_run_id: str) -> list[dict]:
+    def _split_mapped_task_id(self, task_id: str) -> tuple[str, int | None]:
+        match = re.match(r"^(?P<task_id>.+)/map_index=(?P<map_index>-?\d+)$", task_id)
+        if not match:
+            return task_id, None
+        return match.group("task_id"), int(match.group("map_index"))
+
+    def get_task_instances(self, dag_run_id: str, dag_id: str | None = None) -> list[dict]:
+        dag_id = dag_id or AIRFLOW_DAG_ID
         r = requests.get(
-            f"{self.base_url}/api/v1/dags/{AIRFLOW_DAG_ID}"
+            f"{self.base_url}/api/v1/dags/{dag_id}"
             f"/dagRuns/{dag_run_id}/taskInstances",
             auth=self.auth
         )
         return r.json().get("task_instances", [])
 
-    def get_task_log(self, dag_run_id: str, task_id: str) -> str:
+    def get_task_log(self, dag_run_id: str, task_id: str, dag_id: str | None = None) -> str:
+        dag_id = dag_id or AIRFLOW_DAG_ID
+        api_task_id, map_index = self._split_mapped_task_id(task_id)
+        params = {"map_index": map_index} if map_index is not None and map_index >= 0 else None
         r = requests.get(
-            f"{self.base_url}/api/v1/dags/{AIRFLOW_DAG_ID}"
-            f"/dagRuns/{dag_run_id}/taskInstances/{task_id}/logs/1",
-            auth=self.auth
+            f"{self.base_url}/api/v1/dags/{dag_id}"
+            f"/dagRuns/{dag_run_id}/taskInstances/{api_task_id}/logs/1",
+            auth=self.auth,
+            params=params,
         )
         return r.text if r.status_code == 200 else "Log unavailable"
 
-    def monitor(self, dag_run_id: str) -> TaskFailure | None:
+    def monitor(self, dag_run_id: str, dag_id: str | None = None) -> TaskFailure | None:
         """
         Polls until DAG completes or a task fails.
         Returns TaskFailure if something fails, None if all succeed.
         """
-        print(f"[MonitorAgent] 👁 Watching DAG run: {dag_run_id}")
+        dag_id = dag_id or AIRFLOW_DAG_ID
+        print(f"[MonitorAgent] 👁 Watching DAG run: {dag_id}/{dag_run_id}")
         task_start_times = {}
 
         while True:
-            tasks = self.get_task_instances(dag_run_id)
+            tasks = self.get_task_instances(dag_run_id, dag_id=dag_id)
 
             for task in tasks:
                 task_id = task["task_id"]
@@ -61,7 +74,7 @@ class MonitorWorkflowAgent:
                     if elapsed > TASK_TIMEOUT_SEC:
                         print(f"[MonitorAgent] ⚠️  Task STALLED: {task_id} "
                               f"({int(elapsed)}s)")
-                        log = self.get_task_log(dag_run_id, task_id)
+                        log = self.get_task_log(dag_run_id, task_id, dag_id=dag_id)
                         return TaskFailure(
                             dag_run_id=dag_run_id,
                             task_id=task_id,
@@ -74,7 +87,7 @@ class MonitorWorkflowAgent:
                 if state in FAILURE_STATES:
                     print(f"[MonitorAgent] ❌ Task FAILED: {task_id} "
                           f"(state: {state})")
-                    log = self.get_task_log(dag_run_id, task_id)
+                    log = self.get_task_log(dag_run_id, task_id, dag_id=dag_id)
                     return TaskFailure(
                         dag_run_id=dag_run_id,
                         task_id=task_id,
@@ -111,4 +124,3 @@ class MonitorWorkflowAgent:
             log_text   = log_text,
             timestamp  = datetime.now().isoformat()
         )
-

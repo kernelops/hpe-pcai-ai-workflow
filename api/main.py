@@ -653,13 +653,20 @@ def autofix_pipeline(request: AutofixPipelineRequest):
         )
 
         actual_failed_task_id = patch_result_1.failed_tasks[0] if patch_result_1.failed_tasks else request.failed_task
-        try:
-            attempt1_log = _monitor.get_task_log(patch_result_1.dag_run_id, actual_failed_task_id)
-        except Exception:
+        if patch_result_1.dag_run_id:
+            try:
+                attempt1_log = _monitor.get_task_log(
+                    patch_result_1.dag_run_id,
+                    actual_failed_task_id,
+                    dag_id=patch_result_1.remediation_dag_id,
+                )
+            except Exception:
+                attempt1_log = request.log_text
+        else:
             attempt1_log = request.log_text
 
         attempt1_failure = TaskFailure(
-            dag_run_id=patch_result_1.dag_run_id,
+            dag_run_id=patch_result_1.dag_run_id or request.dag_run_id,
             task_id=actual_failed_task_id,
             state="failed",
             log_text=attempt1_log,
@@ -668,6 +675,29 @@ def autofix_pipeline(request: AutofixPipelineRequest):
 
         attempt1_error_report = _log.analyse(attempt1_failure)
         attempt1_rca = _rca.analyse(attempt1_error_report)
+
+        phase1["attempt_2_reanalysis"] = {
+            "dag_id": patch_result_1.remediation_dag_id,
+            "dag_run_id": patch_result_1.dag_run_id,
+            "failed_task": actual_failed_task_id,
+            "log_analysis": {
+                "task_id": attempt1_error_report.task_id,
+                "error_type": attempt1_error_report.error_type,
+                "error_message": attempt1_error_report.error_message,
+                "error_line": attempt1_error_report.error_line,
+                "diagnosis": attempt1_error_report.diagnosis,
+                "confidence": attempt1_error_report.confidence,
+                "rag_diagnosis": attempt1_error_report.rag_diagnosis,
+                "rag_solution": attempt1_error_report.rag_solution,
+                "rag_sources": attempt1_error_report.rag_sources,
+            },
+            "root_cause": {
+                "root_cause": attempt1_rca.root_cause,
+                "classification": attempt1_rca.classification,
+                "severity": attempt1_rca.severity,
+                "engineer_action": attempt1_rca.engineer_action,
+            },
+        }
 
         # Re-run SSH fix pipeline with the correct RCA
         strategy = _fix_gen.generate(attempt1_rca)
@@ -687,6 +717,9 @@ def autofix_pipeline(request: AutofixPipelineRequest):
 
         phase1["fix_generator_agent"] = {
             "thinking": [
+                f"Attempt 2: Fetched fresh failed logs from {patch_result_1.remediation_dag_id}/{patch_result_1.dag_run_id}",
+                f"Attempt 2: Re-ran Log Analyser Agent and found: {attempt1_error_report.error_type}",
+                f"Attempt 2: Re-ran Root Cause Agent: {attempt1_rca.root_cause}",
                 f"Attempt 2: Generating SSH fix commands for: {actual_failed_task_id}",
                 f"Classification: {attempt1_rca.classification} | Severity: {attempt1_rca.severity}",
                 f"Fix type: {strategy.fix_type}",
@@ -700,6 +733,11 @@ def autofix_pipeline(request: AutofixPipelineRequest):
                 "estimated_risk": strategy.estimated_risk,
                 "description": strategy.description,
                 "requires_approval": strategy.requires_approval,
+                "source_dag_id": patch_result_1.remediation_dag_id,
+                "source_dag_run_id": patch_result_1.dag_run_id,
+                "source_failed_task": actual_failed_task_id,
+                "fresh_error_type": attempt1_error_report.error_type,
+                "fresh_root_cause": attempt1_rca.root_cause,
             },
         }
         phase1["fix_executor_agent"] = {
@@ -832,4 +870,3 @@ def queue_status():
         })
         
     return {"queue_available": True, "queued_errors": errors}
-

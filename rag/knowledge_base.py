@@ -600,6 +600,17 @@ MOCK_PAST_ERRORS = [
         "severity": "Medium - package installation fails and blocks dependent setup steps, but no system damage",
         "retrieved_sources": "https://itsfoss.com/unable-to-locate-package-error-ubuntu/, https://askubuntu.com/questions/378558/unable-to-locate-package-while-trying-to-install-packages-with-apt"
     },
+    {
+        "id": "err_042", #for os error 1
+        "text": "virsh destroy failed error failed to get domain",
+        "source": "OS Validation Logs",
+        "diagnosis": "virsh destroy was called on a VM name that does not exist in libvirt. The domain was never created, was already destroyed, or the name is misspelled. virsh exits with code 1 when it cannot find the domain, which causes set -e scripts to abort immediately.",
+        "solution": "Check if the domain exists before attempting to destroy it: (virsh dominfo <VM_NAME> &>/dev/null && sudo virsh destroy <VM_NAME> || echo 'VM not found, skipping.'). Alternatively list all known domains first (virsh list --all) and verify the name. Use virsh undefine <VM_NAME> if you also want to remove the domain definition.",
+        "prevention": "Always guard virsh destroy with a domain existence check. Treat 'domain not found' as a non-fatal condition during cleanup tasks. Use idempotent cleanup patterns.",
+        "error_type": "Runtime error",
+        "severity": "Low - cleanup intent is already achieved if domain does not exist; fix is to suppress the error gracefully",
+        "retrieved_sources": "https://lists.libvirt.org/archives/list/users@lists.libvirt.org/thread/PLUM4LMGJNOB7FQ4NHLN7CPPQEHLGX2G/"
+},
 ]
 
 # Phase 2 Attempt 1 - Add commands, their valid flags and usage

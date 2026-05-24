@@ -589,6 +589,17 @@ MOCK_PAST_ERRORS = [
         "severity": "Low - domain interaction failed",
         "retrieved_sources": "https://lists.libvirt.org/archives/list/users@lists.libvirt.org/thread/PLUM4LMGJNOB7FQ4NHLN7CPPQEHLGX2G/"
     },
+    {
+        "id": "err_041", #for os error 2
+        "text": "E: Unable to locate package <PACKAGE_NAME>.",
+        "source": "OS Validation Logs",
+        "diagnosis": "apt-get could not find the specified package in any configured repository. apt exits with code 100 on this failure. Likely causes: package name is misspelled, apt cache is stale and needs updating, package does not exist in the configured repositories, required third-party repository is missing from sources.list, or the package is not available for the current OS version/codename.",
+        "solution": "Run apt-get update first to refresh the package cache (sudo apt-get update). Verify the exact package name (apt-cache search <KEYWORD>). Check if the package exists for your distribution version at https://packages.ubuntu.com. If it requires a third-party repo, add it first (sudo add-apt-repository <REPO> && sudo apt-get update). Verify OS version compatibility (lsb_release -a).",
+        "prevention": "Always run apt-get update before apt-get install in scripts. Validate package names against the target OS version before automating. Pin known-good package names in deployment scripts.",
+        "error_type": "Configuration error",
+        "severity": "Medium - package installation fails and blocks dependent setup steps, but no system damage",
+        "retrieved_sources": "https://itsfoss.com/unable-to-locate-package-error-ubuntu/, https://askubuntu.com/questions/378558/unable-to-locate-package-while-trying-to-install-packages-with-apt"
+    },
 ]
 
 # Phase 2 Attempt 1 - Add commands, their valid flags and usage

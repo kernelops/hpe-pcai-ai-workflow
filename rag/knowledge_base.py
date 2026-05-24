@@ -543,31 +543,7 @@ MOCK_PAST_ERRORS = [
         "retrieved_sources": "https://askubuntu.com/questions/1165604/wget-permission-denied"
     },
     {
-        "id": "err_039", #os error 8
-        "text": "/root/: Permission denied. SSH operator error: exit status = 1.",
-        "source": "OS Installation Logs",
-        "diagnosis": (
-            "An SSH task (like wget or curl) attempted to write a file to a protected system directory "
-            "(such as /root or /etc) without elevated privileges. Standard users do not have write access "
-            "to these directories, resulting in a 'Permission denied' filesystem error."
-        ),
-        "solution": (
-            "1. Best Practice: Change the download destination in the DAG to a universally writable directory "
-            "used for staging, such as /tmp/ (e.g., wget -O /tmp/alpine-virt.iso). "
-            "2. Alternative: If the file must strictly reside in /root/, execute the command with elevated "
-            "privileges by adding sudo (e.g., sudo wget -O /root/alpine-virt.iso)."
-        ),
-        "prevention": (
-            "Always use standard user-writable directories (like /tmp) for staging temporary downloads in automated scripts. "
-            "Only escalate privileges with sudo when absolutely necessary."
-        ),
-        "error_type": "Command execution failure",
-        "severity": "Medium - remote shell task returned a generic error status",
-        "retrieved_sources": "https://askubuntu.com/questions/1165604/wget-permission-denied"
-    },
-
-    {
-        "id": "err_040", # os error 8
+        "id": "err_039", # os error 8
         # Keep only the static, repeating parts of the error message
         "text": "virsh domstate failed error failed to get domain", 
         "source": "OS Validation Logs",
@@ -590,7 +566,7 @@ MOCK_PAST_ERRORS = [
         "retrieved_sources": "https://lists.libvirt.org/archives/list/users@lists.libvirt.org/thread/PLUM4LMGJNOB7FQ4NHLN7CPPQEHLGX2G/"
     },
     {
-        "id": "err_041", #for os error 2
+        "id": "err_040", #for os error 2
         "text": "E: Unable to locate package <PACKAGE_NAME>.",
         "source": "OS Validation Logs",
         "diagnosis": "apt-get could not find the specified package in any configured repository. apt exits with code 100 on this failure. Likely causes: package name is misspelled, apt cache is stale and needs updating, package does not exist in the configured repositories, required third-party repository is missing from sources.list, or the package is not available for the current OS version/codename.",
@@ -601,7 +577,7 @@ MOCK_PAST_ERRORS = [
         "retrieved_sources": "https://itsfoss.com/unable-to-locate-package-error-ubuntu/, https://askubuntu.com/questions/378558/unable-to-locate-package-while-trying-to-install-packages-with-apt"
     },
     {
-        "id": "err_042", #for os error 1
+        "id": "err_041", #for os error 1
         "text": "virsh destroy failed error failed to get domain",
         "source": "OS Validation Logs",
         "diagnosis": "virsh destroy was called on a VM name that does not exist in libvirt. The domain was never created, was already destroyed, or the name is misspelled. virsh exits with code 1 when it cannot find the domain, which causes set -e scripts to abort immediately.",

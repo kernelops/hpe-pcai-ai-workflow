@@ -1,0 +1,8 @@
+{
+  "reportMissingImports": "warning",
+  "reportMissingModuleSource": "none",
+  "exclude": [
+    "airflow/dags/**",
+    "airflow/**"
+  ]
+}

@@ -525,13 +525,33 @@ def start_deployment():
         },
     }
     
+    import time as _time
+
     try:
         with _airflow_client() as client:
-            resp = client.post(f"/api/v1/dags/{AIRFLOW_DAG_ID}/dagRuns", json=payload)
-            if resp.status_code not in (200, 201):
+            # Step 1: Ensure DAG is unpaused (required after fresh restart)
+            unpause_resp = client.patch(
+                f"/api/v1/dags/{AIRFLOW_DAG_ID}",
+                json={"is_paused": False},
+            )
+            if unpause_resp.status_code == 200:
+                print(f"✅ DAG '{AIRFLOW_DAG_ID}' unpaused successfully")
+            else:
+                print(f"⚠️ Unpause returned {unpause_resp.status_code}: {unpause_resp.text[:200]}")
+
+            # Step 2: Trigger with retry (Airflow may still be parsing after restart)
+            last_err = ""
+            for attempt in range(3):
+                resp = client.post(f"/api/v1/dags/{AIRFLOW_DAG_ID}/dagRuns", json=payload)
+                if resp.status_code in (200, 201):
+                    break
+                last_err = resp.text
+                print(f"⚠️ Trigger attempt {attempt + 1}/3 failed ({resp.status_code}), retrying in 3s...")
+                _time.sleep(3)
+            else:
                 raise HTTPException(
                     status_code=500,
-                    detail=f"Failed to trigger DAG: {resp.status_code} {resp.text}",
+                    detail=f"Failed to trigger DAG after 3 attempts: {last_err[:500]}",
                 )
             data = resp.json()
     except httpx.RequestError as exc:

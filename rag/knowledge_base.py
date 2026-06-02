@@ -588,7 +588,7 @@ MOCK_PAST_ERRORS = [
         "retrieved_sources": "https://lists.libvirt.org/archives/list/users@lists.libvirt.org/thread/PLUM4LMGJNOB7FQ4NHLN7CPPQEHLGX2G/"
     },
     {
-        "id": "err_043", #os error 5
+        "id": "err_042", #os error 5
         "text": "cannot set up guest memory pc.ram Cannot allocate memory",
         "source": "OS Installation Logs",
         "diagnosis": "virt-install failed because the requested memory value exceeds what the host system can allocate. QEMU tried to reserve the specified RAM for the VM but the host does not have enough free memory. This is caused by passing an invalid or excessively large --memory value to virt-install.",
@@ -597,6 +597,17 @@ MOCK_PAST_ERRORS = [
         "error_type": "Resource allocation error",
         "severity": "Medium - VM provisioning fails completely, host system is unaffected",
         "retrieved_sources": "https://access.redhat.com/solutions/1464463"
+    },
+    {
+        "id": "err_043", #os error 6
+        "text": "Validating install media failed Must specify storage creation parameters for non-existent path",
+        "source": "OS Installation Logs",
+        "diagnosis": "virt-install failed because the ISO file specified with --cdrom does not exist at the given path. The download step either failed, was skipped, or the file was saved to a different location. virt-install validates the media path before starting installation and aborts if the file is missing.",
+        "solution": "1. Check if the ISO file exists: ls -lh /tmp/alpine-virt.iso. 2. Re-download the ISO to the correct path: wget -O /tmp/alpine-virt.iso <URL>. 3. Verify the --cdrom path in the virt-install command matches the actual file location. 4. Retry virt-install with the correct ISO path.",
+        "prevention": "Always verify the ISO file exists before running virt-install. Add a pre-check step: test -f /tmp/alpine-virt.iso || exit 1. Ensure the download task completes successfully before the provision task runs.",
+        "error_type": "Configuration error",
+        "severity": "Medium - VM provisioning fails completely but fix is straightforward",
+        "retrieved_sources": "https://linux.die.net/man/1/virt-install"
     },
     
 ]

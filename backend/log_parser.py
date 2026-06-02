@@ -133,6 +133,9 @@ def _extract_evidence_lines(body: str) -> List[str]:
         r"curl\s*:?\s*\(\d+\)",
         r"exportfs:",
         r"mount\.nfs:",
+        r"nfs consistency validation failed",
+        r"nfs mount inconsistency",
+        r"check\.txt missing",
         r"command not found",
         r"failed to enable unit",
         r"job for .* failed",
@@ -162,7 +165,7 @@ def _extract_evidence_lines(body: str) -> List[str]:
             continue
 
         if re.search(
-            r"ERROR|failed|exception|refused|timed out|unable to|sudo:|curl:|exportfs:|does not exist",
+            r"ERROR|failed|exception|refused|timed out|unable to|sudo:|curl:|exportfs:|does not exist|missing|inconsistency",
             clean,
             re.IGNORECASE,
         ):

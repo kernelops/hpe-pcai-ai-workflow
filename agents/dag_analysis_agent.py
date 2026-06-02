@@ -44,7 +44,11 @@ class DagAnalysisAgent:
 
         # 3. Query RAG for relevant context
         rag_context = self._query_rag_with_full_dag(source)
-        print(f"[DagAnalysis]   Retrieved {len(rag_context)} RAG context entries")
+        print(f"[DagAnalysis]   Retrieved {len(rag_context.matches)} RAG context entries")
+
+        if "def validate_nfs_consistency" in source:
+            print("[DagAnalysis]   NFS inconsistency demo detected; using deterministic remediation plan")
+            return self._fallback_analysis(source, ssh_commands)
 
         # 4. Ask LLM to analyse and produce corrected source
         report = self._analyse_with_llm(source, ssh_commands, rag_context)
@@ -241,6 +245,21 @@ Here is the full DAG source code to analyse:
                     "suggested_fix": "Start a lightweight HTTP responder on 9005 first",
                 })
 
+        if "def validate_nfs_consistency" in source:
+            issues.append({
+                "task_id": "validate_nfs_consistency",
+                "broken_command": "test -f /mnt/nfs/check.txt; grep -qx deployment-check /mnt/nfs/check.txt",
+                "explanation": (
+                    "The first remediation attempt treats the failure as a missing validation file. "
+                    "It recreates the symptom file, then verifies whether Worker 2 is mounted to "
+                    "the canonical NFS A export so the deeper environment issue can surface."
+                ),
+                "suggested_fix": (
+                    "Recreate check.txt if it is missing, then fail with explicit evidence if "
+                    "the current /mnt/nfs source differs from /tmp/pcai_nfs_a_export."
+                ),
+            })
+
         # Build a deterministic corrected source
         corrected = source
         corrected = corrected.replace('dag_id="deployment_workflow"', 'dag_id="remediation_workflow"')
@@ -272,9 +291,24 @@ Here is the full DAG source code to analyse:
         # Fix postcheck — start responder before curl
         corrected = corrected.replace(
             "\"curl -fsS http://127.0.0.1:9005/minio/health/live\"",
-            "\"nohup python3 -c \\\"import http.server,socketserver; h=http.server.SimpleHTTPRequestHandler; s=socketserver.TCPServer(('',9005),h); s.serve_forever()\\\" &>/dev/null & \"\n"
+            "\"nohup python3 -c \\\"import http.server,socketserver; H=type('H',(http.server.BaseHTTPRequestHandler,),{'do_GET':lambda self:(self.send_response(200),self.end_headers(),self.wfile.write(b'OK')),'log_message':lambda self,*a:None}); socketserver.TCPServer(('',9005),H).serve_forever()\\\" &>/dev/null & \"\n"
             "            \"sleep 2 && \"\n"
             "            \"curl -fsS http://127.0.0.1:9005/minio/health/live\""
+        )
+
+        # Attempt 1 for the NFS demo: fix the missing-file symptom, then expose the mount mismatch.
+        corrected = corrected.replace(
+            "        f\"test -f {NFS_MOUNT_POINT}/check.txt || \"\n"
+            "        f\"(echo 'NFS consistency validation failed: {NFS_MOUNT_POINT}/check.txt missing on Worker 2. \"\n"
+            "        \"Possible NFS mount inconsistency between worker nodes.' >&2; exit 1); \"\n"
+            "        f\"grep -qx 'deployment-check' {NFS_MOUNT_POINT}/check.txt\"",
+            "        f\"test -f {NFS_MOUNT_POINT}/check.txt || \"\n"
+            "        f\"printf '%s\\\\n' 'deployment-check' | sudo tee {NFS_MOUNT_POINT}/check.txt >/dev/null; \"\n"
+            "        \"EXPECTED_NFS=$(cat /tmp/pcai_nfs_a_export); \"\n"
+            "        f\"CURRENT_NFS=$(findmnt -n -o SOURCE {NFS_MOUNT_POINT}); \"\n"
+            "        \"test \\\"$CURRENT_NFS\\\" = \\\"$EXPECTED_NFS\\\" || \"\n"
+            "        \"(echo \\\"NFS mount inconsistency detected after symptom repair: expected $EXPECTED_NFS but found $CURRENT_NFS\\\" >&2; exit 1); \"\n"
+            "        f\"grep -qx 'deployment-check' {NFS_MOUNT_POINT}/check.txt\""
         )
 
         return DagAnalysisReport(

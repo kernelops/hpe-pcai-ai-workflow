@@ -652,127 +652,198 @@ def autofix_pipeline(request: AutofixPipelineRequest):
             "⚠️ DAG corrected, but errors persist. Proceeding to Attempt 2 (Infrastructure Healing)..."
         )
 
-        actual_failed_task_id = patch_result_1.failed_tasks[0] if patch_result_1.failed_tasks else request.failed_task
-        if patch_result_1.dag_run_id:
-            try:
-                attempt1_log = _monitor.get_task_log(
-                    patch_result_1.dag_run_id,
-                    actual_failed_task_id,
-                    dag_id=patch_result_1.remediation_dag_id,
-                )
-            except Exception:
+        def _base_task_id(task_id: str) -> str:
+            return task_id.split("/map_index=", 1)[0].split("/attempt=", 1)[0]
+
+        def _unique_failed_tasks(task_ids: list[str]) -> list[str]:
+            unique: list[str] = []
+            seen: set[str] = set()
+            for task_id in task_ids:
+                base = _base_task_id(task_id)
+                if base in seen:
+                    continue
+                seen.add(base)
+                unique.append(task_id)
+            return unique
+
+        attempt_2_tasks = _unique_failed_tasks(patch_result_1.failed_tasks or [request.failed_task])
+        attempt_2_reanalyses = []
+        attempt_2_results = []
+
+        for actual_failed_task_id in attempt_2_tasks:
+            if patch_result_1.dag_run_id:
+                try:
+                    attempt1_log = _monitor.get_task_log(
+                        patch_result_1.dag_run_id,
+                        actual_failed_task_id,
+                        dag_id=patch_result_1.remediation_dag_id,
+                    )
+                except Exception:
+                    attempt1_log = request.log_text
+            else:
                 attempt1_log = request.log_text
-        else:
-            attempt1_log = request.log_text
 
-        attempt1_failure = TaskFailure(
-            dag_run_id=patch_result_1.dag_run_id or request.dag_run_id,
-            task_id=actual_failed_task_id,
-            state="failed",
-            log_text=attempt1_log,
-            timestamp=datetime.now().isoformat()
-        )
+            attempt1_failure = TaskFailure(
+                dag_run_id=patch_result_1.dag_run_id or request.dag_run_id,
+                task_id=actual_failed_task_id,
+                state="failed",
+                log_text=attempt1_log,
+                timestamp=datetime.now().isoformat(),
+            )
 
-        attempt1_error_report = _log.analyse(attempt1_failure)
-        attempt1_rca = _rca.analyse(attempt1_error_report)
+            attempt1_error_report = _log.analyse(attempt1_failure)
+            attempt1_rca = _rca.analyse(attempt1_error_report)
+            strategy = _fix_gen.generate(attempt1_rca)
+            approved = request.auto_approve or not strategy.requires_approval
+            result = _fix_exec.execute(
+                strategy=strategy,
+                worker_nodes=request.worker_nodes,
+                approved=approved,
+                mock=request.mock or not request.worker_nodes,
+            )
+            val_report = _val.validate(
+                fix_result=result,
+                worker_nodes=request.worker_nodes,
+                mock=request.mock or not request.worker_nodes,
+                task_id=actual_failed_task_id,
+            )
 
-        phase1["attempt_2_reanalysis"] = {
-            "dag_id": patch_result_1.remediation_dag_id,
-            "dag_run_id": patch_result_1.dag_run_id,
-            "failed_task": actual_failed_task_id,
-            "log_analysis": {
-                "task_id": attempt1_error_report.task_id,
-                "error_type": attempt1_error_report.error_type,
-                "error_message": attempt1_error_report.error_message,
-                "error_line": attempt1_error_report.error_line,
-                "diagnosis": attempt1_error_report.diagnosis,
-                "confidence": attempt1_error_report.confidence,
-                "rag_diagnosis": attempt1_error_report.rag_diagnosis,
-                "rag_solution": attempt1_error_report.rag_solution,
-                "rag_sources": attempt1_error_report.rag_sources,
-            },
-            "root_cause": {
-                "root_cause": attempt1_rca.root_cause,
-                "classification": attempt1_rca.classification,
-                "severity": attempt1_rca.severity,
-                "engineer_action": attempt1_rca.engineer_action,
-            },
-        }
+            reanalysis = {
+                "dag_id": patch_result_1.remediation_dag_id,
+                "dag_run_id": patch_result_1.dag_run_id,
+                "failed_task": actual_failed_task_id,
+                "log_analysis": {
+                    "task_id": attempt1_error_report.task_id,
+                    "error_type": attempt1_error_report.error_type,
+                    "error_message": attempt1_error_report.error_message,
+                    "error_line": attempt1_error_report.error_line,
+                    "diagnosis": attempt1_error_report.diagnosis,
+                    "confidence": attempt1_error_report.confidence,
+                    "rag_diagnosis": attempt1_error_report.rag_diagnosis,
+                    "rag_solution": attempt1_error_report.rag_solution,
+                    "rag_sources": attempt1_error_report.rag_sources,
+                },
+                "root_cause": {
+                    "root_cause": attempt1_rca.root_cause,
+                    "classification": attempt1_rca.classification,
+                    "severity": attempt1_rca.severity,
+                    "engineer_action": attempt1_rca.engineer_action,
+                },
+            }
+            attempt_2_reanalyses.append(reanalysis)
+            attempt_2_results.append({
+                "failed_task": actual_failed_task_id,
+                "strategy": strategy,
+                "result": result,
+                "validation": val_report,
+                "error_report": attempt1_error_report,
+                "rca": attempt1_rca,
+            })
 
-        # Re-run SSH fix pipeline with the correct RCA
-        strategy = _fix_gen.generate(attempt1_rca)
-        approved = request.auto_approve or not strategy.requires_approval
-        result = _fix_exec.execute(
-            strategy=strategy,
-            worker_nodes=request.worker_nodes,
-            approved=approved,
-            mock=request.mock or not request.worker_nodes,
-        )
-        val_report = _val.validate(
-            fix_result=result,
-            worker_nodes=request.worker_nodes,
-            mock=request.mock or not request.worker_nodes,
-            task_id=actual_failed_task_id,
-        )
+        phase1["attempt_2_reanalysis"] = attempt_2_reanalyses
 
-        phase1["fix_generator_agent"] = {
-            "thinking": [
-                f"Attempt 2: Fetched fresh failed logs from {patch_result_1.remediation_dag_id}/{patch_result_1.dag_run_id}",
-                f"Attempt 2: Re-ran Log Analyser Agent and found: {attempt1_error_report.error_type}",
-                f"Attempt 2: Re-ran Root Cause Agent: {attempt1_rca.root_cause}",
-                f"Attempt 2: Generating SSH fix commands for: {actual_failed_task_id}",
-                f"Classification: {attempt1_rca.classification} | Severity: {attempt1_rca.severity}",
-                f"Fix type: {strategy.fix_type}",
-                f"Risk: {strategy.estimated_risk}",
-                f"Commands: {len(strategy.fix_commands)} fix command(s)",
-            ],
-            "output": {
+        generator_thinking = [
+            f"Attempt 2: Processing {len(attempt_2_results)} failed remediation task(s)",
+            f"Attempt 2 source: {patch_result_1.remediation_dag_id}/{patch_result_1.dag_run_id}",
+        ]
+        executor_thinking = [
+            f"Attempt 2: Executing SSH fixes on {len(request.worker_nodes)} worker node(s)",
+        ]
+        validation_thinking = [
+            "Attempt 2: Validating all generated SSH fixes",
+        ]
+
+        strategy_outputs = []
+        all_command_outputs = []
+        validation_outputs = []
+
+        for item in attempt_2_results:
+            strategy = item["strategy"]
+            result = item["result"]
+            val_report = item["validation"]
+            error_report = item["error_report"]
+            rca_report = item["rca"]
+            task_id = item["failed_task"]
+
+            generator_thinking.extend([
+                f"Task {task_id}: Log Analyser found {error_report.error_type}",
+                f"Task {task_id}: Root cause: {rca_report.root_cause}",
+                f"Task {task_id}: Fix type {strategy.fix_type} ({strategy.estimated_risk} risk)",
+            ])
+            executor_thinking.append(
+                f"Task {task_id}: execution {result.execution_status.upper()} with {len(strategy.fix_commands)} command(s)"
+            )
+            validation_thinking.append(
+                f"Task {task_id}: validation {'PASSED' if val_report.is_valid else 'FAILED'}"
+            )
+
+            strategy_outputs.append({
+                "failed_task": task_id,
                 "fix_type": strategy.fix_type,
                 "fix_commands": strategy.fix_commands,
                 "dry_run_commands": strategy.dry_run_commands,
                 "estimated_risk": strategy.estimated_risk,
                 "description": strategy.description,
                 "requires_approval": strategy.requires_approval,
-                "source_dag_id": patch_result_1.remediation_dag_id,
-                "source_dag_run_id": patch_result_1.dag_run_id,
-                "source_failed_task": actual_failed_task_id,
-                "fresh_error_type": attempt1_error_report.error_type,
-                "fresh_root_cause": attempt1_rca.root_cause,
-            },
-        }
-        phase1["fix_executor_agent"] = {
-            "thinking": [
-                f"Attempt 2: Executing SSH fixes on {len(request.worker_nodes)} worker node(s)",
-                f"Approval status: {'auto-approved' if approved else 'pending'}",
-                f"Executing {len(strategy.fix_commands)} fix command(s)...",
-                f"Execution result: {result.execution_status.upper()}",
-            ],
-            "output": {
-                "execution_status": result.execution_status,
-                "command_outputs": result.command_outputs,
-                "error_on_fix": result.error_on_fix,
-            },
-        }
-        phase1["validation_agent"] = {
-            "thinking": [
-                f"Attempt 2: Validating fix for task: {actual_failed_task_id}",
-                f"Running SSH health checks...",
-                f"Checking Redis queue for lingering errors...",
-                f"Validation verdict: {'PASSED' if val_report.is_valid else 'FAILED'}",
-            ],
-            "output": {
+                "fresh_error_type": error_report.error_type,
+                "fresh_root_cause": rca_report.root_cause,
+            })
+            all_command_outputs.extend(result.command_outputs)
+            validation_outputs.append({
+                "failed_task": task_id,
                 "is_valid": val_report.is_valid,
                 "health_check_output": val_report.health_check_output,
                 "queue_status": val_report.queue_status,
                 "collateral_damage_check": val_report.collateral_damage_check,
                 "verdict": val_report.verdict,
                 "escalated_errors": val_report.escalated_errors,
+            })
+
+        attempt_2_success = all(
+            item["result"].execution_status == "success" and item["validation"].is_valid
+            for item in attempt_2_results
+        )
+        failed_attempt_2_tasks = [
+            item["failed_task"]
+            for item in attempt_2_results
+            if item["result"].execution_status != "success" or not item["validation"].is_valid
+        ]
+
+        phase1["fix_generator_agent"] = {
+            "thinking": generator_thinking,
+            "output": {
+                "source_dag_id": patch_result_1.remediation_dag_id,
+                "source_dag_run_id": patch_result_1.dag_run_id,
+                "tasks_processed": [item["failed_task"] for item in attempt_2_results],
+                "strategies": strategy_outputs,
+            },
+        }
+        phase1["fix_executor_agent"] = {
+            "thinking": executor_thinking,
+            "output": {
+                "execution_status": "success" if attempt_2_success else "failed",
+                "command_outputs": all_command_outputs,
+                "failed_tasks": failed_attempt_2_tasks,
+            },
+        }
+        phase1["validation_agent"] = {
+            "thinking": validation_thinking,
+            "output": {
+                "is_valid": attempt_2_success,
+                "validations": validation_outputs,
+                "failed_tasks": failed_attempt_2_tasks,
+                "verdict": (
+                    "✅ Validation Passed: all Attempt 2 fixes succeeded."
+                    if attempt_2_success
+                    else "❌ Validation Failed: one or more Attempt 2 fixes failed."
+                ),
             },
         }
 
-        attempt_2_success = result.execution_status == "success" and val_report.is_valid
         phase1["attempt_2"] = {
             "status": "success" if attempt_2_success else "failed",
+            "tasks_processed": [item["failed_task"] for item in attempt_2_results],
+            "failed_tasks": failed_attempt_2_tasks,
         }
 
         if attempt_2_success:
@@ -783,12 +854,10 @@ def autofix_pipeline(request: AutofixPipelineRequest):
                 "dag_corrected": True,
                 "infra_healed": True,
                 "message": "Errors resolved via DAG correction + Infrastructure healing (Attempt 2).",
-                "fix_type": strategy.fix_type,
-                "fix_description": strategy.description,
-                "estimated_risk": strategy.estimated_risk,
-                "commands_executed": len(strategy.fix_commands),
-                "execution_status": result.execution_status,
-                "validation_verdict": val_report.verdict,
+                "tasks_fixed": [item["failed_task"] for item in attempt_2_results],
+                "commands_executed": sum(len(item["strategy"].fix_commands) for item in attempt_2_results),
+                "execution_status": "success",
+                "validation_verdict": "all fixes validated",
             }
         else:
             # Both attempts failed → escalation
@@ -800,8 +869,9 @@ def autofix_pipeline(request: AutofixPipelineRequest):
                 "infra_healed": False,
                 "message": "🚨 Both attempts failed. Manual intervention required.",
                 "attempt_1_outcome": patch_result_1.run_outcome,
-                "attempt_2_outcome": result.execution_status,
-                "validation_verdict": val_report.verdict,
+                "attempt_2_outcome": "failed",
+                "failed_attempt_2_tasks": failed_attempt_2_tasks,
+                "validation_verdict": "one or more fixes failed validation",
             }
 
         return phase1

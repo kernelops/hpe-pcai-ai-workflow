@@ -2339,6 +2339,25 @@ button:disabled {
   border-color: rgba(16, 185, 129, 0.3);
 }
 
+.agent-card-autofix .agent-card-summary,
+.agent-card-autofix .agent-card-list,
+.agent-card-autofix .agent-card-list li {
+  color: #dbeafe;
+}
+
+.agent-card-autofix .agent-output {
+  background: rgba(2, 6, 23, 0.45);
+  border-color: rgba(148, 163, 184, 0.22);
+}
+
+.agent-card-autofix .agent-output-row span {
+  color: #bfdbfe;
+}
+
+.agent-card-autofix .agent-output-row strong {
+  color: #f8fafc;
+}
+
 @keyframes autofixSlideIn {
   from {
     opacity: 0;

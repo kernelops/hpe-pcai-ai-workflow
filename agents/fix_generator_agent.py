@@ -77,9 +77,10 @@ FIX_REGISTRY: dict[str, FixStrategy] = {
             (
                 "nohup python3 -c \""
                 "import http.server,socketserver; "
-                "h=http.server.SimpleHTTPRequestHandler; "
-                "s=socketserver.TCPServer(('',9005),h); "
-                "s.serve_forever()\" &>/dev/null &"
+                "H=type('H',(http.server.BaseHTTPRequestHandler,),{"
+                "'do_GET':lambda self:(self.send_response(200),self.end_headers(),self.wfile.write(b'OK')),"
+                "'log_message':lambda self,*a:None}); "
+                "socketserver.TCPServer(('',9005),H).serve_forever()\" &>/dev/null &"
             ),
             "sleep 2",
         ],
@@ -89,6 +90,30 @@ FIX_REGISTRY: dict[str, FixStrategy] = {
         description=(
             "Start a lightweight HTTP responder on port 9005 so the "
             "MinIO health-check endpoint responds during post-deployment validation."
+        ),
+    ),
+    "validate_nfs_consistency": FixStrategy(
+        fix_type="nfs_mount_repair",
+        fix_commands=[
+            (
+                "set -e; "
+                "NFS_A=$(cat /tmp/pcai_nfs_a_export); "
+                "sudo umount -lf /mnt/nfs >/dev/null 2>&1 || true; "
+                "sudo mkdir -p /mnt/nfs; "
+                "timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 \"$NFS_A\" /mnt/nfs; "
+                "mount | grep ' /mnt/nfs '; "
+                "cat /mnt/nfs/check.txt"
+            ),
+        ],
+        dry_run_commands=[
+            "echo 'Before fix mount state:'; mount | grep ' /mnt/nfs ' || true",
+            "echo 'Canonical NFS A:'; cat /tmp/pcai_nfs_a_export",
+        ],
+        requires_approval=False,
+        estimated_risk="medium",
+        description=(
+            "Repair the NFS mount inconsistency by remounting workers to the "
+            "canonical NFS A export and validating check.txt."
         ),
     ),
 }
@@ -128,6 +153,7 @@ class FixGeneratorAgent:
         """Exact or substring match against the fix registry."""
         # Strip Airflow mapped-task suffix: simulate_x_error/map_index=0 → simulate_x_error
         clean_id = re.sub(r"/map_index=\d+$", "", task_id)
+        clean_id = re.sub(r"/attempt=\d+$", "", clean_id)
 
         # Exact match
         if clean_id in FIX_REGISTRY:

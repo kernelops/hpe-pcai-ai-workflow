@@ -586,7 +586,19 @@ MOCK_PAST_ERRORS = [
         "error_type": "Runtime error",
         "severity": "Low - cleanup intent is already achieved if domain does not exist; fix is to suppress the error gracefully",
         "retrieved_sources": "https://lists.libvirt.org/archives/list/users@lists.libvirt.org/thread/PLUM4LMGJNOB7FQ4NHLN7CPPQEHLGX2G/"
-},
+    },
+    {
+        "id": "err_043", #os error 5
+        "text": "cannot set up guest memory pc.ram Cannot allocate memory",
+        "source": "OS Installation Logs",
+        "diagnosis": "virt-install failed because the requested memory value exceeds what the host system can allocate. QEMU tried to reserve the specified RAM for the VM but the host does not have enough free memory. This is caused by passing an invalid or excessively large --memory value to virt-install.",
+        "solution": "1. Check available memory on the host: free -h. 2. Use a realistic memory value that fits within host capacity (e.g. --memory 2048 for 2GB). 3. Clean up the failed VM if it was partially created: virsh undefine ilo-sim-vm. 4. Retry virt-install with a valid --memory value.",
+        "prevention": "Always validate --memory values against available host RAM before running virt-install. Add a pre-check step: free -h and ensure requested memory is less than available RAM.",
+        "error_type": "Resource allocation error",
+        "severity": "Medium - VM provisioning fails completely, host system is unaffected",
+        "retrieved_sources": "https://access.redhat.com/solutions/1464463"
+    },
+    
 ]
 
 # Phase 2 Attempt 1 - Add commands, their valid flags and usage

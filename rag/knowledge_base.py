@@ -609,6 +609,17 @@ MOCK_PAST_ERRORS = [
         "severity": "Medium - VM provisioning fails completely but fix is straightforward",
         "retrieved_sources": "https://linux.die.net/man/1/virt-install"
     },
+    {
+    "id": "err_044", #os error 7
+    "text": "[FAIL] Timeout waiting for OS boot.",
+    "source": "OS Installation Logs",
+    "diagnosis": "The VM was successfully created and is running, but the OS did not complete booting within the expected time window. The monitoring script polled virsh domstate and found the VM still in 'running' state after the timeout expired. This can happen if the ISO is booting slowly, the VM has insufficient resources, or the boot process is stuck.",
+    "solution": "1. Check the VM console to see the current boot state: sudo virsh console ilo-sim-vm. 2. Check VM resource usage: sudo virsh dominfo ilo-sim-vm. 3. Increase the timeout in the monitoring script to allow more time for boot. 4. Verify the ISO is valid and boots correctly by testing manually.",
+    "prevention": "Set a realistic boot timeout based on the VM specs and ISO being used. Add a console log check to distinguish a slow boot from a stuck boot. Use virsh domstate with --reason to get more detail on the VM state.",
+    "error_type": "Timeout error",
+    "severity": "Medium - VM is running but OS boot monitoring failed, may need manual intervention",
+    "retrieved_sources": "https://www.libvirt.org/manpages/virsh.html#domstate"
+},
     
 ]
 

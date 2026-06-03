@@ -610,16 +610,27 @@ MOCK_PAST_ERRORS = [
         "retrieved_sources": "https://linux.die.net/man/1/virt-install"
     },
     {
-    "id": "err_044", #os error 7
-    "text": "[FAIL] Timeout waiting for OS boot.",
-    "source": "OS Installation Logs",
-    "diagnosis": "The VM was successfully created and is running, but the OS did not complete booting within the expected time window. The monitoring script polled virsh domstate and found the VM still in 'running' state after the timeout expired. This can happen if the ISO is booting slowly, the VM has insufficient resources, or the boot process is stuck.",
-    "solution": "1. Check the VM console to see the current boot state: sudo virsh console ilo-sim-vm. 2. Check VM resource usage: sudo virsh dominfo ilo-sim-vm. 3. Increase the timeout in the monitoring script to allow more time for boot. 4. Verify the ISO is valid and boots correctly by testing manually.",
-    "prevention": "Set a realistic boot timeout based on the VM specs and ISO being used. Add a console log check to distinguish a slow boot from a stuck boot. Use virsh domstate with --reason to get more detail on the VM state.",
-    "error_type": "Timeout error",
-    "severity": "Medium - VM is running but OS boot monitoring failed, may need manual intervention",
-    "retrieved_sources": "https://www.libvirt.org/manpages/virsh.html#domstate"
-},
+        "id": "err_044", #os error 7
+        "text": "[FAIL] Timeout waiting for OS boot.",
+        "source": "OS Installation Logs",
+        "diagnosis": "The VM was successfully created and is running, but the OS did not complete booting within the expected time window. The monitoring script polled virsh domstate and found the VM still in 'running' state after the timeout expired. This can happen if the ISO is booting slowly, the VM has insufficient resources, or the boot process is stuck.",
+        "solution": "1. Check the VM console to see the current boot state: sudo virsh console ilo-sim-vm. 2. Check VM resource usage: sudo virsh dominfo ilo-sim-vm. 3. Increase the timeout in the monitoring script to allow more time for boot. 4. Verify the ISO is valid and boots correctly by testing manually.",
+        "prevention": "Set a realistic boot timeout based on the VM specs and ISO being used. Add a console log check to distinguish a slow boot from a stuck boot. Use virsh domstate with --reason to get more detail on the VM state.",
+        "error_type": "Timeout error",
+        "severity": "Medium - VM is running but OS boot monitoring failed, may need manual intervention",
+        "retrieved_sources": "https://www.libvirt.org/manpages/virsh.html#domstate"
+    },
+    {
+        "id": "err_045", #os error 9
+        "text": "[FAIL] Expected CPUs found mismatch VM resource validation failed",
+        "source": "OS Installation Logs",
+        "diagnosis": "The VM was provisioned with fewer vCPUs than the validation script expected. The virt-install command used --vcpus 1 but the validation step requires 4 CPUs. This is a configuration mismatch between the provisioning step and the validation step.",
+        "solution": "1. Check the current VM CPU count: sudo virsh dominfo ilo-sim-vm | grep CPU. 2. Update the --vcpus value in the virt-install command to match the expected count. 3. Or update the validation script threshold to match the actual provisioned CPU count. 4. If the VM needs to be re-provisioned: sudo virsh destroy ilo-sim-vm && sudo virsh undefine ilo-sim-vm, then re-run virt-install with correct --vcpus value.",
+        "prevention": "Always keep --vcpus in virt-install consistent with the validation script expectations. Define CPU count as a shared parameter/variable used by both provisioning and validation steps.",
+        "error_type": "Configuration mismatch error",
+        "severity": "Medium - VM is running but does not meet resource requirements",
+        "retrieved_sources": "https://www.libvirt.org/manpages/virsh.html#dominfo"
+    },
     
 ]
 

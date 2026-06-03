@@ -115,9 +115,24 @@ def extract_candidate_lines(log_text: str) -> List[str]:
             continue
 
         if "error: failed to get domain" in message.lower():
-            candidate_lines.append("virsh domstate failed error failed to get domain")
+            if "virsh destroy" in log_text:
+                candidate_lines.append("virsh destroy failed error failed to get domain")
+            else:
+                candidate_lines.append("virsh domstate failed error failed to get domain")
             continue
-
+        if "cannot set up guest memory" in message.lower() and "cannot allocate memory" in message.lower():
+            candidate_lines.append("cannot set up guest memory pc.ram Cannot allocate memory")
+            continue
+        if "validating install media" in message.lower() and "non-existent path" in message.lower():
+            candidate_lines.append("Validating install media failed Must specify storage creation parameters for non-existent path")
+            continue
+        if "[fail] expected" in message.lower() and "cpus" in message.lower():
+            candidate_lines.append("[FAIL] Expected CPUs found mismatch VM resource validation failed")
+            continue
+        if "[fail] memory mismatch" in message.lower():
+            candidate_lines.append("[FAIL] Memory mismatch expected found VM resource validation failed")
+            continue
+        
         message = re.sub(r'/root/[^:]+:', '/root/:', message)
 
         # Drop noise

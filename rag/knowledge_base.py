@@ -664,6 +664,17 @@ MOCK_PAST_ERRORS = [
         "severity": "Medium - download hangs indefinitely until Airflow kills the SSH session",
         "retrieved_sources": "https://oneuptime.com/blog/post/2026-01-24-fix-ssh-connection-timeout-errors/view"
     },
+    {
+        "id": "err_049", #env error 3
+        "text": "Failed to connect. Sleeping before retry attempt",
+        "source": "OS Installation Logs",
+        "diagnosis": "Airflow's SSH operator could not establish a TCP connection to the worker node and exhausted all retries. The worker node is unreachable — it is powered off, the IP is wrong, or the network/firewall is blocking port 22. This is an SSH connection failure, not a command execution failure.",
+        "solution": "Verify the worker node is powered on and reachable (ping <WORKER_IP>). Check if port 22 is open (nc -zv <WORKER_IP> 22). Verify the correct IP is configured in the Airflow SSH connection (worker_node_192_168_0_6). Check firewall rules on the worker node (sudo ufw status). Restart SSH service on the worker if reachable (sudo systemctl restart ssh).",
+        "prevention": "Add a pre-flight reachability check before SSH tasks. Ensure worker nodes are provisioned and SSH is running before DAG execution. Monitor worker node availability.",
+        "error_type": "Network error",
+        "severity": "High - task cannot execute at all; worker node is completely unreachable",
+        "retrieved_sources": "https://airflow.apache.org/docs/apache-airflow-providers-ssh/stable/connections/ssh.html, https://github.com/apache/airflow/issues/29241"
+    },
     
 ]
 

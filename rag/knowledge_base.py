@@ -642,6 +642,17 @@ MOCK_PAST_ERRORS = [
         "severity": "Medium - VM is running but does not meet expected resource requirements",
         "retrieved_sources": "https://www.libvirt.org/manpages/virsh.html#dominfo"
     },
+    {
+        "id": "err_047", #os error 3
+        "text": "AirflowException: SSH operator error: exit status = 8",
+        "source": "OS Installation Logs",
+        "diagnosis": "wget exited with code 8, meaning the remote server returned an HTTP error response (4xx/5xx). Exit code 8 is wget-specific and indicates the server was reachable but rejected the request — typically a 404 (invalid URL path) or 403 (access denied). The file was not downloaded.",
+        "solution": "Verify the URL is correct and accessible (curl -I <URL>). Fix the URL in the DAG and retry. Run wget without -q to see the full server error message.",
+        "prevention": "Validate download URLs before embedding them in DAGs. Add a pre-flight check: curl -I --fail <URL> || exit 1. Verify the downloaded file exists before proceeding to the next step.",
+        "error_type": "Network error",
+        "severity": "Medium - download fails completely; any subsequent step depending on the file will also fail",
+        "retrieved_sources": "https://www.gnu.org/software/wget/manual/html_node/Exit-Status.html"
+    },
     
 ]
 

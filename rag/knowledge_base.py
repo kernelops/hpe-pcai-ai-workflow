@@ -631,6 +631,17 @@ MOCK_PAST_ERRORS = [
         "severity": "Medium - VM is running but does not meet resource requirements",
         "retrieved_sources": "https://www.libvirt.org/manpages/virsh.html#dominfo"
     },
+    {
+        "id": "err_046", #os error 10
+        "text": "[FAIL] Memory mismatch expected found VM resource validation failed",
+        "source": "OS Validation Logs",
+        "diagnosis": "The VM memory validation failed because the expected memory value in the DAG is hardcoded to an incorrect value (9999999 KB). The actual VM memory is 1048576 KB (1 GB). This is a configuration mismatch between the expected value in the DAG script and the actual provisioned VM memory.",
+        "solution": "1. Check actual VM memory: sudo virsh dominfo ilo-sim-vm | grep 'Max memory'. 2. Update the expected memory value in OS_installation_errors.py to match the actual VM memory (1048576). 3. Rerun the validation task.",
+        "prevention": "Always keep the expected memory value in the validation script consistent with the --memory value used in virt-install. Define memory as a shared variable used by both provisioning and validation steps.",
+        "error_type": "Configuration mismatch error",
+        "severity": "Medium - VM is running but does not meet expected resource requirements",
+        "retrieved_sources": "https://www.libvirt.org/manpages/virsh.html#dominfo"
+    },
     
 ]
 

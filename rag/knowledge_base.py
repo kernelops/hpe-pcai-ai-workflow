@@ -653,6 +653,17 @@ MOCK_PAST_ERRORS = [
         "severity": "Medium - download fails completely; any subsequent step depending on the file will also fail",
         "retrieved_sources": "https://www.gnu.org/software/wget/manual/html_node/Exit-Status.html"
     },
+    {
+        "id": "err_048", # env error 1
+        "text": "AirflowException: SSH command timed out",
+        "source": "OS Installation Logs",
+        "diagnosis": "The SSH-executed command timed out because a long-running operation inside it stalled — not because SSH itself failed. In this case wget successfully resolved and connected to the host but the download hung, indicating the firewall is blocking outbound traffic on the required port (e.g. port 443 for HTTPS). The SSH session was killed by Airflow's timeout before the command completed.",
+        "solution": "Check if outbound port 443 is blocked on the worker node (curl -v https://dl-cdn.alpinelinux.org). If blocked, update firewall rules to allow outbound HTTPS (sudo ufw allow out 443/tcp). Verify connectivity after fixing (wget -O /tmp/test.iso <URL>). Increase Airflow SSH timeout if the download is legitimately slow.",
+        "prevention": "Ensure outbound ports 80 and 443 are open on all worker nodes before deployment. Add a pre-flight connectivity check before download tasks (curl -I --fail <URL> || exit 1). Set a realistic Airflow SSH timeout based on expected download size.",
+        "error_type": "Network error",
+        "severity": "Medium - download hangs indefinitely until Airflow kills the SSH session",
+        "retrieved_sources": "https://oneuptime.com/blog/post/2026-01-24-fix-ssh-connection-timeout-errors/view"
+    },
     
 ]
 

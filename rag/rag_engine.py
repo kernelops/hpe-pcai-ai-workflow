@@ -49,6 +49,7 @@ def retrieve_matches(
     chroma_client: chromadb.ClientAPI,
     top_k: int = 1,
 ) -> List[Dict]:
+    print(f"[RAGEngine] retrieve_matches -> candidate_lines={candidate_lines}, top_k={top_k}, threshold={SIMILARITY_THRESHOLD}")
     """
     For each candidate line:
       - Query ChromaDB for the closest KB entry
@@ -70,6 +71,7 @@ def retrieve_matches(
       }
     """
     if not candidate_lines:
+        print("[RAGEngine] retrieve_matches -> no candidate lines provided")
         return []
 
     ef = get_embedding_function()
@@ -97,15 +99,21 @@ def retrieve_matches(
         documents = results.get("documents", [[]])[0]
         metadatas = results.get("metadatas", [[]])[0]
         distances = results.get("distances", [[]])[0]
+        print(f"[RAGEngine] query results for line '{line}': docs={len(documents)}, metas={len(metadatas)}, distances={len(distances)}")
+        print(f"[RAGEngine] query returned documents={documents}")
+        print(f"[RAGEngine] query returned distances={distances}")
 
         for doc, meta, dist in zip(documents, metadatas, distances):
             similarity = _distance_to_similarity(dist)
+            print(f"[RAGEngine]   doc='{doc}' dist={dist:.6f} similarity={similarity:.4f}")
 
             if similarity < SIMILARITY_THRESHOLD:
+                print(f"[RAGEngine]   skipping doc='{doc}' because similarity {similarity:.4f} < threshold {SIMILARITY_THRESHOLD}")
                 continue
 
             existing = best_per_document.get(doc)
             if existing is None or similarity > existing["similarity"]:
+                print(f"[RAGEngine]   keeping/updating best match for doc='{doc}' similarity={similarity:.4f}")
                 best_per_document[doc] = {
                     "matched_line": line,
                     "similarity": similarity,
@@ -119,6 +127,9 @@ def retrieve_matches(
                     "retrieved_sources": meta.get("retrieved_sources", ""),
                 }
 
+    print(f"[RAGEngine] retrieve_matches -> {len(best_per_document)} final match(es) after deduplication")
+    for match in best_per_document.values():
+        print(f"[RAGEngine]   final doc='{match['document']}' sim={match['similarity']:.4f} matched_line='{match['matched_line']}'")
     # Sort by similarity descending
     ranked = sorted(best_per_document.values(), key=lambda x: x["similarity"], reverse=True)
     return ranked
@@ -190,6 +201,8 @@ def run_rag_pipeline(
     """
 
     candidate_lines = parsed_error.candidate_lines
+    print(f"[RAGEngine] run_rag_pipeline -> parsed error_type={parsed_error.error_type} error_message={parsed_error.error_message} task_id={parsed_error.task_id}")
+    print(f"[RAGEngine] run_rag_pipeline -> candidate_lines={candidate_lines}")
 
     # Fallback: if log parser found no candidate lines, build one from the parsed error
     if not candidate_lines:
@@ -210,6 +223,7 @@ def run_rag_pipeline(
     error_location = format_error_location(parsed_error)
 
     if not matches:
+        print("[RAGEngine] run_rag_pipeline -> no matches found")
         return {
             "error_location": error_location,
             "error_type": parsed_error.error_type or "Unknown",
@@ -218,6 +232,7 @@ def run_rag_pipeline(
             "retrieved_sources": [],
         }
 
+    print(f"[RAGEngine] run_rag_pipeline -> returning {len(matches)} matches")
     return {
         "error_location": error_location,
         "error_type": parsed_error.error_type or "Unknown",

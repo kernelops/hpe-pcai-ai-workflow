@@ -10,10 +10,9 @@ import os
 import re
 import requests
 from groq import Groq
-from common.config import GROQ_API_KEY, GROQ_MODEL
-from common.models import DagAnalysisReport, RagContext, RagMatch
+from common.config import GROQ_API_KEY, GROQ_MODEL, RAG_API_URL
+from common.models import DagAnalysisReport
 
-RAG_BASE = os.getenv("RAG_SERVICE_URL", "http://localhost:8002")
 DAGS_DIR = os.path.join(os.path.dirname(__file__), "..", "airflow", "dags")
 
 
@@ -43,15 +42,21 @@ class DagAnalysisAgent:
         print(f"[DagAnalysis]   Found {len(ssh_commands)} SSHOperator command blocks")
 
         # 3. Query RAG for relevant context
-        rag_context = self._query_rag_with_full_dag(source)
-        print(f"[DagAnalysis]   Retrieved {len(rag_context.matches)} RAG context entries")
+        rag_json = self._query_rag_with_full_dag(source)
+        print(f"[DagAnalysis]   Retrieved {len(rag_json.get('matches', []))} RAG context entries")
+        # rag_json is a dict with keys: 'commands_found' and 'matches'
+
+        # 3.5 Format RAG json
+        format_ragjson = self._format_rag_response(rag_json)
+        print(f"[DagAnalysis]   Formatted RAG context:\n{format_ragjson}")
+
 
         if "def validate_nfs_consistency" in source:
             print("[DagAnalysis]   NFS inconsistency demo detected; using deterministic remediation plan")
             return self._fallback_analysis(source, ssh_commands)
 
         # 4. Ask LLM to analyse and produce corrected source
-        report = self._analyse_with_llm(source, ssh_commands, rag_context)
+        report = self._analyse_with_llm(source, ssh_commands, format_ragjson)
         return report
 
     # ── Source reading ────────────────────────────────────────
@@ -89,29 +94,56 @@ class DagAnalysisAgent:
 
     # ── RAG context retrieval ─────────────────────────────────
 
-    def _query_rag_with_full_dag(self, source: str) -> RagContext:
+    def _query_rag_with_full_dag(self, source: str) -> dict:
+        #Query RAG API and return raw JSON response.
         try:
             response = requests.post(
-                f"{RAG_BASE}/analyze-dag",
+                f"{RAG_API_URL}/analyze-dag",
                 json={"dag_source": source},
                 timeout=30,
             )
             response.raise_for_status()
-            data = response.json()
-            return RagContext(**data)  # Convert dict to RagContext
+            return response.json()  # Return raw JSON dict
         except Exception as e:
             print(f"[RAG] call failed: {e}")
-            return RagContext(commands_found=[], matches=[])
+            return {"commands_found": [], "matches": []}  # Return empty JSON structure on error
+        
+    def _format_rag_response(self, rag_json: dict) -> str:
+        """Format the RAG JSON response into a readable string."""
+        if not rag_json.get("commands_found") and not rag_json.get("matches"):
+            return "No commands found or matches available."
+        
+        output_lines = []
+        
+        # Format commands found
+        commands = rag_json.get("commands_found", [])
+        if commands:
+            output_lines.append(f"Commands Found ({len(commands)}):")
+            for cmd in commands:
+                output_lines.append(f"  • {cmd}")
+            output_lines.append("")
+        
+        # Format matches with documentation
+        matches = rag_json.get("matches", [])
+        if matches:
+            output_lines.append(f"Documentation Matches ({len(matches)}):")
+            for i, match in enumerate(matches, 1):
+                output_lines.append(f"\n  {i}. {match.get('command', 'Unknown')}")
+                output_lines.append(f"     Description: {match.get('description', 'N/A')}")
+                output_lines.append(f"     Usage: {match.get('usage', 'N/A')}")
+                if match.get('flags'):
+                    output_lines.append(f"     Flags: {match.get('flags', 'N/A')}")
+                output_lines.append("-" * 50)
+        
+        return "\n".join(output_lines)
 
     # ── LLM analysis ─────────────────────────────────────────
 
     def _analyse_with_llm(self, source: str, ssh_commands: list[dict],
-                           rag_context: RagContext) -> DagAnalysisReport:
+                           rag_text: str) -> DagAnalysisReport:
         """Ask the LLM to identify issues and produce corrected DAG source."""
         if not self.client:
             return self._fallback_analysis(source, ssh_commands)
-
-        rag_text = json.dumps(rag_context, indent=2)
 
         prompt = f"""You are a senior HPE PCAI infrastructure engineer reviewing an Apache Airflow DAG.
 
@@ -198,7 +230,7 @@ Here is the full DAG source code to analyse:
                 has_dag_issues=parsed.get("has_dag_issues", len(issues) > 0),
                 issues=issues,
                 corrected_source=corrected if corrected else None,
-                rag_context_used=rag_context,
+                rag_context_used=rag_text,
             )
 
         except Exception as exc:
@@ -315,7 +347,7 @@ Here is the full DAG source code to analyse:
             has_dag_issues=len(issues) > 0,
             issues=issues,
             corrected_source=corrected if issues else None,
-            rag_context_used=RagContext(commands_found=[], matches=[]),
+            rag_context_used=None,
         )
 
     # ── Helpers ───────────────────────────────────────────────

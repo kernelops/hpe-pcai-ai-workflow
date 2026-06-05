@@ -159,8 +159,13 @@ def analyze_log(request: AnalyzeRequest):
     if not request.log_text.strip():
         raise HTTPException(status_code=400, detail="log_text cannot be empty")
 
+    print("[RAGDebug] analyze_log -> received request")
+    print(f"[RAGDebug]   dag_id={request.dag_id}, task_id={request.task_id}, log_text length={len(request.log_text)}")
+
     # Step 1: Parse the log
     parsed_error = parse_airflow_log(request.log_text)
+    print(f"[RAGDebug] analyze_log -> parsed_error.error_type={parsed_error.error_type}, parsed_error.error_message={parsed_error.error_message}")
+    print(f"[RAGDebug] analyze_log -> parsed_error.candidate_lines={parsed_error.candidate_lines}")
 
     # Allow manual override of dag_id/task_id
     if request.dag_id:
@@ -178,12 +183,15 @@ def analyze_log(request: AnalyzeRequest):
 
     # Step 3: Run RAG pipeline
     try:
+        print(f"[RAGDebug] analyze_log -> running RAG pipeline with top_k=1")
         result = run_rag_pipeline(
             parsed_error=parsed_error,
             chroma_client=chroma_client,
             top_k=1,
         )
+        print(f"[RAGDebug] analyze_log -> RAG pipeline returned {len(result.get('matches', []))} matches")
     except Exception as e:
+        print(f"[RAGDebug] analyze_log -> RAG pipeline exception: {e}")
         raise HTTPException(status_code=500, detail=f"RAG pipeline error: {str(e)}")
 
     return AnalyzeResponse(
@@ -218,36 +226,36 @@ def analyze_dag(request: AnalyzeDAGRequest):
         matches=result["matches"],
     )
 
-@app.post("/ingest")
-def ingest_new_error(request: IngestRequest):
-    """
-    Add a new error+fix pair to the knowledge base at runtime.
-    Only the error_line is embedded. All other fields go into metadata.
-    """
-    ef = get_embedding_function()
-    col = chroma_client.get_collection(name=ERRORS_COLLECTION, embedding_function=ef)
+# @app.post("/ingest")
+# def ingest_new_error(request: IngestRequest):
+#     """
+#     Add a new error+fix pair to the knowledge base at runtime.
+#     Only the error_line is embedded. All other fields go into metadata.
+#     """
+#     ef = get_embedding_function()
+#     col = chroma_client.get_collection(name=ERRORS_COLLECTION, embedding_function=ef)
 
-    new_id = f"err_{uuid.uuid4().hex[:8]}"
+#     new_id = f"err_{uuid.uuid4().hex[:8]}"
 
-    col.add(
-        ids=[new_id],
-        documents=[request.error_line],
-        metadatas=[{
-            "source": request.source_label,
-            "error_type": request.error_type,
-            "severity": request.severity,
-            "diagnosis": request.diagnosis,
-            "solution": request.solution,
-            "prevention": request.prevention,
-            "retrieved_sources": request.retrieved_sources,
-        }],
-    )
+#     col.add(
+#         ids=[new_id],
+#         documents=[request.error_line],
+#         metadatas=[{
+#             "source": request.source_label,
+#             "error_type": request.error_type,
+#             "severity": request.severity,
+#             "diagnosis": request.diagnosis,
+#             "solution": request.solution,
+#             "prevention": request.prevention,
+#             "retrieved_sources": request.retrieved_sources,
+#         }],
+#     )
 
-    return {
-        "status": "ingested",
-        "id": new_id,
-        "message": f"New error+fix added to knowledge base with id {new_id}"
-    }
+#     return {
+#         "status": "ingested",
+#         "id": new_id,
+#         "message": f"New error+fix added to knowledge base with id {new_id}"
+#     }
 
 
 # --- Run directly ---

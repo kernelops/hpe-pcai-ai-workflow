@@ -529,7 +529,21 @@ def start_deployment():
 
     try:
         with _airflow_client() as client:
-            # Step 1: Ensure DAG is unpaused (required after fresh restart)
+            # Step 1: Wait for Airflow scheduler to recognise the DAG after restart
+            for wait_attempt in range(12):
+                dag_check = client.get(f"/api/v1/dags/{AIRFLOW_DAG_ID}")
+                if dag_check.status_code == 200:
+                    print(f"✅ DAG '{AIRFLOW_DAG_ID}' found in Airflow")
+                    break
+                print(f"⏳ Waiting for Airflow to parse DAG... ({wait_attempt + 1}/12)")
+                _time.sleep(5)
+            else:
+                raise HTTPException(
+                    status_code=503,
+                    detail="Airflow has not finished parsing the DAG yet. Please wait a moment and try again.",
+                )
+
+            # Step 2: Ensure DAG is unpaused (required after fresh restart)
             unpause_resp = client.patch(
                 f"/api/v1/dags/{AIRFLOW_DAG_ID}",
                 json={"is_paused": False},
@@ -539,19 +553,19 @@ def start_deployment():
             else:
                 print(f"⚠️ Unpause returned {unpause_resp.status_code}: {unpause_resp.text[:200]}")
 
-            # Step 2: Trigger with retry (Airflow may still be parsing after restart)
+            # Step 3: Trigger with retry (Airflow scheduler may need extra time)
             last_err = ""
-            for attempt in range(3):
+            for attempt in range(6):
                 resp = client.post(f"/api/v1/dags/{AIRFLOW_DAG_ID}/dagRuns", json=payload)
                 if resp.status_code in (200, 201):
                     break
-                last_err = resp.text
-                print(f"⚠️ Trigger attempt {attempt + 1}/3 failed ({resp.status_code}), retrying in 3s...")
-                _time.sleep(3)
+                last_err = resp.text[:500]
+                print(f"⚠️ Trigger attempt {attempt + 1}/6 failed ({resp.status_code}): {last_err[:200]}")
+                _time.sleep(5)
             else:
                 raise HTTPException(
                     status_code=500,
-                    detail=f"Failed to trigger DAG after 3 attempts: {last_err[:500]}",
+                    detail=f"Failed to trigger DAG after 6 attempts: {last_err}",
                 )
             data = resp.json()
     except httpx.RequestError as exc:

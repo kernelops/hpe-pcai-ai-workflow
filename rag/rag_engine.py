@@ -21,6 +21,7 @@ try:
         get_embedding_function,
         ERRORS_COLLECTION,
         COMMANDS_COLLECTION,
+        FIX_STRATEGIES_COLLECTION,
     )
 except ImportError:
     from log_parser import ParsedError, format_error_location
@@ -28,6 +29,7 @@ except ImportError:
         get_embedding_function,
         ERRORS_COLLECTION,
         COMMANDS_COLLECTION,
+        FIX_STRATEGIES_COLLECTION,
     )
 
 
@@ -272,4 +274,93 @@ def run_dag_command_pipeline(
     return {
         "commands_found": commands,
         "matches": matches,
+    }
+
+
+def retrieve_fix_strategies(
+    task_id: str,
+    error_context: str,
+    chroma_client: chromadb.ClientAPI,
+    top_k: int = 3,
+) -> List[Dict]:
+    """
+    Query the fix_strategies collection for known remediation patterns.
+    Searches using both the task_id and the error context for semantic matching.
+    Returns matching fix strategies as structured dicts.
+    """
+    if not chroma_client:
+        return []
+
+    ef = get_embedding_function()
+
+    try:
+        col = chroma_client.get_collection(
+            name=FIX_STRATEGIES_COLLECTION,
+            embedding_function=ef,
+        )
+    except Exception as exc:
+        print(f"[RAGEngine] Could not access collection '{FIX_STRATEGIES_COLLECTION}': {exc}")
+        return []
+
+    # Build a query combining task_id and error context for best semantic match
+    query_text = f"{task_id}: {error_context}"
+    print(f"[RAGEngine] Querying fix strategies for: '{query_text[:100]}'")
+
+    try:
+        results = col.query(
+            query_texts=[query_text],
+            n_results=top_k,
+            include=["documents", "metadatas", "distances"],
+        )
+    except Exception as exc:
+        print(f"[RAGEngine] Fix strategy query failed: {exc}")
+        return []
+
+    documents = results.get("documents", [[]])[0]
+    metadatas = results.get("metadatas", [[]])[0]
+    distances = results.get("distances", [[]])[0]
+
+    strategies = []
+    for doc, meta, dist in zip(documents, metadatas, distances):
+        similarity = _distance_to_similarity(dist)
+        print(f"[RAGEngine]   fix strategy match: task_id='{meta.get('task_id')}' "
+              f"sim={similarity:.4f} desc='{meta.get('description', '')[:60]}'")
+
+        # Use a lower threshold — we want broad matches as context for the LLM
+        if similarity < 0.3:
+            continue
+
+        strategies.append({
+            "task_id": meta.get("task_id", ""),
+            "fix_type": meta.get("fix_type", ""),
+            "fix_commands": meta.get("fix_commands", "[]"),
+            "dry_run_commands": meta.get("dry_run_commands", "[]"),
+            "estimated_risk": meta.get("estimated_risk", "medium"),
+            "description": meta.get("description", ""),
+            "requires_approval": meta.get("requires_approval", "true"),
+            "similarity": round(similarity, 4),
+            "matched_document": doc,
+        })
+
+    print(f"[RAGEngine] Found {len(strategies)} fix strategy match(es)")
+    return strategies
+
+
+def run_fix_strategy_pipeline(
+    task_id: str,
+    error_context: str,
+    chroma_client: chromadb.ClientAPI,
+) -> Dict:
+    """
+    Pipeline entry point for querying fix strategies.
+    Returns structured response with matching strategies.
+    """
+    strategies = retrieve_fix_strategies(
+        task_id=task_id,
+        error_context=error_context,
+        chroma_client=chroma_client,
+    )
+    return {
+        "task_id": task_id,
+        "strategies": strategies,
     }

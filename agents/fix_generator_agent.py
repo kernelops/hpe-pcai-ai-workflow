@@ -4,125 +4,29 @@ Phase 2 — Fix Generator Agent.
 Takes a RootCauseReport and produces a concrete FixStrategy
 with SSH commands to remediate the failure.
 
-Two resolution paths:
-1. Deterministic fix registry — for known simulated error patterns (high reliability).
-2. LLM-generated fixes — for unknown errors (uses RAG solution as guidance).
+Resolution flow:
+1. Query RAG for known fix strategies matching this task + error context.
+2. ALWAYS call LLM with: RCA report + known fix context from RAG, if available.
+3. LLM decides whether to use/adapt the known fix or generate a novel one.
+4. If the LLM is unavailable, return a high-risk manual-review fallback.
 """
 
 import json
 import re
+import httpx
 from groq import Groq
-from common.config import GROQ_API_KEY, GROQ_MODEL
+from common.config import GROQ_API_KEY, GROQ_MODEL, RAG_API_URL
 from common.models import RootCauseReport, FixStrategy
 
 
-# ── Deterministic fix registry ────────────────────────────────
-# Maps task_id patterns to pre-built fix strategies for the
-# simulated errors in deployment_workflow.py.
-
-FIX_REGISTRY: dict[str, FixStrategy] = {
-    "simulate_os_validation_error": FixStrategy(
-        fix_type="config_correction",
-        fix_commands=[
-            "sudo touch /etc/redhat-release",
-            "echo 'Red Hat Enterprise Linux release 8.8 (Ootpa)' | sudo tee /etc/redhat-release",
-        ],
-        dry_run_commands=["cat /etc/os-release"],
-        requires_approval=False,
-        estimated_risk="low",
-        description=(
-            "Create /etc/redhat-release with appropriate content to "
-            "satisfy the OS baseline validation check."
-        ),
-    ),
-    "simulate_nfs_configuration_error": FixStrategy(
-        fix_type="config_correction",
-        fix_commands=[
-            "sudo apt-get update && sudo apt-get install -y nfs-kernel-server || true",
-            "printf '%s\\n' '/srv/nfs/share *(rw,sync,no_subtree_check)' | sudo tee /etc/exports > /dev/null",
-            "sudo exportfs -ra",
-        ],
-        dry_run_commands=["cat /etc/exports", "sudo exportfs -v"],
-        requires_approval=False,
-        estimated_risk="low",
-        description=(
-            "Replace the broken NFS export option (broken_option) with valid "
-            "NFS export flags (rw,sync,no_subtree_check) and reload exports."
-        ),
-    ),
-    "simulate_minio_service_error": FixStrategy(
-        fix_type="service_restart",
-        fix_commands=[
-            (
-                "printf '[Unit]\\nDescription=MinIO (fixed)\\n"
-                "[Service]\\nExecStart=/bin/true\\nType=oneshot\\n"
-                "RemainAfterExit=yes\\n[Install]\\n"
-                "WantedBy=multi-user.target\\n' "
-                "| sudo tee /etc/systemd/system/minio-broken.service > /dev/null"
-            ),
-            "sudo systemctl daemon-reload",
-            "sudo systemctl enable --now minio-broken",
-        ],
-        dry_run_commands=["systemctl list-unit-files | grep minio || true"],
-        requires_approval=False,
-        estimated_risk="low",
-        description=(
-            "Create the missing minio-broken.service systemd unit file, "
-            "reload the daemon, and enable the service."
-        ),
-    ),
-    "simulate_postcheck_error": FixStrategy(
-        fix_type="service_restart",
-        fix_commands=[
-            (
-                "nohup python3 -c \""
-                "import http.server,socketserver; "
-                "H=type('H',(http.server.BaseHTTPRequestHandler,),{"
-                "'do_GET':lambda self:(self.send_response(200),self.end_headers(),self.wfile.write(b'OK')),"
-                "'log_message':lambda self,*a:None}); "
-                "socketserver.TCPServer(('',9005),H).serve_forever()\" &>/dev/null &"
-            ),
-            "sleep 2",
-        ],
-        dry_run_commands=["ss -tuln | grep 9005 || echo 'Port 9005 not in use'"],
-        requires_approval=False,
-        estimated_risk="low",
-        description=(
-            "Start a lightweight HTTP responder on port 9005 so the "
-            "MinIO health-check endpoint responds during post-deployment validation."
-        ),
-    ),
-    "validate_nfs_consistency": FixStrategy(
-        fix_type="nfs_mount_repair",
-        fix_commands=[
-            (
-                "set -e; "
-                "NFS_A=$(cat /tmp/pcai_nfs_a_export); "
-                "sudo umount -lf /mnt/nfs >/dev/null 2>&1 || true; "
-                "sudo mkdir -p /mnt/nfs; "
-                "timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 \"$NFS_A\" /mnt/nfs; "
-                "mount | grep ' /mnt/nfs '; "
-                "cat /mnt/nfs/check.txt"
-            ),
-        ],
-        dry_run_commands=[
-            "echo 'Before fix mount state:'; mount | grep ' /mnt/nfs ' || true",
-            "echo 'Canonical NFS A:'; cat /tmp/pcai_nfs_a_export",
-        ],
-        requires_approval=False,
-        estimated_risk="medium",
-        description=(
-            "Repair the NFS mount inconsistency by remounting workers to the "
-            "canonical NFS A export and validating check.txt."
-        ),
-    ),
-}
+RAG_BASE = RAG_API_URL
 
 
 class FixGeneratorAgent:
     """
     Generates a concrete FixStrategy from a RootCauseReport.
-    Tries the deterministic registry first, then falls back to LLM.
+    Always queries RAG for known fix context, then routes through LLM.
+    Does not return hardcoded task fixes before the LLM has reasoned over the actual error.
     """
 
     def __init__(self):
@@ -134,51 +38,68 @@ class FixGeneratorAgent:
         task_id = rca.error_report.task_id
         print(f"[FixGenerator] 🔧 Generating fix strategy for: {task_id}")
 
-        # 1. Try the deterministic registry
-        strategy = self._lookup_registry(task_id)
+        # 1. Query RAG for known fix strategies
+        rag_context = self._query_rag_fix_strategies(task_id, rca)
+        if rag_context:
+            print(f"[FixGenerator] 📚 Got {len(rag_context)} RAG fix strategy match(es)")
+        else:
+            print("[FixGenerator] ⚠️ No RAG fix strategies found; LLM will use RCA context only")
+
+        # 2. Always call LLM with RAG context
+        strategy = self._generate_with_llm(rca, rag_context)
         if strategy:
-            print(f"[FixGenerator] ✅ Registry match — {strategy.fix_type} "
+            print(f"[FixGenerator] ✅ LLM-generated fix — {strategy.fix_type} "
                   f"({strategy.estimated_risk} risk)")
             return strategy
 
-        # 2. Fall back to LLM-generated fix
-        strategy = self._generate_with_llm(rca)
-        print(f"[FixGenerator] ✅ LLM-generated fix — {strategy.fix_type} "
-              f"({strategy.estimated_risk} risk)")
-        return strategy
+        print("[FixGenerator] ⚠️ LLM unavailable; returning manual-review fallback")
+        return self._build_fallback_strategy(rca)
 
-    # ── Registry lookup ───────────────────────────────────────
+    # ── RAG query ─────────────────────────────────────────────
 
-    def _lookup_registry(self, task_id: str) -> FixStrategy | None:
-        """Exact or substring match against the fix registry."""
-        # Strip Airflow mapped-task suffix: simulate_x_error/map_index=0 → simulate_x_error
+    def _query_rag_fix_strategies(self, task_id: str, rca: RootCauseReport) -> list[dict]:
+        """Query the RAG service for known fix strategies matching this task."""
         clean_id = re.sub(r"/map_index=\d+$", "", task_id)
         clean_id = re.sub(r"/attempt=\d+$", "", clean_id)
 
-        # Exact match
-        if clean_id in FIX_REGISTRY:
-            return FIX_REGISTRY[clean_id].model_copy()
-        if task_id in FIX_REGISTRY:
-            return FIX_REGISTRY[task_id].model_copy()
+        error_context = " ".join(filter(None, [
+            rca.error_report.error_type,
+            rca.error_report.error_message,
+            rca.root_cause,
+            rca.engineer_action,
+        ]))
 
-        # Substring match (e.g. "simulate_nfs" matches "simulate_nfs_configuration_error")
-        for key, strategy in FIX_REGISTRY.items():
-            if key in clean_id or clean_id in key:
-                return strategy.model_copy()
-
-        return None
+        try:
+            resp = httpx.post(
+                f"{RAG_BASE.rstrip('/')}/query-fix-strategies",
+                json={"task_id": clean_id, "error_context": error_context[:500]},
+                timeout=10.0,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                return data.get("strategies", [])
+            else:
+                print(f"[FixGenerator] RAG query returned {resp.status_code}")
+                return []
+        except Exception as e:
+            print(f"[FixGenerator] RAG query failed: {e}")
+            return []
 
     # ── LLM fix generation ────────────────────────────────────
 
-    def _generate_with_llm(self, rca: RootCauseReport) -> FixStrategy:
+    def _generate_with_llm(self, rca: RootCauseReport, rag_context: list[dict]) -> FixStrategy | None:
         """
-        Ask the LLM to produce concrete SSH fix commands based
-        on the root cause analysis and RAG solution.
+        Ask the LLM to produce concrete SSH fix commands based on
+        the root cause analysis and known fix strategies from RAG.
         """
-        er = rca.error_report
+        if not self.client:
+            return None
 
-        # Extract the original command that failed from the log
+        er = rca.error_report
         original_command = self._extract_command_from_log(er.raw_log)
+
+        # Format RAG fix context for the prompt
+        rag_section = self._format_rag_context(rag_context)
 
         prompt = f"""You are a senior HPE PCAI infrastructure engineer.
 A deployment task failed and needs an automated SSH-based fix.
@@ -192,6 +113,8 @@ Severity: {rca.severity}
 Engineer Action: {rca.engineer_action}
 RAG Solution: {er.rag_solution or 'none available'}
 Original Command: {original_command or 'not available'}
+
+{rag_section}
 
 Generate a fix strategy as ONLY valid JSON:
 {{
@@ -207,10 +130,9 @@ Rules:
 - Commands must be idempotent (safe to run multiple times)
 - Use sudo where needed
 - Be specific — no placeholders
+- If the known fix strategies from the knowledge base are relevant to the actual error, use them as a strong starting point
+- If the actual error is DIFFERENT from what the known strategies address, generate a novel fix
 - If unsure, set requires_approval to true and estimated_risk to high"""
-
-        if not self.client:
-            return self._build_fallback_strategy(rca)
 
         try:
             response = self.client.chat.completions.create(
@@ -232,7 +154,34 @@ Rules:
             )
         except Exception as exc:
             print(f"[FixGenerator] LLM fix generation failed: {exc}")
-            return self._build_fallback_strategy(rca)
+            return None
+
+    def _format_rag_context(self, rag_context: list[dict]) -> str:
+        """Format RAG fix strategy matches into a readable prompt section."""
+        if not rag_context:
+            return "Known Fix Strategies from Knowledge Base: None found."
+
+        lines = ["Known Fix Strategies from Knowledge Base:"]
+        for i, ctx in enumerate(rag_context, 1):
+            try:
+                cmds = json.loads(ctx.get("fix_commands", "[]"))
+            except (json.JSONDecodeError, TypeError):
+                cmds = []
+            try:
+                dry_cmds = json.loads(ctx.get("dry_run_commands", "[]"))
+            except (json.JSONDecodeError, TypeError):
+                dry_cmds = []
+
+            lines.append(f"\n--- Strategy {i} (similarity: {ctx.get('similarity', 'N/A')}) ---")
+            lines.append(f"Task: {ctx.get('task_id', 'unknown')}")
+            lines.append(f"Fix Type: {ctx.get('fix_type', 'unknown')}")
+            lines.append(f"Risk: {ctx.get('estimated_risk', 'unknown')}")
+            lines.append(f"Description: {ctx.get('description', '')}")
+            lines.append(f"Fix Commands: {json.dumps(cmds, indent=2)}")
+            if dry_cmds:
+                lines.append(f"Verification Commands: {json.dumps(dry_cmds, indent=2)}")
+
+        return "\n".join(lines)
 
     # ── Helpers ───────────────────────────────────────────────
 

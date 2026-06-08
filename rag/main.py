@@ -22,6 +22,7 @@ try:
     from .rag_engine import (
         run_rag_pipeline,
         run_dag_command_pipeline,
+        run_fix_strategy_pipeline,
     )
 except ImportError:
     from log_parser import parse_airflow_log
@@ -30,6 +31,7 @@ except ImportError:
     from rag_engine import (
         run_rag_pipeline,
         run_dag_command_pipeline,
+        run_fix_strategy_pipeline,
     )
 
 load_dotenv()
@@ -142,6 +144,36 @@ class AnalyzeDAGResponse(BaseModel):
     matches: list[CommandMatch]
 
 
+class FixStrategyQueryRequest(BaseModel):
+    task_id: str
+    error_context: str = ""
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "task_id": "simulate_nfs_configuration_error",
+                "error_context": "exportfs: command not found"
+            }
+        }
+
+
+class FixStrategyMatch(BaseModel):
+    task_id: str
+    fix_type: str
+    fix_commands: str        # JSON-encoded list of commands
+    dry_run_commands: str    # JSON-encoded list of commands
+    estimated_risk: str
+    description: str
+    requires_approval: str
+    similarity: float
+    matched_document: str
+
+
+class FixStrategyQueryResponse(BaseModel):
+    task_id: str
+    strategies: list[FixStrategyMatch]
+
+
 # --- Endpoints ---
 
 @app.get("/health")
@@ -224,6 +256,33 @@ def analyze_dag(request: AnalyzeDAGRequest):
     return AnalyzeDAGResponse(
         commands_found=result["commands_found"],
         matches=result["matches"],
+    )
+
+
+@app.post("/query-fix-strategies", response_model=FixStrategyQueryResponse)
+def query_fix_strategies(request: FixStrategyQueryRequest):
+    """
+    Query the knowledge base for known fix strategies matching a task ID and error context.
+    Used by the FixGeneratorAgent to provide RAG context to the LLM.
+    """
+    if not request.task_id.strip():
+        raise HTTPException(status_code=400, detail="task_id cannot be empty")
+
+    print(f"[RAG] query-fix-strategies: task_id={request.task_id}, error_context={request.error_context[:100]}")
+
+    try:
+        result = run_fix_strategy_pipeline(
+            task_id=request.task_id,
+            error_context=request.error_context,
+            chroma_client=chroma_client,
+        )
+    except Exception as e:
+        print(f"[RAG] fix strategy query error: {e}")
+        raise HTTPException(status_code=500, detail=f"Fix strategy query error: {str(e)}")
+
+    return FixStrategyQueryResponse(
+        task_id=result["task_id"],
+        strategies=result["strategies"],
     )
 
 # @app.post("/ingest")

@@ -9,6 +9,7 @@ Contains:
 import chromadb
 from chromadb.utils import embedding_functions
 import hashlib
+import json
 import math
 import os
 import re
@@ -17,6 +18,7 @@ from typing import List, Dict
 # Collection names
 ERRORS_COLLECTION = "past_errors"
 COMMANDS_COLLECTION = "valid_commands"
+FIX_STRATEGIES_COLLECTION = "fix_strategies"
 
 
 def _normalize_embedding_input(input_data) -> List[str]:
@@ -926,6 +928,142 @@ VALID_COMMANDS = [
     }
 ]
 
+# ── Fix Strategies ───────────────────────────────────────────
+# Each entry stores a known remediation strategy for a specific Airflow task failure.
+# The 'text' field is embedded for semantic search; metadata stores the actual fix commands.
+MOCK_FIX_STRATEGIES = [
+    {
+        "id": "fix_os_validation",
+        "task_id": "simulate_os_validation_error",
+        "text": (
+            "simulate_os_validation_error: OS baseline validation failed — "
+            "/etc/redhat-release is missing or does not exist on the target host. "
+            "Create the file with appropriate Red Hat Enterprise Linux release content."
+        ),
+        "fix_type": "config_correction",
+        "fix_commands": json.dumps([
+            "sudo touch /etc/redhat-release",
+            "echo 'Red Hat Enterprise Linux release 8.8 (Ootpa)' | sudo tee /etc/redhat-release",
+        ]),
+        "dry_run_commands": json.dumps(["cat /etc/os-release"]),
+        "estimated_risk": "low",
+        "description": (
+            "Create /etc/redhat-release with appropriate content to "
+            "satisfy the OS baseline validation check."
+        ),
+        "requires_approval": "false",
+    },
+    {
+        "id": "fix_nfs_config",
+        "task_id": "simulate_nfs_configuration_error",
+        "text": (
+            "simulate_nfs_configuration_error: NFS configuration failed — "
+            "exportfs command not found or broken NFS export options. "
+            "Install nfs-kernel-server package and configure valid exports."
+        ),
+        "fix_type": "config_correction",
+        "fix_commands": json.dumps([
+            "sudo apt-get update && sudo apt-get install -y nfs-kernel-server || true",
+            "printf '%s\\n' '/srv/nfs/share *(rw,sync,no_subtree_check)' | sudo tee /etc/exports > /dev/null",
+            "sudo exportfs -ra",
+        ]),
+        "dry_run_commands": json.dumps(["cat /etc/exports", "sudo exportfs -v"]),
+        "estimated_risk": "low",
+        "description": (
+            "Replace the broken NFS export option (broken_option) with valid "
+            "NFS export flags (rw,sync,no_subtree_check) and reload exports."
+        ),
+        "requires_approval": "false",
+    },
+    {
+        "id": "fix_minio_service",
+        "task_id": "simulate_minio_service_error",
+        "text": (
+            "simulate_minio_service_error: MinIO service unit file does not exist — "
+            "systemd cannot enable or start the minio-broken service. "
+            "Create the systemd unit file, reload daemon, and enable service."
+        ),
+        "fix_type": "service_restart",
+        "fix_commands": json.dumps([
+            (
+                "printf '[Unit]\\nDescription=MinIO (fixed)\\n"
+                "[Service]\\nExecStart=/bin/true\\nType=oneshot\\n"
+                "RemainAfterExit=yes\\n[Install]\\n"
+                "WantedBy=multi-user.target\\n' "
+                "| sudo tee /etc/systemd/system/minio-broken.service > /dev/null"
+            ),
+            "sudo systemctl daemon-reload",
+            "sudo systemctl enable --now minio-broken",
+        ]),
+        "dry_run_commands": json.dumps(["systemctl list-unit-files | grep minio || true"]),
+        "estimated_risk": "low",
+        "description": (
+            "Create the missing minio-broken.service systemd unit file, "
+            "reload the daemon, and enable the service."
+        ),
+        "requires_approval": "false",
+    },
+    {
+        "id": "fix_postcheck",
+        "task_id": "simulate_postcheck_error",
+        "text": (
+            "simulate_postcheck_error: Post-deployment health check failed — "
+            "curl to http://127.0.0.1:9005 returned connection refused. "
+            "No service is listening on port 9005. Start a lightweight HTTP responder."
+        ),
+        "fix_type": "service_restart",
+        "fix_commands": json.dumps([
+            (
+                "nohup python3 -c \""
+                "import http.server,socketserver; "
+                "H=type('H',(http.server.BaseHTTPRequestHandler,),{"
+                "'do_GET':lambda self:(self.send_response(200),self.end_headers(),self.wfile.write(b'OK')),"
+                "'log_message':lambda self,*a:None}); "
+                "socketserver.TCPServer(('',9005),H).serve_forever()\" &>/dev/null &"
+            ),
+            "sleep 2",
+        ]),
+        "dry_run_commands": json.dumps(["ss -tuln | grep 9005 || echo 'Port 9005 not in use'"]),
+        "estimated_risk": "low",
+        "description": (
+            "Start a lightweight HTTP responder on port 9005 so the "
+            "MinIO health-check endpoint responds during post-deployment validation."
+        ),
+        "requires_approval": "false",
+    },
+    {
+        "id": "fix_nfs_consistency",
+        "task_id": "validate_nfs_consistency",
+        "text": (
+            "validate_nfs_consistency: NFS mount inconsistency detected — "
+            "workers are mounting different NFS exports. "
+            "Repair by remounting all workers to the canonical NFS A export and validating check.txt."
+        ),
+        "fix_type": "nfs_mount_repair",
+        "fix_commands": json.dumps([
+            (
+                "set -e; "
+                "NFS_A=$(cat /tmp/pcai_nfs_a_export); "
+                "sudo umount -lf /mnt/nfs >/dev/null 2>&1 || true; "
+                "sudo mkdir -p /mnt/nfs; "
+                "timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 \"$NFS_A\" /mnt/nfs; "
+                "mount | grep ' /mnt/nfs '; "
+                "cat /mnt/nfs/check.txt"
+            ),
+        ]),
+        "dry_run_commands": json.dumps([
+            "echo 'Before fix mount state:'; mount | grep ' /mnt/nfs ' || true",
+            "echo 'Canonical NFS A:'; cat /tmp/pcai_nfs_a_export",
+        ]),
+        "estimated_risk": "medium",
+        "description": (
+            "Repair the NFS mount inconsistency by remounting workers to the "
+            "canonical NFS A export and validating check.txt."
+        ),
+        "requires_approval": "false",
+    },
+]
+
 def get_embedding_function():
     """Returns an embedding function for ChromaDB with offline fallback."""
     if os.getenv("RAG_FORCE_LOCAL_EMBEDDINGS", "").lower() in {"1", "true", "yes"}:
@@ -999,5 +1137,28 @@ def build_knowledge_base(persist_dir: str = "./chroma_db") -> chromadb.ClientAPI
         print(f"[KnowledgeBase] Added {len(VALID_COMMANDS)} command entries.")
     else:
         print(f"[KnowledgeBase] Commands collection already has {commands_col.count()} entries.")
-    
+
+    # --- Fix Strategies Collection ---
+    fix_col = client.get_or_create_collection(
+        name=FIX_STRATEGIES_COLLECTION,
+        embedding_function=ef,
+        metadata={"hnsw:space": "cosine"}
+    )
+
+    print("[KnowledgeBase] Upserting fix strategies...")
+    fix_col.upsert(
+        ids=[f["id"] for f in MOCK_FIX_STRATEGIES],
+        documents=[f["text"] for f in MOCK_FIX_STRATEGIES],
+        metadatas=[{
+            "task_id": f["task_id"],
+            "fix_type": f["fix_type"],
+            "fix_commands": f["fix_commands"],
+            "dry_run_commands": f["dry_run_commands"],
+            "estimated_risk": f["estimated_risk"],
+            "description": f["description"],
+            "requires_approval": f["requires_approval"],
+        } for f in MOCK_FIX_STRATEGIES],
+    )
+    print(f"[KnowledgeBase] Fix strategies collection has {fix_col.count()} entries.")
+
     return client

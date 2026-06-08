@@ -20,7 +20,7 @@ If the `DagAnalysisAgent` identifies a logic flaw in the orchestration code:
 If Attempt 1 fails (or if the issue was inherently an OS/Hardware issue that cannot be fixed by changing the orchestration code):
 1. **Dynamic Log Fetching**: The pipeline dynamically fetches the new error logs for the specific task that failed during Attempt 1.
 2. **Re-Analysis**: The `LogAnalyserAgent` and `RootCauseAgent` process the new error to generate a fresh RCA.
-3. **Fix Generation**: The `FixGeneratorAgent` creates an execution strategy. It first checks a deterministic registry for known, safe fixes (e.g., `apt-get install nfs-kernel-server`). If the issue is unknown, it falls back to the LLM to generate a custom bash fix.
+3. **Fix Generation**: The `FixGeneratorAgent` creates an execution strategy. It queries the RAG `fix_strategies` collection for known remediation patterns, passes those patterns to the LLM as context, and always lets the LLM decide whether to adapt the known strategy or generate a novel bash fix for the actual error.
 4. **Fix Execution**: The `FixExecutorAgent` connects to the offending worker node via Paramiko SSH. It automatically injects the necessary credentials to handle interactive `[sudo]` password prompts.
 5. **Validation**: The `ValidationAgent` runs post-execution health checks on the node and verifies that the Redis error queue is no longer receiving telemetry errors from the host.
 
@@ -33,6 +33,6 @@ Phase 2 can be triggered through two distinct paths, representing both Active Or
 ## LangGraph Agents involved in Phase 2
 - **`DagAnalysisAgent`** `[LLM-based]`: Analyzes DAG source code for broken logic and outputs a corrected Python string.
 - **`DagPatchAgent`** `[Non-LLM]`: Writes the corrected source to disk and manages the Airflow REST API interactions.
-- **`FixGeneratorAgent`** `[Hybrid]`: Looks up deterministic bash scripts for known issues, or uses the LLM to generate novel fixes.
+- **`FixGeneratorAgent`** `[LLM + RAG]`: Retrieves known fix strategies from RAG as context, then asks the LLM to generate or adapt the final SSH remediation commands.
 - **`FixExecutorAgent`** `[Non-LLM]`: Manages the Paramiko SSH connections, PTY creation, and `sudo` handling.
 - **`ValidationAgent`** `[Non-LLM]`: Ensures the system has returned to a healthy state by running verification commands and checking the Redis queue depth.

@@ -257,20 +257,9 @@ function hasFailureSignals(logText) {
 }
 
 function useToast() {
-  const [toast, setToast] = useState(null);
+  const show = () => {};
 
-  const show = (message, kind = "success") => {
-    setToast({ message, kind });
-    setTimeout(() => setToast(null), 3500);
-  };
-
-  const node = toast ? (
-    <div className={`toast ${toast.kind === "success" ? "toast-success" : "toast-error"}`}>
-      {toast.message}
-    </div>
-  ) : null;
-
-  return { show, node };
+  return { show, node: null };
 }
 
 function useNodes(apiBase, toast) {
@@ -1343,7 +1332,7 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
             <span className="label">DAG</span>
             <span className="value">deployment_workflow</span>
           </div>
-          <div className="meta-card">
+          <div className="meta-card meta-card-status">
             <span className="label">Status</span>
             <span className={`status-chip ${statusClass}`}>{status}</span>
           </div>

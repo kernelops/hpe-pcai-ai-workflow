@@ -316,12 +316,41 @@ body {
   padding: 14px 16px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  align-items: flex-start;
+}
+
+.meta-card .label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+.meta-card .value {
+  display: block;
+  min-width: 0;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.meta-card-status {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .value-run-id {
   font-family: var(--font-mono);
   font-size: 0.82rem;
-  word-break: break-all;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .status-chip {
@@ -1288,7 +1317,7 @@ button:disabled {
 /* Toast Notifications */
 .toast {
   position: fixed;
-  bottom: 24px;
+  top: 24px;
   right: 24px;
   padding: 16px 20px;
   border-radius: var(--radius-lg);
@@ -1298,8 +1327,9 @@ button:disabled {
   font-size: 0.9rem;
   box-shadow: var(--shadow-xl);
   max-width: 400px;
-  z-index: 1000;
+  z-index: 9999;
   animation: slideUp 0.3s ease-out;
+  pointer-events: none;
 }
 
 @keyframes slideUp {

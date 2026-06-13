@@ -179,7 +179,12 @@ class FixExecutorAgent:
             if "sudo" in command:
                 kwargs["get_pty"] = True
 
-            # Use get_transport for command execution with timeout
+            # Prepend env vars to disable pagers (systemctl opens a pager on
+            # some distros like Kali, which hangs the SSH channel indefinitely)
+            pager_prefix = "export SYSTEMD_PAGER='' PAGER=cat; "
+            if not command.startswith("export SYSTEMD_PAGER"):
+                command = pager_prefix + command
+
             stdin, stdout, stderr = client.exec_command(command, **kwargs)
 
             if "sudo" in command and password:

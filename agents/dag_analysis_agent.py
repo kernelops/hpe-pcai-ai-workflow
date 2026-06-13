@@ -51,7 +51,7 @@ class DagAnalysisAgent:
         print(f"[DagAnalysis]   Formatted RAG context:\n{format_ragjson}")
 
 
-        if "def validate_nfs_consistency" in source:
+        if "def validate_nfs_consistency" in source and '"error-simulation"' in source:
             print("[DagAnalysis]   NFS inconsistency demo detected; using deterministic remediation plan")
             return self._fallback_analysis(source, ssh_commands)
 

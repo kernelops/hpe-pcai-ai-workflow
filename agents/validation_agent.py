@@ -122,7 +122,10 @@ class ValidationAgent:
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             client.connect(hostname=ip, username=username, password=password, timeout=15, look_for_keys=False, allow_agent=False)
-            stdin, stdout, stderr = client.exec_command(command, timeout=60)
+            # Disable pagers to prevent systemctl from hanging SSH
+            if not command.startswith("export SYSTEMD_PAGER"):
+                command = "export SYSTEMD_PAGER='' PAGER=cat; " + command
+            stdin, stdout, stderr = client.exec_command(command, timeout=60, get_pty=True)
             result["exit_code"] = stdout.channel.recv_exit_status()
             result["stdout"] = stdout.read().decode("utf-8", errors="replace").strip()
             result["stderr"] = stderr.read().decode("utf-8", errors="replace").strip()

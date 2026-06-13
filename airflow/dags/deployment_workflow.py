@@ -85,19 +85,19 @@ def _run_node_command(node: dict, command: str) -> str:
         client.close()
 
 
-def _require_two_nodes(**context) -> list[dict]:
+def _require_nodes(**context) -> list[dict]:
     nodes = context["task_instance"].xcom_pull(task_ids="get_worker_nodes") or []
-    if len(nodes) < 2:
-        raise RuntimeError("NFS inconsistency demo requires at least two reachable worker nodes")
+    if len(nodes) < 1:
+        raise RuntimeError("Deployment workflow requires at least one reachable worker node")
     return nodes
 
 
 def prepare_host_nfs_servers(**context):
     """
     Configure one host NFS export on each worker.
-    Worker 1 becomes NFS A, Worker 2 becomes NFS B.
+    Worker 1 becomes NFS A. If Worker 2 exists, it becomes NFS B.
     """
-    nodes = _require_two_nodes(**context)
+    nodes = _require_nodes(**context)
     exports = []
 
     for index, node in enumerate(nodes[:2], start=1):
@@ -109,8 +109,7 @@ def prepare_host_nfs_servers(**context):
         command = (
             "set -e; "
             "if ! command -v exportfs >/dev/null 2>&1 || ! command -v mount.nfs >/dev/null 2>&1; then "
-            "  sudo apt-get update >/dev/null 2>&1; "
-            "  sudo apt-get install -y nfs-kernel-server nfs-common >/dev/null 2>&1; "
+            "  echo 'NFS server not installed!' >&2; exit 1; "
             "fi; "
             f"sudo mkdir -p {export_dir}; "
             f"sudo chmod 777 {export_dir}; "
@@ -130,7 +129,11 @@ def prepare_host_nfs_servers(**context):
         )
         _run_node_command(node, command)
 
-    for node in nodes[:2]:
+    # Ensure exports array has at least 2 elements for the return dict
+    if len(exports) == 1:
+        exports.append(exports[0])
+
+    for index, node in enumerate(nodes[:2]):
         _run_node_command(
             node,
             f"printf '%s\\n' '{exports[0]}' | sudo tee /tmp/pcai_nfs_a_export >/dev/null; "
@@ -144,7 +147,7 @@ def prepare_host_nfs_servers(**context):
 
 def mount_workers_to_nfs_a(**context):
     """Put both workers into the initial healthy state: both mounted to NFS A."""
-    nodes = _require_two_nodes(**context)
+    nodes = _require_nodes(**context)
     exports = context["task_instance"].xcom_pull(task_ids="prepare_host_nfs_servers")
     nfs_a = exports["nfs_a_export"]
 
@@ -152,8 +155,7 @@ def mount_workers_to_nfs_a(**context):
         command = (
             "set -e; "
             "if ! command -v mount.nfs >/dev/null 2>&1; then "
-            "  sudo apt-get update >/dev/null 2>&1; "
-            "  sudo apt-get install -y nfs-common >/dev/null 2>&1; "
+            "  echo 'NFS common not installed!' >&2; exit 1; "
             "fi; "
             f"sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
             f"sudo rmdir {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
@@ -169,7 +171,7 @@ def mount_workers_to_nfs_a(**context):
 
 def create_nfs_validation_file(**context):
     """Write the validation file on Worker 1, which is mounted to NFS A."""
-    nodes = _require_two_nodes(**context)
+    nodes = _require_nodes(**context)
     command = (
         "set -e; "
         f"printf '%s\\n' 'deployment-check' | sudo tee {NFS_MOUNT_POINT}/check.txt >/dev/null; "
@@ -180,45 +182,57 @@ def create_nfs_validation_file(**context):
 
 
 def simulate_nfs_mount_inconsistency(**context):
-    """Move Worker 2 from NFS A to NFS B, creating the environment issue."""
-    nodes = _require_two_nodes(**context)
+    """Move Worker 2 from NFS A to NFS B (or unmount if 1 node), creating the environment issue."""
+    nodes = _require_nodes(**context)
     exports = context["task_instance"].xcom_pull(task_ids="prepare_host_nfs_servers")
-    nfs_b = exports["nfs_b_export"]
-    command = (
-        "set -e; "
-        "sudo exportfs -ra; "
-        "sudo systemctl restart nfs-server >/dev/null 2>&1 || "
-        "sudo systemctl restart nfs-kernel-server >/dev/null 2>&1 || true; "
-        "sudo exportfs -ra; "
-        f"sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
-        f"sudo rmdir {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
-        f"sudo mkdir -p {NFS_MOUNT_POINT}; "
-        f"(timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 {nfs_b} {NFS_MOUNT_POINT} || "
-        f"(sleep 2; sudo exportfs -ra; sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
-        f"timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 {nfs_b} {NFS_MOUNT_POINT})); "
-        f"printf '%s\\n' '{nfs_b}' | sudo tee /tmp/pcai_nfs_b_export >/dev/null; "
-        "echo 'NFS mount inconsistency injected: Worker 2 now points to NFS B'; "
-        f"mount | grep ' {NFS_MOUNT_POINT} '"
-    )
-    _run_node_command(nodes[1], command)
+    
+    if len(nodes) == 1:
+        # For 1 node, we just unmount it to simulate the file missing
+        command = (
+            "set -e; "
+            f"sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
+            "echo 'NFS mount inconsistency injected: Worker 1 unmounted from NFS A'; "
+        )
+        _run_node_command(nodes[0], command)
+    else:
+        nfs_b = exports["nfs_b_export"]
+        command = (
+            "set -e; "
+            "sudo exportfs -ra; "
+            "sudo systemctl restart nfs-server >/dev/null 2>&1 || "
+            "sudo systemctl restart nfs-kernel-server >/dev/null 2>&1 || true; "
+            "sudo exportfs -ra; "
+            f"sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
+            f"sudo rmdir {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
+            f"sudo mkdir -p {NFS_MOUNT_POINT}; "
+            f"(timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 {nfs_b} {NFS_MOUNT_POINT} || "
+            f"(sleep 2; sudo exportfs -ra; sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
+            f"timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 {nfs_b} {NFS_MOUNT_POINT})); "
+            f"printf '%s\\n' '{nfs_b}' | sudo tee /tmp/pcai_nfs_b_export >/dev/null; "
+            "echo 'NFS mount inconsistency injected: Worker 2 now points to NFS B'; "
+            f"mount | grep ' {NFS_MOUNT_POINT} '"
+        )
+        _run_node_command(nodes[1], command)
 
 
 def validate_nfs_consistency(**context):
     """
-    Validate from Worker 2.
-    This fails because Worker 1 wrote check.txt to NFS A, while Worker 2 now reads NFS B.
+    Validate from the target worker (Worker 2 if available, or Worker 1).
+    This fails because the target worker cannot read check.txt anymore.
     """
-    nodes = _require_two_nodes(**context)
+    nodes = _require_nodes(**context)
+    target_node = nodes[-1] if len(nodes) > 1 else nodes[0]
+    
     command = (
         "set -e; "
-        f"echo 'Validating NFS consistency from Worker 2'; "
-        f"mount | grep ' {NFS_MOUNT_POINT} '; "
+        f"echo 'Validating NFS consistency'; "
+        f"mount | grep ' {NFS_MOUNT_POINT} ' || true; "
         f"test -f {NFS_MOUNT_POINT}/check.txt || "
-        f"(echo 'NFS consistency validation failed: {NFS_MOUNT_POINT}/check.txt missing on Worker 2. "
+        f"(echo 'NFS consistency validation failed: {NFS_MOUNT_POINT}/check.txt missing on worker node. "
         "Possible NFS mount inconsistency between worker nodes.' >&2; exit 1); "
         f"grep -qx 'deployment-check' {NFS_MOUNT_POINT}/check.txt"
     )
-    _run_node_command(nodes[1], command)
+    _run_node_command(target_node, command)
 
 
 @provide_session

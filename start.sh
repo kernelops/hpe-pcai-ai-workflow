@@ -150,6 +150,14 @@ if [ "$SKIP_AIRFLOW" = false ]; then
 
     cd "$REPO_ROOT/airflow"
     echo "AIRFLOW_UID=$(id -u)" > .env
+    
+    # Extract keys from root .env and pass them to Airflow so docker-compose doesn't need hardcoded defaults
+    if grep -q "AIRFLOW_FERNET_KEY" "$REPO_ROOT/.env" 2>/dev/null; then
+        grep "AIRFLOW_FERNET_KEY" "$REPO_ROOT/.env" >> .env
+    fi
+    if grep -q "AIRFLOW_SECRET_KEY" "$REPO_ROOT/.env" 2>/dev/null; then
+        grep "AIRFLOW_SECRET_KEY" "$REPO_ROOT/.env" >> .env
+    fi
     mkdir -p logs config plugins
 
     docker compose up -d >> "$LOG_DIR/airflow.log" 2>&1

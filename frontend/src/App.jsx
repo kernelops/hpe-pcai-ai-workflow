@@ -129,6 +129,202 @@ const AGENT_CARD_ORDER = [
   "validation_agent"
 ];
 
+/*
+ * Curated display fields for each agent card.
+ * Each entry: { key: field name in output, label: human-readable label }
+ * Fields not listed here are hidden from the card display.
+ * "handoff" describes what this agent passes to the next one.
+ */
+const AGENT_DISPLAY_FIELDS = {
+  workflow_agent: {
+    fields: [
+      { key: "dag_id", label: "DAG" },
+      { key: "dag_run_id", label: "Run ID" },
+      { key: "status", label: "Status" },
+    ],
+    handoff: "Run context passed to Monitor Agent",
+  },
+  monitor_agent: {
+    fields: [
+      { key: "failure_detected", label: "Failure Detected" },
+      { key: "failed_task", label: "Failed Task" },
+      { key: "task_state", label: "Task State" },
+    ],
+    handoff: "Failed task ID & state passed to Log Analysis Agent",
+  },
+  log_analysis_agent: {
+    fields: [
+      { key: "task_id", label: "Task" },
+      { key: "error_type", label: "Error Type" },
+      { key: "error_message", label: "Error Message" },
+      { key: "diagnosis", label: "Diagnosis" },
+      { key: "confidence", label: "Confidence" },
+      { key: "rag_solution", label: "RAG Solution" },
+    ],
+    handoff: "Structured error report passed to Root Cause Agent",
+  },
+  root_cause_agent: {
+    fields: [
+      { key: "root_cause", label: "Root Cause" },
+      { key: "classification", label: "Classification" },
+      { key: "severity", label: "Severity" },
+      { key: "engineer_action", label: "Recommended Action" },
+    ],
+    handoff: "Root cause report passed to Alerting Agent",
+  },
+  alerting_agent: {
+    fields: [
+      { key: "alert_message", label: "Alert" },
+      { key: "action_status", label: "Action Status" },
+      { key: "approval_required", label: "Approval Required" },
+      { key: "channels_notified", label: "Channels Notified" },
+    ],
+    handoff: "Alert dispatched — triggers Autofix if enabled",
+  },
+  dag_analysis_agent: {
+    fields: [
+      { key: "has_dag_issues", label: "DAG Issues Found" },
+      { key: "_issue_count", label: "Issue Count" },
+      { key: "_issue_summaries", label: "Issues" },
+    ],
+    handoff: "Analysis report passed to DAG Patch Agent",
+  },
+  dag_patch_agent: {
+    fields: [
+      { key: "dag_written", label: "DAG Written" },
+      { key: "run_outcome", label: "Run Outcome" },
+      { key: "attempt_number", label: "Attempt" },
+      { key: "failed_tasks", label: "Still Failing" },
+    ],
+    handoff: "Patch result determines if SSH healing is needed",
+  },
+  fix_generator_agent: {
+    fields: [
+      { key: "fix_type", label: "Fix Type" },
+      { key: "description", label: "Description" },
+      { key: "estimated_risk", label: "Risk Level" },
+      { key: "_command_count", label: "Commands" },
+    ],
+    handoff: "Fix strategy passed to Fix Executor Agent",
+  },
+  fix_executor_agent: {
+    fields: [
+      { key: "execution_status", label: "Execution Status" },
+      { key: "_command_summary", label: "Commands Executed" },
+    ],
+    handoff: "Execution result passed to Validation Agent",
+  },
+  validation_agent: {
+    fields: [
+      { key: "is_valid", label: "Validation Passed" },
+      { key: "verdict", label: "Verdict" },
+    ],
+    handoff: null,
+  },
+};
+
+/**
+ * Formats a raw output value for display in agent cards.
+ * Handles booleans, arrays, nulls, and objects cleanly.
+ */
+function formatAgentValue(value) {
+  if (value === null || value === undefined || value === "") return "-";
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (Array.isArray(value)) {
+    if (value.length === 0) return "None";
+    // For short arrays of strings, join them
+    if (value.every(v => typeof v === "string")) return value.join(", ");
+    return `${value.length} item(s)`;
+  }
+  if (typeof value === "number") {
+    // Format confidence as percentage
+    if (value > 0 && value <= 1) return `${(value * 100).toFixed(0)}%`;
+    return String(value);
+  }
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+}
+
+/**
+ * Computes virtual/derived fields for agent output display.
+ * These are fields prefixed with _ in AGENT_DISPLAY_FIELDS.
+ */
+function getVirtualField(agentKey, fieldKey, output) {
+  if (!output) return "-";
+  switch (`${agentKey}.${fieldKey}`) {
+    case "dag_analysis_agent._issue_count":
+      return Array.isArray(output.issues) ? `${output.issues.length} issue(s)` : "-";
+    case "dag_analysis_agent._issue_summaries":
+      if (!Array.isArray(output.issues) || output.issues.length === 0) return "None";
+      return output.issues.map(i => `${i.task_id || "?"}: ${(i.explanation || "").slice(0, 80)}`).join("; ");
+    case "fix_generator_agent._command_count": {
+      // Handle both single-task and multi-task output shapes
+      const cmds = output.fix_commands;
+      const strats = output.strategies;
+      if (Array.isArray(cmds)) return `${cmds.length} command(s)`;
+      if (Array.isArray(strats)) {
+        const total = strats.reduce((n, s) => n + (Array.isArray(s.fix_commands) ? s.fix_commands.length : 0), 0);
+        return `${total} command(s) across ${strats.length} task(s)`;
+      }
+      return "-";
+    }
+    case "fix_executor_agent._command_summary": {
+      const outputs = output.command_outputs;
+      if (!Array.isArray(outputs)) return "-";
+      const ok = outputs.filter(c => c.exit_code === 0 || c.status === "success").length;
+      return `${ok}/${outputs.length} succeeded`;
+    }
+    default:
+      return "-";
+  }
+}
+
+/**
+ * Renders a curated output section for an agent card.
+ * Falls back to raw display for unknown agent keys.
+ */
+function renderCuratedOutput(agentKey, output, idPrefix) {
+  if (!output) return null;
+  const config = AGENT_DISPLAY_FIELDS[agentKey];
+
+  // Fallback: if no config exists, show top-level scalars only (skip large objects/arrays)
+  if (!config) {
+    return (
+      <div className="agent-output">
+        {Object.entries(output).filter(([, v]) => typeof v !== "object" || v === null).map(([k, v]) => (
+          <div key={`${idPrefix}-${k}`} className="agent-output-row">
+            <span>{k.replace(/_/g, " ")}</span>
+            <strong>{formatAgentValue(v)}</strong>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="agent-output">
+        {config.fields.map(({ key, label }) => {
+          const value = key.startsWith("_")
+            ? getVirtualField(agentKey, key, output)
+            : formatAgentValue(output[key]);
+          return (
+            <div key={`${idPrefix}-${key}`} className="agent-output-row">
+              <span>{label}</span>
+              <strong>{value}</strong>
+            </div>
+          );
+        })}
+      </div>
+      {config.handoff && (
+        <div className="agent-handoff">
+          ↳ {config.handoff}
+        </div>
+      )}
+    </>
+  );
+}
+
 const LOG_PATTERNS = [
   {
     id: "ssh_auth",
@@ -1604,21 +1800,7 @@ function AgentOpsView({ agentOpsState, onRetry, runId, nodes }) {
                           <li key={`autofix-${key}-${i}`}>{item}</li>
                         ))}
                       </ul>
-                      {cardData.output && (
-                        <div className="agent-output">
-                          {Object.entries(cardData.output).map(([k, v]) => (
-                            <div key={`autofix-${key}-${k}`} className="agent-output-row">
-                              <span>{k.replace(/_/g, " ")}</span>
-                              <strong>
-                                {Array.isArray(v) ? (v.length > 0 ? JSON.stringify(v) : "-") :
-                                 typeof v === 'object' && v !== null ? JSON.stringify(v) :
-                                 v === null || v === undefined || v === "" ? "-" :
-                                 typeof v === 'boolean' ? (v ? "true" : "false") : String(v)}
-                              </strong>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                      {cardData.output && renderCuratedOutput(key, cardData.output, `autofix-${key}`)}
                     </article>
                   );
                 })}
@@ -1635,15 +1817,26 @@ function AgentOpsView({ agentOpsState, onRetry, runId, nodes }) {
                     </span>
                   </div>
                   <div className="agent-summary-grid">
-                    {Object.entries(globalAutofixData.autofix_summary).map(([key, value]) => (
-                      <div key={`autofix-summary-${key}`} className="agent-output-row">
-                        <span>{key.replace(/_/g, " ")}</span>
-                        <strong>
-                          {value === true ? "Yes" : value === false ? "No" :
-                           value === null || value === undefined || value === "" ? "-" : String(value)}
-                        </strong>
-                      </div>
-                    ))}
+                    {[
+                      { key: "total_attempts", label: "Total Attempts" },
+                      { key: "final_status", label: "Final Status" },
+                      { key: "dag_corrected", label: "DAG Corrected" },
+                      { key: "infra_healed", label: "Infrastructure Healed" },
+                      { key: "message", label: "Summary" },
+                      { key: "fix_type", label: "Fix Type" },
+                      { key: "fix_description", label: "Fix Applied" },
+                      { key: "execution_status", label: "Execution Status" },
+                      { key: "validation_verdict", label: "Validation" },
+                    ].map(({ key, label }) => {
+                      const value = globalAutofixData.autofix_summary[key];
+                      if (value === null || value === undefined || value === "") return null;
+                      return (
+                        <div key={`autofix-summary-${key}`} className="agent-output-row">
+                          <span>{label}</span>
+                          <strong>{formatAgentValue(value)}</strong>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -1698,22 +1891,7 @@ function AgentOpsView({ agentOpsState, onRetry, runId, nodes }) {
                             <li key={`${analysisTaskId}-${card.title}-${bulletIndex}`}>{item}</li>
                           ))}
                         </ul>
-                        {card.output && (
-                          <div className="agent-output">
-                            {Object.entries(card.output).map(([key, value]) => (
-                              <div key={`${analysisTaskId}-${card.title}-${key}`} className="agent-output-row">
-                                <span>{key.replace(/_/g, " ")}</span>
-                                <strong>
-                                  {Array.isArray(value)
-                                    ? value.join(", ")
-                                    : value === null || value === undefined || value === ""
-                                      ? "-"
-                                      : String(value)}
-                                </strong>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                        {card.output && renderCuratedOutput(card.key, card.output, `${analysisTaskId}-${card.key}`)}
                       </article>
                     ))}
                   </div>
@@ -1725,18 +1903,26 @@ function AgentOpsView({ agentOpsState, onRetry, runId, nodes }) {
                         <span className="agent-card-status">{combinedSummary.severity || "ready"}</span>
                       </div>
                       <div className="agent-summary-grid">
-                        {Object.entries(combinedSummary).map(([key, value]) => (
-                          <div key={`${analysisTaskId}-${key}`} className="agent-output-row">
-                            <span>{key.replace(/_/g, " ")}</span>
-                            <strong>
-                              {Array.isArray(value)
-                                ? value.join(", ")
-                                : value === null || value === undefined || value === ""
-                                  ? "-"
-                                  : String(value)}
-                            </strong>
-                          </div>
-                        ))}
+                        {[
+                          { key: "verdict", label: "Verdict" },
+                          { key: "failed_task", label: "Failed Task" },
+                          { key: "error_type", label: "Error Type" },
+                          { key: "root_cause", label: "Root Cause" },
+                          { key: "severity", label: "Severity" },
+                          { key: "classification", label: "Classification" },
+                          { key: "engineer_action", label: "Recommended Action" },
+                          { key: "rag_solution", label: "RAG Solution" },
+                          { key: "alert_message", label: "Alert" },
+                        ].map(({ key, label }) => {
+                          const value = combinedSummary[key];
+                          if (value === null || value === undefined || value === "") return null;
+                          return (
+                            <div key={`${analysisTaskId}-summary-${key}`} className="agent-output-row">
+                              <span>{label}</span>
+                              <strong>{formatAgentValue(value)}</strong>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}

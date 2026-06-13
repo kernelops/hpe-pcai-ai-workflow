@@ -1314,6 +1314,17 @@ button:disabled {
   word-break: break-word;
 }
 
+.agent-handoff {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(0, 179, 136, 0.06);
+  border: 1px dashed rgba(0, 179, 136, 0.25);
+  font-size: 0.78rem;
+  color: var(--accent-secondary);
+  font-style: italic;
+}
+
 /* Toast Notifications */
 .toast {
   position: fixed;

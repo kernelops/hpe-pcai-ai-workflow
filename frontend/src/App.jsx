@@ -218,6 +218,7 @@ const AGENT_DISPLAY_FIELDS = {
     fields: [
       { key: "is_valid", label: "Validation Passed" },
       { key: "verdict", label: "Verdict" },
+      { key: "verification_outcome", label: "Verification DAG" },
     ],
     handoff: null,
   },

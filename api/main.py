@@ -590,18 +590,47 @@ def autofix_pipeline(request: AutofixPipelineRequest):
             phase1["attempt_2"] = {
                 "status": "success" if val_report.is_valid else "failed",
             }
-            phase1["pipeline_status"] = "fixed" if val_report.is_valid else "fix_failed"
+            
+            # ── Verification Run ─────────────────────────────────
+            verification_outcome = "skipped"
+            verification_run_id = None
+            if val_report.is_valid:
+                phase1["validation_agent"]["thinking"].append("Triggering final verification DAG run...")
+                
+                # Temporarily point dag_pat to the original DAG
+                original_dag_id = _dag_pat.REMEDIATION_DAG_ID
+                _dag_pat.REMEDIATION_DAG_ID = request.dag_id
+                try:
+                    conf = {"worker_nodes": request.worker_nodes} if request.worker_nodes else {}
+                    verification_run_id = _dag_pat._trigger_dag(conf)
+                    if verification_run_id:
+                        phase1["validation_agent"]["thinking"].append(f"Verification DAG triggered: {verification_run_id}")
+                        verification_outcome, _ = _dag_pat._poll_dag_run(verification_run_id)
+                        phase1["validation_agent"]["thinking"].append(f"Verification run outcome: {verification_outcome.upper()}")
+                finally:
+                    _dag_pat.REMEDIATION_DAG_ID = original_dag_id
+                
+                final_status = "fixed" if verification_outcome == "success" else "escalated"
+                phase1["pipeline_status"] = final_status
+                
+                phase1["validation_agent"]["output"]["verification_run_id"] = verification_run_id
+                phase1["validation_agent"]["output"]["verification_outcome"] = verification_outcome
+            else:
+                final_status = "escalated"
+                phase1["pipeline_status"] = "fix_failed"
+
             phase1["autofix_summary"] = {
                 "total_attempts": 1,
-                "final_status": "fixed" if val_report.is_valid else "escalated",
+                "final_status": final_status,
                 "dag_corrected": False,
                 "infra_healed": val_report.is_valid,
+                "message": "Errors resolved via Infrastructure healing." if final_status == "fixed" else "Infrastructure healed, but verification DAG failed." if val_report.is_valid else "Fix Failed",
                 "fix_type": strategy.fix_type,
                 "fix_description": strategy.description,
                 "estimated_risk": strategy.estimated_risk,
                 "commands_executed": len(strategy.fix_commands),
                 "execution_status": result.execution_status,
-                "validation_verdict": val_report.verdict,
+                "validation_verdict": f"Verification DAG: {verification_outcome}" if val_report.is_valid else val_report.verdict,
             }
             return phase1
 
@@ -847,17 +876,35 @@ def autofix_pipeline(request: AutofixPipelineRequest):
         }
 
         if attempt_2_success:
-            phase1["pipeline_status"] = "fixed"
+            # ── Verification Run ─────────────────────────────────
+            phase1["validation_agent"]["thinking"].append("Triggering final verification DAG run...")
+            
+            # Since we patched the DAG, we use remediation_workflow (already the default)
+            conf = {"worker_nodes": request.worker_nodes} if request.worker_nodes else {}
+            verification_run_id = _dag_pat._trigger_dag(conf)
+            verification_outcome = "failed"
+            
+            if verification_run_id:
+                phase1["validation_agent"]["thinking"].append(f"Verification DAG triggered: {verification_run_id}")
+                verification_outcome, _ = _dag_pat._poll_dag_run(verification_run_id)
+                phase1["validation_agent"]["thinking"].append(f"Verification run outcome: {verification_outcome.upper()}")
+                
+                phase1["validation_agent"]["output"]["verification_run_id"] = verification_run_id
+                phase1["validation_agent"]["output"]["verification_outcome"] = verification_outcome
+                
+            final_status = "fixed" if verification_outcome == "success" else "escalated"
+            phase1["pipeline_status"] = final_status
+            
             phase1["autofix_summary"] = {
                 "total_attempts": 2,
-                "final_status": "fixed",
+                "final_status": final_status,
                 "dag_corrected": True,
                 "infra_healed": True,
-                "message": "Errors resolved via DAG correction + Infrastructure healing (Attempt 2).",
+                "message": "Errors resolved via DAG correction + Infrastructure healing." if final_status == "fixed" else "Infrastructure healed, but verification DAG failed.",
                 "tasks_fixed": [item["failed_task"] for item in attempt_2_results],
                 "commands_executed": sum(len(item["strategy"].fix_commands) for item in attempt_2_results),
                 "execution_status": "success",
-                "validation_verdict": "all fixes validated",
+                "validation_verdict": f"Verification DAG: {verification_outcome}",
             }
         else:
             # Both attempts failed → escalation

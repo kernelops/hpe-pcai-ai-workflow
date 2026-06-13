@@ -82,6 +82,11 @@ class AgentOpsAnalyzeRequest(BaseModel):
     run_id: str
     status: str
     logs: str
+    dag_id: Optional[str] = None
+
+
+class DeploymentStartRequest(BaseModel):
+    dag_id: Optional[str] = None
 
 
 app = FastAPI(title="Infra AI Deployer Backend")
@@ -180,6 +185,49 @@ def home():
 @app.get("/dashboard")
 def dashboard_entry():
     return {"url": "/static/index.html"}
+
+
+@app.get("/dags")
+def list_dags():
+    """
+    List all parsed DAGs from Airflow API, with a comprehensive fallback.
+    """
+    try:
+        with _airflow_client() as client:
+            resp = client.get("/api/v1/dags")
+            if resp.is_success:
+                dags = resp.json().get("dags", [])
+                return [
+                    {
+                        "dag_id": d["dag_id"],
+                        "description": d.get("description", ""),
+                        "is_paused": d.get("is_paused", False),
+                        "tags": [t["name"] for t in d.get("tags", [])]
+                    }
+                    for d in dags
+                ]
+    except Exception as e:
+        print(f"Error fetching DAGs from Airflow: {e}")
+    
+    fallback_dags = [
+        {"dag_id": "deployment_workflow", "description": "NFS consistency deployment workflow"},
+        {"dag_id": "remediation_workflow", "description": "Remediation validation workflow"},
+        {"dag_id": "OS_installation", "description": "OS installation and provisioning utilizing KVM/Libvirt"},
+        {"dag_id": "OS_error_01_cleanup_failure", "description": "Simulates failure during cleanup"},
+        {"dag_id": "OS_error_02_pkg_install_fail", "description": "Simulates failure during package installation"},
+        {"dag_id": "OS_error_03_iso_download_404", "description": "Simulates wget failing due to a 404 Not Found error"},
+        {"dag_id": "OS_error_04_iso_permission_denied", "description": "Simulates failure to write ISO due to permission denied"},
+        {"dag_id": "OS_error_05_virt_install_invalid_arg", "description": "Simulates failure during provisioning due to invalid memory argument"},
+        {"dag_id": "OS_error_06_virt_install_missing_iso", "description": "Simulates virt-install failing because the CDROM ISO does not exist"},
+        {"dag_id": "OS_error_07_monitor_boot_timeout", "description": "Simulates timeout waiting for OS to boot by checking for an impossible state"},
+        {"dag_id": "OS_error_08_monitor_wrong_vm_name", "description": "Simulates domstate check failure due to typo in VM name"},
+        {"dag_id": "OS_error_09_validate_cpu_mismatch", "description": "Simulates validation failure by expecting more CPUs than allocated"},
+        {"dag_id": "OS_error_10_validate_mem_mismatch", "description": "Simulates validation failure by enforcing a strict memory mismatch"},
+        {"dag_id": "env_error_01_firewall_block", "description": "Simulates firewall blocking outbound HTTPS"},
+        {"dag_id": "env_error_02_dns_failure", "description": "Simulates DNS failure causing download_os_image to fail"},
+        {"dag_id": "env_error_03_apt_cache_corrupt", "description": "Simulates corrupted apt cache causing prerequisites to fail"},
+    ]
+    return fallback_dags
 
 
 @app.post("/nodes", response_model=WorkerNode)
@@ -430,7 +478,7 @@ def _summarize_logs_with_llm(run_id: Optional[str], status: Optional[str], logs:
         raise HTTPException(status_code=500, detail=f"Invalid LLM response format: {exc}") from exc
 
 
-def _analyze_failed_run_with_agents(run_id: str, status: str, logs: str) -> dict:
+def _analyze_failed_run_with_agents(run_id: str, status: str, logs: str, dag_id: Optional[str] = None) -> dict:
     if not logs or not logs.strip():
         raise HTTPException(status_code=400, detail="No logs provided")
 
@@ -438,13 +486,14 @@ def _analyze_failed_run_with_agents(run_id: str, status: str, logs: str) -> dict
     if not failure_payloads:
         raise HTTPException(status_code=400, detail="Unable to identify a failed task from the provided logs")
 
+    effective_dag_id = dag_id or AIRFLOW_DAG_ID
     try:
         with httpx.Client(timeout=60.0) as client:
             analyses = []
 
             for failure_payload in failure_payloads:
                 payload = {
-                    "dag_id": AIRFLOW_DAG_ID,
+                    "dag_id": effective_dag_id,
                     "dag_run_id": run_id,
                     "failed_task": failure_payload.failed_task,
                     "task_state": failure_payload.task_state,
@@ -498,7 +547,7 @@ def _analyze_failed_run_with_agents(run_id: str, status: str, logs: str) -> dict
 
 
 @app.post("/deployments/start", response_model=DeploymentStartResponse)
-def start_deployment():
+def start_deployment(payload_data: DeploymentStartRequest = DeploymentStartRequest()):
     """
     Trigger Airflow DAG run via Airflow REST API.
     """
@@ -510,6 +559,8 @@ def start_deployment():
             status_code=400,
             detail="No reachable worker nodes available. Please add and configure worker nodes first."
         )
+    
+    selected_dag_id = payload_data.dag_id or AIRFLOW_DAG_ID
     
     run_id = f"manual__{datetime.utcnow().isoformat()}"
     payload = {
@@ -531,32 +582,32 @@ def start_deployment():
         with _airflow_client() as client:
             # Step 1: Wait for Airflow scheduler to recognise the DAG after restart
             for wait_attempt in range(12):
-                dag_check = client.get(f"/api/v1/dags/{AIRFLOW_DAG_ID}")
+                dag_check = client.get(f"/api/v1/dags/{selected_dag_id}")
                 if dag_check.status_code == 200:
-                    print(f"✅ DAG '{AIRFLOW_DAG_ID}' found in Airflow")
+                    print(f"✅ DAG '{selected_dag_id}' found in Airflow")
                     break
                 print(f"⏳ Waiting for Airflow to parse DAG... ({wait_attempt + 1}/12)")
                 _time.sleep(5)
             else:
                 raise HTTPException(
                     status_code=503,
-                    detail="Airflow has not finished parsing the DAG yet. Please wait a moment and try again.",
+                    detail=f"Airflow has not finished parsing the DAG '{selected_dag_id}' yet. Please wait a moment and try again.",
                 )
 
             # Step 2: Ensure DAG is unpaused (required after fresh restart)
             unpause_resp = client.patch(
-                f"/api/v1/dags/{AIRFLOW_DAG_ID}",
+                f"/api/v1/dags/{selected_dag_id}",
                 json={"is_paused": False},
             )
             if unpause_resp.status_code == 200:
-                print(f"✅ DAG '{AIRFLOW_DAG_ID}' unpaused successfully")
+                print(f"✅ DAG '{selected_dag_id}' unpaused successfully")
             else:
                 print(f"⚠️ Unpause returned {unpause_resp.status_code}: {unpause_resp.text[:200]}")
 
             # Step 3: Trigger with retry (Airflow scheduler may need extra time)
             last_err = ""
             for attempt in range(6):
-                resp = client.post(f"/api/v1/dags/{AIRFLOW_DAG_ID}/dagRuns", json=payload)
+                resp = client.post(f"/api/v1/dags/{selected_dag_id}/dagRuns", json=payload)
                 if resp.status_code in (200, 201):
                     break
                 last_err = resp.text[:500]
@@ -565,7 +616,7 @@ def start_deployment():
             else:
                 raise HTTPException(
                     status_code=500,
-                    detail=f"Failed to trigger DAG after 6 attempts: {last_err}",
+                    detail=f"Failed to trigger DAG '{selected_dag_id}' after 6 attempts: {last_err}",
                 )
             data = resp.json()
     except httpx.RequestError as exc:
@@ -573,8 +624,8 @@ def start_deployment():
 
     # Start direct log monitoring
     dag_run_id = data.get("dag_run_id", run_id)
-    print(f"🚀 Starting deployment: {dag_run_id}")
-    log_reader.start_monitoring(AIRFLOW_DAG_ID, dag_run_id)
+    print(f"🚀 Starting deployment: {dag_run_id} (DAG: {selected_dag_id})")
+    log_reader.start_monitoring(selected_dag_id, dag_run_id)
 
     state = data.get("state")
     return DeploymentStartResponse(
@@ -585,18 +636,19 @@ def start_deployment():
 
 
 @app.get("/deployments/{run_id}/logs/{task_id}", response_model=DeploymentLogResponse)
-def get_deployment_logs(run_id: str, task_id: str):
+def get_deployment_logs(run_id: str, task_id: str, dag_id: Optional[str] = None):
     """
     Fetch task logs and state for a given DAG run + task from Airflow.
     """
-    print(f"🔍 Fetching logs for run_id={run_id}, task_id={task_id}")
+    effective_dag_id = dag_id or log_reader.dag_id or AIRFLOW_DAG_ID
+    print(f"🔍 Fetching logs for run_id={run_id}, task_id={task_id}, dag_id={effective_dag_id}")
     print(f"🔗 Airflow URL: {AIRFLOW_BASE_URL}")
     
     try:
         with _airflow_client() as client:
             print(f"📡 Getting task instance for {task_id}")
             ti_resp = client.get(
-                f"/api/v1/dags/{AIRFLOW_DAG_ID}/dagRuns/{run_id}/taskInstances/{task_id}"
+                f"/api/v1/dags/{effective_dag_id}/dagRuns/{run_id}/taskInstances/{task_id}"
             )
             print(f"📊 Task instance response: {ti_resp.status_code}")
             
@@ -615,7 +667,7 @@ def get_deployment_logs(run_id: str, task_id: str):
 
             print(f"📄 Getting logs for {task_id}")
             log_resp = client.get(
-                f"/api/v1/dags/{AIRFLOW_DAG_ID}/dagRuns/{run_id}/taskInstances/{task_id}/logs/1"
+                f"/api/v1/dags/{effective_dag_id}/dagRuns/{run_id}/taskInstances/{task_id}/logs/1"
             )
             print(f"📊 Log response: {log_resp.status_code}")
             
@@ -685,15 +737,25 @@ def get_deployment_logs_direct(run_id: str, task_id: str):
 
 
 @app.get("/deployments/{run_id}/live-logs", response_model=DeploymentLiveLogResponse)
-def get_deployment_logs_live(run_id: str):
+def get_deployment_logs_live(run_id: str, dag_id: Optional[str] = None):
     """
     Return combined real-time logs for all tasks in a DAG run.
     """
-    combined_logs, task_streams = log_reader.get_combined_logs_for_run(AIRFLOW_DAG_ID, run_id)
+    effective_dag_id = dag_id or log_reader.dag_id or AIRFLOW_DAG_ID
+    combined_logs, task_streams = log_reader.get_combined_logs_for_run(effective_dag_id, run_id)
     if not combined_logs:
         combined_logs = log_reader.get_combined_logs()
         task_streams = len(log_reader.get_all_logs())
-    state = _get_dag_run_state(run_id) or "running"
+    
+    # Check DAG run state dynamically for the correct DAG
+    state = "running"
+    try:
+        with _airflow_client() as client:
+            resp = client.get(f"/api/v1/dags/{effective_dag_id}/dagRuns/{run_id}")
+            if resp.is_success:
+                state = resp.json().get("state") or "running"
+    except Exception as exc:
+        print(f"Warning: failed to fetch dag run state for {run_id} under {effective_dag_id}: {exc}")
 
     return DeploymentLiveLogResponse(
         run_id=run_id,
@@ -712,7 +774,7 @@ def summarize_logs_llm(payload: LogSummaryRequest):
 
 @app.post("/agent-ops/analyze")
 def analyze_agent_ops(payload: AgentOpsAnalyzeRequest):
-    return _analyze_failed_run_with_agents(payload.run_id, payload.status, payload.logs)
+    return _analyze_failed_run_with_agents(payload.run_id, payload.status, payload.logs, payload.dag_id)
 
 
 # ── Phase 2: Autofix proxy endpoint ──────────────────────────
@@ -721,10 +783,11 @@ class AutofixProxyRequest(BaseModel):
     run_id: str
     status: str
     logs: str
+    dag_id: Optional[str] = None
     auto_approve: bool = True
     mock: bool = False
-
-
+ 
+ 
 @app.post("/agent-ops/autofix")
 def trigger_autofix(payload: AutofixProxyRequest):
     """
@@ -734,30 +797,31 @@ def trigger_autofix(payload: AutofixProxyRequest):
     """
     if not payload.logs or not payload.logs.strip():
         raise HTTPException(status_code=400, detail="No logs provided")
-
+ 
     failure_payloads = build_agent_failure_payloads(payload.logs)
     if not failure_payloads:
         raise HTTPException(
             status_code=400,
             detail="Unable to identify a failed task from the provided logs",
         )
-
+ 
     # Build worker node list from current in-memory nodes
     node_list = [
         {"ip": n.ip, "username": n.username, "password": n.password}
         for n in worker_nodes
         if n.status == "reachable"
     ]
-
+ 
     autofix_url = f"{AGENT_OPS_BASE_URL}/api/agents/autofix-pipeline"
-
+    effective_dag_id = payload.dag_id or AIRFLOW_DAG_ID
+ 
     try:
         with httpx.Client(timeout=90.0) as client:
             results = []
-
+ 
             for fp in failure_payloads:
                 body = {
-                    "dag_id": AIRFLOW_DAG_ID,
+                    "dag_id": effective_dag_id,
                     "dag_run_id": payload.run_id,
                     "failed_task": fp.failed_task,
                     "task_state": fp.task_state,
@@ -767,24 +831,25 @@ def trigger_autofix(payload: AutofixProxyRequest):
                     "auto_approve": payload.auto_approve,
                     "mock": payload.mock,
                 }
-
+ 
                 resp = client.post(autofix_url, json=body)
                 if not resp.is_success:
                     raise HTTPException(
                         status_code=502,
                         detail=f"Agent Ops autofix error: {resp.status_code} {resp.text}",
                     )
-
+ 
                 result = resp.json()
                 result["analysis_task_id"] = fp.failed_task
                 results.append(result)
-
+ 
             return {
                 "pipeline_status": "autofix_complete",
                 "dag_run_id": payload.run_id,
                 "autofix_count": len(results),
                 "results": results,
             }
+
     except httpx.RequestError as exc:
         raise HTTPException(
             status_code=502,

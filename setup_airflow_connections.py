@@ -23,8 +23,9 @@ def create_airflow_ssh_connection(node_ip, username, password):
     """Create an SSH connection in Airflow for a worker node."""
     conn_id = f"worker_node_{node_ip.replace('.', '_')}"
     
-    # Use Airflow CLI to create connection
+    # Use Airflow CLI inside the Docker container to create connection
     cmd = [
+        "docker", "compose", "-f", "airflow/docker-compose.yaml", "exec", "-T", "airflow-webserver",
         "airflow", "connections", "add", conn_id,
         "--conn-type", "ssh",
         "--conn-host", node_ip,
@@ -47,8 +48,11 @@ def update_airflow_ssh_connection(node_ip, username, password):
     """Update an existing SSH connection in Airflow."""
     conn_id = f"worker_node_{node_ip.replace('.', '_')}"
     
-    # Delete existing connection first
-    delete_cmd = ["airflow", "connections", "delete", conn_id, "--yes"]
+    # Delete existing connection first inside the container
+    delete_cmd = [
+        "docker", "compose", "-f", "airflow/docker-compose.yaml", "exec", "-T", "airflow-webserver",
+        "airflow", "connections", "delete", conn_id, "--yes"
+    ]
     try:
         subprocess.run(delete_cmd, capture_output=True, text=True, check=False)
     except:
@@ -98,7 +102,10 @@ def main():
     print("\n🧪 Testing SSH connections...")
     for node in reachable_nodes:
         conn_id = f"worker_node_{node['ip'].replace('.', '_')}"
-        test_cmd = ["airflow", "connections", "test", conn_id]
+        test_cmd = [
+            "docker", "compose", "-f", "airflow/docker-compose.yaml", "exec", "-T", "airflow-webserver",
+            "airflow", "connections", "test", conn_id
+        ]
         try:
             result = subprocess.run(test_cmd, capture_output=True, text=True, timeout=30)
             if result.returncode == 0:

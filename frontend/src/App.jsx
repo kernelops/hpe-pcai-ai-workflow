@@ -1369,7 +1369,7 @@ function LogInsightsView({ insightData, apiBase, toast }) {
   );
 }
 
-function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
+function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate, selectedDag, setSelectedDag, availableDags }) {
   const [currentRunId, setCurrentRunId] = useState(null);
   const [status, setStatus] = useState("Idle");
   const [logs, setLogs] = useState("");
@@ -1390,7 +1390,7 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
     if (pollTimer) clearInterval(pollTimer);
     const id = setInterval(async () => {
       try {
-        const res = await fetch(`${apiBase}/deployments/${encodeURIComponent(runId)}/live-logs`);
+        const res = await fetch(`${apiBase}/deployments/${encodeURIComponent(runId)}/live-logs?dag_id=${encodeURIComponent(selectedDag)}`);
         if (!res.ok) {
           const errorData = await res.json();
           throw new Error(errorData.detail || "Failed to fetch deployment logs");
@@ -1446,7 +1446,7 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
       const res = await fetch(`${apiBase}/deployments/start`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: "{}"
+        body: JSON.stringify({ dag_id: selectedDag })
       });
       if (!res.ok) {
         const errorData = await res.json();
@@ -1506,13 +1506,40 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
       <section className="panel deployment-status">
         <div className="panel-header">
           <h2>Airflow Deployment</h2>
-          <button 
-            className="primary-btn" 
-            onClick={startDeployment}
-            disabled={isDeploying}
-          >
-            {isDeploying ? "Deploying..." : "Start Infrastructure Deployment"}
-          </button>
+          <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+            <div className="dag-select-container" style={{ display: "flex", alignItems: "center" }}>
+              <label htmlFor="dag-select" style={{ marginRight: "8px", fontSize: "0.85rem", color: "var(--text-muted)" }}>Select DAG:</label>
+              <select
+                id="dag-select"
+                value={selectedDag}
+                onChange={(e) => setSelectedDag(e.target.value)}
+                disabled={isDeploying}
+                style={{
+                  padding: "6px 12px",
+                  borderRadius: "4px",
+                  backgroundColor: "var(--bg-card)",
+                  color: "var(--text-main)",
+                  border: "1px solid var(--border-color)",
+                  fontSize: "0.9rem",
+                  outline: "none",
+                  cursor: "pointer"
+                }}
+              >
+                {(availableDags || []).map((dag) => (
+                  <option key={dag.dag_id} value={dag.dag_id}>
+                    {dag.dag_id}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button 
+              className="primary-btn" 
+              onClick={startDeployment}
+              disabled={isDeploying}
+            >
+              {isDeploying ? "Deploying..." : "Start Infrastructure Deployment"}
+            </button>
+          </div>
         </div>
         <div className="deployment-info">
           <p style={{ marginBottom: '12px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
@@ -1527,7 +1554,7 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
           </div>
           <div className="meta-card">
             <span className="label">DAG</span>
-            <span className="value">deployment_workflow</span>
+            <span className="value">{selectedDag}</span>
           </div>
           <div className="meta-card meta-card-status">
             <span className="label">Status</span>
@@ -1574,7 +1601,7 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
   );
 }
 
-function AgentOpsView({ agentOpsState, onRetry, runId, nodes }) {
+function AgentOpsView({ agentOpsState, onRetry, runId, nodes, selectedDag }) {
   const isLoading = agentOpsState.status === "loading";
   const isReady = agentOpsState.status === "ready" && agentOpsState.data;
   const isError = agentOpsState.status === "error";
@@ -1640,7 +1667,7 @@ function AgentOpsView({ agentOpsState, onRetry, runId, nodes }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          dag_id: "deployment_workflow",
+          dag_id: selectedDag || "deployment_workflow",
           dag_run_id: dagRunId,
           failed_task: failedTask,
           task_state: "failed",
@@ -2040,6 +2067,24 @@ function AgentOpsView({ agentOpsState, onRetry, runId, nodes }) {
 export default function App() {
   const [activeView, setActiveView] = useState("overview");
   const [lastDeploymentStatus, setLastDeploymentStatus] = useState("Idle");
+  const [selectedDag, setSelectedDag] = useState("deployment_workflow");
+  const [availableDags, setAvailableDags] = useState([]);
+
+  useEffect(() => {
+    const fetchDags = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/dags`);
+        if (res.ok) {
+          const data = await res.json();
+          setAvailableDags(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch DAGs", err);
+      }
+    };
+    fetchDags();
+  }, []);
+
   const [insightData, setInsightData] = useState({
     runId: null,
     status: "Idle",
@@ -2080,7 +2125,8 @@ export default function App() {
         body: JSON.stringify({
           run_id: payload.runId,
           status: inferredFailure ? "Failed" : payload.status,
-          logs: payload.logs
+          logs: payload.logs,
+          dag_id: selectedDag
         })
       });
       const data = await response.json();
@@ -2165,6 +2211,9 @@ export default function App() {
         toast={{ show }}
         onStatusChange={setLastDeploymentStatus}
         onInsightUpdate={setInsightData}
+        selectedDag={selectedDag}
+        setSelectedDag={setSelectedDag}
+        availableDags={availableDags}
       />
     ),
     insights: <LogInsightsView insightData={insightData} apiBase={API_BASE} toast={{ show }} />,
@@ -2174,6 +2223,7 @@ export default function App() {
         onRetry={() => triggerAgentOpsAnalysis()}
         runId={insightData.runId}
         nodes={nodesHook.nodes}
+        selectedDag={selectedDag}
       />
     )
   };

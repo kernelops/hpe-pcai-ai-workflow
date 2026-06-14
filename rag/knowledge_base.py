@@ -1014,12 +1014,7 @@ MOCK_FIX_STRATEGIES = [
         "fix_type": "service_restart",
         "fix_commands": json.dumps([
             (
-                "nohup python3 -c \""
-                "import http.server,socketserver; "
-                "H=type('H',(http.server.BaseHTTPRequestHandler,),{"
-                "'do_GET':lambda self:(self.send_response(200),self.end_headers(),self.wfile.write(b'OK')),"
-                "'log_message':lambda self,*a:None}); "
-                "socketserver.TCPServer(('',9005),H).serve_forever()\" &>/dev/null &"
+                "nohup python3 -c \"import http.server,socketserver; socketserver.TCPServer.allow_reuse_address=True; H=type('H',(http.server.BaseHTTPRequestHandler,),{'do_GET':lambda s:(s.send_response(200),s.end_headers(),s.wfile.write(b'OK')),'log_message':lambda s,*a:None}); socketserver.TCPServer(('',9005),H).serve_forever()\" >/dev/null 2>&1 </dev/null &"
             ),
             "sleep 2",
         ]),

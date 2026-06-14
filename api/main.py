@@ -86,6 +86,9 @@ def _build_failure_analysis_response(
     dag_id: str,
     dag_run_id: str,
     failure: TaskFailure,
+    error_report,
+    rca,
+    alert_result,
 ):
     workflow_agent_output = {
         "thinking": [
@@ -116,7 +119,6 @@ def _build_failure_analysis_response(
         },
     }
 
-    error_report = _log.analyse(failure)
 
     log_analysis_agent_output = {
         "thinking": [
@@ -142,7 +144,6 @@ def _build_failure_analysis_response(
         },
     }
 
-    rca = _rca.analyse(error_report)
 
     root_cause_agent_output = {
         "thinking": [
@@ -164,7 +165,6 @@ def _build_failure_analysis_response(
         },
     }
 
-    alert_result = _alert.alert(rca)
 
     severity = rca.severity.lower()
     is_critical = severity == "critical"
@@ -507,6 +507,9 @@ def autofix_pipeline(request: AutofixPipelineRequest):
             dag_id=request.dag_id,
             dag_run_id=request.dag_run_id,
             failure=failure,
+            error_report=error_report,
+            rca=rca,
+            alert_result=alert_result,
         )
 
         # ── Step 1: DAG Analysis ─────────────────────────────
@@ -707,6 +710,11 @@ def autofix_pipeline(request: AutofixPipelineRequest):
                 "dag_corrected": False,
                 "infra_healed": val_report.is_valid,
                 "message": "Errors resolved via Infrastructure healing." if final_status == "fixed" else "Infrastructure healed, but verification DAG failed." if val_report.is_valid else "Fix Failed",
+                "initial_failed_tasks": initial_failed_tasks,
+                "attempt1_skipped": True,
+                "attempt1_fixed_tasks": [],
+                "attempt2_skipped": False,
+                "attempt2_fixed_tasks": [request.failed_task] if val_report.is_valid else [],
                 "fix_type": strategy.fix_type,
                 "fix_description": strategy.description,
                 "estimated_risk": strategy.estimated_risk,
@@ -748,6 +756,7 @@ def autofix_pipeline(request: AutofixPipelineRequest):
 
         # If Attempt 1 succeeded → done!
         if patch_result_1.run_outcome == "success":
+            attempt1_skipped = not dag_report.has_dag_issues
             phase1["pipeline_status"] = "fixed"
             phase1["autofix_summary"] = {
                 "total_attempts": 1,
@@ -755,6 +764,12 @@ def autofix_pipeline(request: AutofixPipelineRequest):
                 "dag_corrected": True,
                 "infra_healed": False,
                 "message": "All errors resolved via DAG correction (Attempt 1).",
+                "initial_failed_tasks": initial_failed_tasks,
+                "attempt1_skipped": attempt1_skipped,
+                "attempt1_fixed_tasks": [] if attempt1_skipped else initial_failed_tasks,
+                "attempt2_skipped": True,
+                "attempt2_fixed_tasks": [],
+                "validation_verdict": "Attempt 1 (DAG Fix) fully succeeded.",
             }
             return phase1
 
@@ -1110,6 +1125,8 @@ def autofix_pipeline(request: AutofixPipelineRequest):
         return phase1
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 

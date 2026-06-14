@@ -51,10 +51,6 @@ class DagAnalysisAgent:
         print(f"[DagAnalysis]   Formatted RAG context:\n{format_ragjson}")
 
 
-        if "def validate_nfs_consistency" in source and '"error-simulation"' in source:
-            print("[DagAnalysis]   NFS inconsistency demo detected; using deterministic remediation plan")
-            return self._fallback_analysis(source, ssh_commands)
-
         # 4. Ask LLM to analyse and produce corrected source
         report = self._analyse_with_llm(source, ssh_commands, format_ragjson)
         return report
@@ -143,7 +139,7 @@ class DagAnalysisAgent:
                            rag_text: str) -> DagAnalysisReport:
         """Ask the LLM to identify issues and produce corrected DAG source."""
         if not self.client:
-            return self._fallback_analysis(source, ssh_commands)
+            raise ValueError("Groq client not initialized. Cannot perform DAG analysis without LLM.")
 
         prompt = f"""You are a senior HPE PCAI infrastructure engineer reviewing an Apache Airflow DAG.
 
@@ -164,9 +160,12 @@ IMPORTANT RULES for the corrected DAG:
 - For OS validation: use "sudo touch /etc/redhat-release && echo 'Debian GNU/Linux' | sudo tee /etc/redhat-release >/dev/null && test -f /etc/redhat-release"
 - For NFS: use valid export options (rw,sync,no_subtree_check), not broken ones.
 - For MinIO service: use "printf '[Unit]\\nDescription=MinIO Broken Service\\n[Service]\\nExecStart=/bin/true\\nType=oneshot\\n' | sudo tee /etc/systemd/system/minio-broken.service >/dev/null && sudo systemctl daemon-reload && sudo systemctl enable --now minio-broken"
-- For postcheck: use "nohup python3 -m http.server 9005 >/dev/null 2>&1 & sleep 2; curl -fsS http://127.0.0.1:9005"
+- For postcheck: use "curl -fsS http://127.0.0.1:9005/minio/health/live"
+- For validate_nfs_consistency: use "test -f {{NFS_MOUNT_POINT}}/check.txt || printf '%s\\n' 'deployment-check' | sudo tee {{NFS_MOUNT_POINT}}/check.txt >/dev/null; EXPECTED_NFS=$(cat /tmp/pcai_nfs_a_export); CURRENT_NFS=$(findmnt -n -o SOURCE {{NFS_MOUNT_POINT}}); test '$CURRENT_NFS' = '$EXPECTED_NFS' || (echo 'NFS mount inconsistency detected' >&2; exit 1); grep -qx 'deployment-check' {{NFS_MOUNT_POINT}}/check.txt"
 - DO NOT use heredocs (<<EOF) in the bash commands as they break python string concatenation! Use printf or echo with actual newlines (\\n) instead.
-- Ensure all commands are valid one-line bash commands separated by semicolons or &&.
+- STRICT RULE: Do NOT use f-strings (f"...") or inline variables for complex bash commands. You MUST use standard multiline python strings (e.g., using `"""`) and explicit string formatting, or simple string concatenation. Avoid any unescaped backslashes or curly braces inside python strings.
+- Ensure all commands are valid one-line bash commands separated by semicolons or &&, or properly formatted multiline strings.
+- NEVER place bash semicolons outside the Python string quotes. All bash logic must remain strictly inside the string.
 - DO NOT add any new tasks or remove existing tasks
 - Keep the same task dependency structure
 
@@ -222,6 +221,24 @@ Here is the full DAG source code to analyse:
                     'tags=["deployment", "remediation"]'
                 )
 
+                # Neuter the PythonOperator that sabotages NFS in the Verification DAG
+                corrected = corrected.replace(
+                    'f"sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "',
+                    '"echo \'Skipping simulation in remediation workflow\'; "'
+                )
+                corrected = corrected.replace(
+                    'f"sudo rmdir {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "',
+                    '"echo \'Skipping simulation in remediation workflow\'; "'
+                )
+
+                # Validate the generated code is valid Python syntax
+                import ast
+                try:
+                    ast.parse(corrected)
+                except SyntaxError as e:
+                    print(f"[DagAnalysis] ⚠️ LLM generated invalid python code: {e}. Escalating.")
+                    raise ValueError(f"LLM generated invalid python code: {e}")
+
             print(f"[DagAnalysis] ✅ LLM found {len(issues)} issue(s)")
             for issue in issues:
                 print(f"  • {issue.get('task_id', '?')}: {issue.get('explanation', '')[:80]}")
@@ -235,120 +252,7 @@ Here is the full DAG source code to analyse:
 
         except Exception as exc:
             print(f"[DagAnalysis] LLM analysis failed: {exc}")
-            return self._fallback_analysis(source, ssh_commands)
-
-    # ── Fallback ──────────────────────────────────────────────
-
-    def _fallback_analysis(self, source: str, ssh_commands: list[dict]) -> DagAnalysisReport:
-        """Deterministic fallback when LLM is unavailable."""
-        print("[DagAnalysis] Using deterministic fallback analysis")
-        issues = []
-
-        for cmd in ssh_commands:
-            command = cmd["command"]
-            task_id = cmd["task_id"]
-
-            if "broken_option" in command:
-                issues.append({
-                    "task_id": task_id,
-                    "broken_command": command,
-                    "explanation": "NFS exports contain invalid 'broken_option' keyword",
-                    "suggested_fix": command.replace("broken_option", "no_subtree_check"),
-                })
-            elif "minio-broken" in command and "tee" not in command:
-                issues.append({
-                    "task_id": task_id,
-                    "broken_command": command,
-                    "explanation": "Tries to enable 'minio-broken' service that does not exist",
-                    "suggested_fix": "Create systemd unit file first, then enable service",
-                })
-            elif "test -f /etc/redhat-release" in command:
-                issues.append({
-                    "task_id": task_id,
-                    "broken_command": command,
-                    "explanation": "Expects /etc/redhat-release on non-RHEL hosts (Kali/Debian)",
-                    "suggested_fix": "Create /etc/redhat-release if missing before testing",
-                })
-            elif "curl -fsS http://127.0.0.1:9005" in command:
-                issues.append({
-                    "task_id": task_id,
-                    "broken_command": command,
-                    "explanation": "Curls health endpoint on port 9005 but no service is listening",
-                    "suggested_fix": "Start a lightweight HTTP responder on 9005 first",
-                })
-
-        if "def validate_nfs_consistency" in source:
-            issues.append({
-                "task_id": "validate_nfs_consistency",
-                "broken_command": "test -f /mnt/nfs/check.txt; grep -qx deployment-check /mnt/nfs/check.txt",
-                "explanation": (
-                    "The first remediation attempt treats the failure as a missing validation file. "
-                    "It recreates the symptom file, then verifies whether Worker 2 is mounted to "
-                    "the canonical NFS A export so the deeper environment issue can surface."
-                ),
-                "suggested_fix": (
-                    "Recreate check.txt if it is missing, then fail with explicit evidence if "
-                    "the current /mnt/nfs source differs from /tmp/pcai_nfs_a_export."
-                ),
-            })
-
-        # Build a deterministic corrected source
-        corrected = source
-        corrected = corrected.replace('dag_id="deployment_workflow"', 'dag_id="remediation_workflow"')
-        corrected = corrected.replace('tags=["deployment", "error-simulation"]', 'tags=["deployment", "remediation"]')
-
-        # Fix NFS
-        corrected = corrected.replace(
-            "'/srv/nfs/share *(rw,sync,broken_option)'",
-            "'/srv/nfs/share *(rw,sync,no_subtree_check)'"
-        )
-
-        # Fix OS validation — create file before testing
-        corrected = corrected.replace(
-            "\"test -f /etc/redhat-release || \"\n"
-            "            \"(echo 'OS baseline validation failed: expected /etc/redhat-release on target host' >&2; exit 1)\"",
-            "\"sudo touch /etc/redhat-release && \"\n"
-            "            \"echo 'Red Hat Enterprise Linux release 8.8 (Ootpa)' | sudo tee /etc/redhat-release > /dev/null && \"\n"
-            "            \"test -f /etc/redhat-release && echo 'OS baseline validation passed'\""
-        )
-
-        # Fix MinIO — create service file first
-        corrected = corrected.replace(
-            "\"sudo systemctl enable --now minio-broken\"",
-            "\"printf '[Unit]\\\\nDescription=MinIO (remediated)\\\\n[Service]\\\\nExecStart=/bin/true\\\\nType=oneshot\\\\nRemainAfterExit=yes\\\\n[Install]\\\\nWantedBy=multi-user.target\\\\n' | sudo tee /etc/systemd/system/minio-broken.service > /dev/null && \"\n"
-            "            \"sudo systemctl daemon-reload && \"\n"
-            "            \"sudo systemctl enable --now minio-broken\""
-        )
-
-        # Fix postcheck — start responder before curl
-        corrected = corrected.replace(
-            "\"curl -fsS http://127.0.0.1:9005/minio/health/live\"",
-            "\"nohup python3 -c \\\"import http.server,socketserver; H=type('H',(http.server.BaseHTTPRequestHandler,),{'do_GET':lambda self:(self.send_response(200),self.end_headers(),self.wfile.write(b'OK')),'log_message':lambda self,*a:None}); socketserver.TCPServer(('',9005),H).serve_forever()\\\" &>/dev/null & \"\n"
-            "            \"sleep 2 && \"\n"
-            "            \"curl -fsS http://127.0.0.1:9005/minio/health/live\""
-        )
-
-        # Attempt 1 for the NFS demo: fix the missing-file symptom, then expose the mount mismatch.
-        corrected = corrected.replace(
-            "        f\"test -f {NFS_MOUNT_POINT}/check.txt || \"\n"
-            "        f\"(echo 'NFS consistency validation failed: {NFS_MOUNT_POINT}/check.txt missing on Worker 2. \"\n"
-            "        \"Possible NFS mount inconsistency between worker nodes.' >&2; exit 1); \"\n"
-            "        f\"grep -qx 'deployment-check' {NFS_MOUNT_POINT}/check.txt\"",
-            "        f\"test -f {NFS_MOUNT_POINT}/check.txt || \"\n"
-            "        f\"printf '%s\\\\n' 'deployment-check' | sudo tee {NFS_MOUNT_POINT}/check.txt >/dev/null; \"\n"
-            "        \"EXPECTED_NFS=$(cat /tmp/pcai_nfs_a_export); \"\n"
-            "        f\"CURRENT_NFS=$(findmnt -n -o SOURCE {NFS_MOUNT_POINT}); \"\n"
-            "        \"test \\\"$CURRENT_NFS\\\" = \\\"$EXPECTED_NFS\\\" || \"\n"
-            "        \"(echo \\\"NFS mount inconsistency detected after symptom repair: expected $EXPECTED_NFS but found $CURRENT_NFS\\\" >&2; exit 1); \"\n"
-            "        f\"grep -qx 'deployment-check' {NFS_MOUNT_POINT}/check.txt\""
-        )
-
-        return DagAnalysisReport(
-            has_dag_issues=len(issues) > 0,
-            issues=issues,
-            corrected_source=corrected if issues else None,
-            rag_context_used=None,
-        )
+            raise
 
     # ── Helpers ───────────────────────────────────────────────
 

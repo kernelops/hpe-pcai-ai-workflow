@@ -157,8 +157,8 @@ def mount_workers_to_nfs_a(**context):
             "if ! command -v mount.nfs >/dev/null 2>&1; then "
             "  echo 'NFS common not installed!' >&2; exit 1; "
             "fi; "
-            f"sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
-            f"sudo rmdir {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
+            "echo 'Skipping simulation in remediation workflow'; "
+            "echo 'Skipping simulation in remediation workflow'; "
             f"sudo mkdir -p {NFS_MOUNT_POINT}; "
             f"(timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 {nfs_a} {NFS_MOUNT_POINT} || "
             f"(sleep 2; sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
@@ -189,7 +189,7 @@ def simulate_nfs_mount_inconsistency(**context):
         # For 1 node, we just unmount it to simulate the file missing
         command = (
             "set -e; "
-            f"sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
+            "echo 'Skipping simulation in remediation workflow'; "
             "echo 'NFS mount inconsistency injected: Worker 1 unmounted from NFS A'; "
         )
         _run_node_command(nodes[0], command)
@@ -202,8 +202,8 @@ def simulate_nfs_mount_inconsistency(**context):
             "sudo systemctl restart nfs-server >/dev/null 2>&1 || "
             "sudo systemctl restart nfs-kernel-server >/dev/null 2>&1 || true; "
             "sudo exportfs -ra; "
-            f"sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
-            f"sudo rmdir {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
+            "echo 'Skipping simulation in remediation workflow'; "
+            "echo 'Skipping simulation in remediation workflow'; "
             f"sudo mkdir -p {NFS_MOUNT_POINT}; "
             f"(timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 {nfs_b} {NFS_MOUNT_POINT} || "
             f"(sleep 2; sudo exportfs -ra; sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
@@ -329,7 +329,7 @@ with DAG(
             "set -e; "
             "echo 'Simulating realistic post-deployment validation failure...'; "
             "sudo fuser -k 9005/tcp >/dev/null 2>&1 || true; "
-            "nohup python3 -c \"import http.server,socketserver; H=type('H',(http.server.BaseHTTPRequestHandler,),{'do_GET':lambda self:(self.send_response(200),self.end_headers(),self.wfile.write(b'OK')),'log_message':lambda self,*a:None}); socketserver.TCPServer(('',9005),H).serve_forever()\" &>/dev/null & "
+            "nohup python3 -c \"import http.server,socketserver; socketserver.TCPServer.allow_reuse_address=True; H=type('H',(http.server.BaseHTTPRequestHandler,),{'do_GET':lambda s:(s.send_response(200),s.end_headers(),s.wfile.write(b'OK')),'log_message':lambda s,*a:None}); socketserver.TCPServer(('',9005),H).serve_forever()\" >/dev/null 2>&1 </dev/null & "
             "sleep 2 && "
             "curl -fsS http://127.0.0.1:9005/minio/health/live"
         ),

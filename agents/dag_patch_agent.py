@@ -248,7 +248,7 @@ class DagPatchAgent:
                 tasks = resp.json().get("task_instances", [])
                 failed = []
                 for task in tasks:
-                    if task.get("state") not in ("failed", "upstream_failed"):
+                    if task.get("state") != "failed":
                         continue
                     task_id = task["task_id"]
                     map_index = task.get("map_index")

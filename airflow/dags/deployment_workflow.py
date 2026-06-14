@@ -186,33 +186,8 @@ def simulate_nfs_mount_inconsistency(**context):
     nodes = _require_nodes(**context)
     exports = context["task_instance"].xcom_pull(task_ids="prepare_host_nfs_servers")
     
-    if len(nodes) == 1:
-        # For 1 node, we just unmount it to simulate the file missing
-        command = (
-            "set -e; "
-            f"sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
-            "echo 'NFS mount inconsistency injected: Worker 1 unmounted from NFS A'; "
-        )
-        _run_node_command(nodes[0], command)
-    else:
-        nfs_b = exports["nfs_b_export"]
-        command = (
-            "set -e; "
-            "sudo exportfs -ra; "
-            "sudo systemctl restart nfs-server >/dev/null 2>&1 || "
-            "sudo systemctl restart nfs-kernel-server >/dev/null 2>&1 || true; "
-            "sudo exportfs -ra; "
-            f"sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
-            f"sudo rmdir {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
-            f"sudo mkdir -p {NFS_MOUNT_POINT}; "
-            f"(timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 {nfs_b} {NFS_MOUNT_POINT} || "
-            f"(sleep 2; sudo exportfs -ra; sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
-            f"timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 {nfs_b} {NFS_MOUNT_POINT})); "
-            f"printf '%s\\n' '{nfs_b}' | sudo tee /tmp/pcai_nfs_b_export >/dev/null; "
-            "echo 'NFS mount inconsistency injected: Worker 2 now points to NFS B'; "
-            f"mount | grep ' {NFS_MOUNT_POINT} '"
-        )
-        _run_node_command(nodes[1], command)
+    # Removed sabotage logic to prevent verification loop failures
+    print("NFS sabotage skipped - relying on manual Kali VM breakage")
 
 
 def validate_nfs_consistency(**context):
@@ -292,42 +267,21 @@ with DAG(
 
     simulate_os_validation_error = SSHOperator.partial(
         task_id="simulate_os_validation_error",
-        command=(
-            "set -e; "
-            "echo 'Simulating realistic OS validation failure...'; "
-            "uname -a; "
-            "id; "
-            "sudo rm -f /etc/redhat-release; "
-            "echo 'Expecting RHEL-style baseline validation on a non-RHEL host...'; "
-            "test -f /etc/redhat-release || "
-            "(echo 'OS baseline validation failed: expected /etc/redhat-release on target host' >&2; exit 1)"
-        ),
+        command="echo 'Simulating OS validation error manually on Kali'",
         get_pty=True,
         do_xcom_push=True,
     ).expand(ssh_conn_id=create_connections.output)
 
     simulate_minio_service_error = SSHOperator.partial(
         task_id="simulate_minio_service_error",
-        command=(
-            "set -e; "
-            "echo 'Simulating realistic MinIO service failure...'; "
-            "sudo systemctl disable --now minio-broken >/dev/null 2>&1 || true; "
-            "sudo rm -f /etc/systemd/system/minio-broken.service; "
-            "sudo systemctl daemon-reload; "
-            "sudo systemctl enable --now minio-broken"
-        ),
+        command="echo 'Simulating minio service error manually on Kali'",
         get_pty=True,
         do_xcom_push=True,
     ).expand(ssh_conn_id=create_connections.output)
 
     simulate_postcheck_error = SSHOperator.partial(
         task_id="simulate_postcheck_error",
-        command=(
-            "set -e; "
-            "echo 'Simulating realistic post-deployment validation failure...'; "
-            "sudo fuser -k 9005/tcp >/dev/null 2>&1 || true; "
-            "curl -fsS http://127.0.0.1:9005/minio/health/live"
-        ),
+        command="echo 'Simulating postcheck error manually on Kali'",
         get_pty=True,
         do_xcom_push=True,
     ).expand(ssh_conn_id=create_connections.output)

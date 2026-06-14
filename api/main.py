@@ -477,6 +477,26 @@ def autofix_pipeline(request: AutofixPipelineRequest):
             timestamp=request.timestamp,
         )
 
+        # ── Step 0: Get All Initial Failed Tasks ─────────────
+        try:
+            import requests
+            from agents.dag_patch_agent import AIRFLOW_API
+            url = f"{AIRFLOW_API}/dags/{request.dag_id}/dagRuns/{request.dag_run_id}/taskInstances"
+            resp = requests.get(url, auth=_dag_pat._auth(), timeout=5)
+            if resp.status_code == 200:
+                data = resp.json()
+                initial_failed_tasks = [
+                    ti["task_id"]
+                    for ti in data.get("task_instances", [])
+                    if ti["state"] == "failed"
+                ]
+                if not initial_failed_tasks:
+                    initial_failed_tasks = [request.failed_task]
+            else:
+                initial_failed_tasks = [request.failed_task]
+        except Exception:
+            initial_failed_tasks = [request.failed_task]
+
         # ── Step 0: Phase 1 analysis ─────────────────────────
         error_report = _log.analyse(failure)
         rca = _rca.analyse(error_report)
@@ -1046,28 +1066,43 @@ def autofix_pipeline(request: AutofixPipelineRequest):
             final_status = "fixed" if verification_outcome == "success" else "escalated"
             phase1["pipeline_status"] = final_status
             
+            attempt1_skipped = not dag_report.has_dag_issues
+            attempt1_fixed_tasks = [] if attempt1_skipped else [t for t in initial_failed_tasks if t not in patch_result_1.failed_tasks]
+            attempt2_skipped = attempt_2_success and len(attempt_2_results) == 0
+            attempt2_fixed_tasks = [item["failed_task"] for item in attempt_2_results]
+
             phase1["autofix_summary"] = {
                 "total_attempts": 2,
                 "final_status": final_status,
                 "dag_corrected": True,
                 "infra_healed": True,
                 "message": "Errors resolved via DAG correction + Infrastructure healing." if final_status == "fixed" else "Infrastructure healed, but verification DAG failed.",
-                "tasks_fixed": [item["failed_task"] for item in attempt_2_results],
-                "commands_executed": sum(len(item["strategy"].fix_commands) for item in attempt_2_results),
+                "initial_failed_tasks": initial_failed_tasks,
+                "attempt1_skipped": attempt1_skipped,
+                "attempt1_fixed_tasks": attempt1_fixed_tasks,
+                "attempt2_skipped": attempt2_skipped,
+                "attempt2_fixed_tasks": attempt2_fixed_tasks,
                 "execution_status": "success",
                 "validation_verdict": f"Verification DAG: {verification_outcome}",
             }
         else:
             # Both attempts failed → escalation
+            attempt1_skipped = not dag_report.has_dag_issues
+            attempt1_fixed_tasks = [] if attempt1_skipped else [t for t in initial_failed_tasks if t not in patch_result_1.failed_tasks]
+            attempt2_skipped = len(attempt_2_results) == 0
+            
             phase1["pipeline_status"] = "escalated"
             phase1["autofix_summary"] = {
                 "total_attempts": 2,
                 "final_status": "escalated",
                 "dag_corrected": True,
                 "infra_healed": False,
-                "message": "🚨 Both attempts failed. Manual intervention required.",
-                "attempt_1_outcome": patch_result_1.run_outcome,
-                "attempt_2_outcome": "failed",
+                "message": "🚨 Pipeline failed. Manual intervention required.",
+                "initial_failed_tasks": initial_failed_tasks,
+                "attempt1_skipped": attempt1_skipped,
+                "attempt1_fixed_tasks": attempt1_fixed_tasks,
+                "attempt2_skipped": attempt2_skipped,
+                "attempt2_fixed_tasks": [],
                 "failed_attempt_2_tasks": failed_attempt_2_tasks,
                 "validation_verdict": "one or more fixes failed validation",
             }

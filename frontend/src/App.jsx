@@ -1797,6 +1797,45 @@ function AgentOpsView({ agentOpsState, onRetry, runId, dagId, nodes }) {
                 )}
               </div>
 
+              {/* Comprehensive Autofix Summary Card */}
+              {globalAutofixData.autofix_summary && (
+                <div className="agent-summary autofix-summary-card" style={{ marginBottom: '1.5rem', borderLeft: '4px solid var(--accent-secondary)' }}>
+                  <div className="agent-summary-header">
+                    <h3>🔧 Autofix Summary</h3>
+                    <span className={`agent-card-status ${globalAutofixData.autofix_summary.final_status === 'fixed' ? 'status-fixed' : 'status-failed'}`}>
+                      {globalAutofixData.autofix_summary.final_status === 'fixed' ? '✅ All Errors Resolved' :
+                       globalAutofixData.autofix_summary.final_status === 'escalated' ? '🚨 Escalated to Human' : '❌ Fix Failed'}
+                    </span>
+                  </div>
+                  <div className="agent-summary-grid">
+                    <div className="agent-output-row">
+                      <span>Initial Failures</span>
+                      <strong>{globalAutofixData.autofix_summary.initial_failed_tasks?.length || 0} tasks ({globalAutofixData.autofix_summary.initial_failed_tasks?.join(", ") || "none"})</strong>
+                    </div>
+                    <div className="agent-output-row">
+                      <span>Attempt 1 (DAG Fix)</span>
+                      <strong>
+                        {globalAutofixData.autofix_summary.attempt1_skipped 
+                          ? "Skipped (DAG source is clean)" 
+                          : `${globalAutofixData.autofix_summary.attempt1_fixed_tasks?.length || 0} tasks fixed (${globalAutofixData.autofix_summary.attempt1_fixed_tasks?.join(", ") || "none"})`}
+                      </strong>
+                    </div>
+                    <div className="agent-output-row">
+                      <span>Attempt 2 (SSH Fix)</span>
+                      <strong>
+                        {globalAutofixData.autofix_summary.attempt2_skipped 
+                          ? "Skipped (No remaining infrastructure issues)" 
+                          : `${globalAutofixData.autofix_summary.attempt2_fixed_tasks?.length || 0} tasks fixed (${globalAutofixData.autofix_summary.attempt2_fixed_tasks?.join(", ") || "none"})`}
+                      </strong>
+                    </div>
+                    <div className="agent-output-row">
+                      <span>Verification Run</span>
+                      <strong>{globalAutofixData.autofix_summary.validation_verdict}</strong>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Autofix Agent Cards */}
               <div className="agentops-grid">
                 {["dag_analysis_agent", "dag_patch_agent", "fix_generator_agent", "fix_executor_agent", "validation_agent"].map((key) => {
@@ -1821,40 +1860,6 @@ function AgentOpsView({ agentOpsState, onRetry, runId, dagId, nodes }) {
                 })}
               </div>
 
-              {/* Autofix Summary Card */}
-              {globalAutofixData.autofix_summary && (
-                <div className="agent-summary autofix-summary-card" style={{ marginTop: '1rem' }}>
-                  <div className="agent-summary-header">
-                    <h3>🔧 Autofix Summary</h3>
-                    <span className={`agent-card-status ${globalAutofixData.autofix_summary.final_status === 'fixed' ? 'status-fixed' : 'status-failed'}`}>
-                      {globalAutofixData.autofix_summary.final_status === 'fixed' ? '✅ All Errors Resolved' :
-                       globalAutofixData.autofix_summary.final_status === 'escalated' ? '🚨 Escalated to Human' : '❌ Fix Failed'}
-                    </span>
-                  </div>
-                  <div className="agent-summary-grid">
-                    {[
-                      { key: "total_attempts", label: "Total Attempts" },
-                      { key: "final_status", label: "Final Status" },
-                      { key: "dag_corrected", label: "DAG Corrected" },
-                      { key: "infra_healed", label: "Infrastructure Healed" },
-                      { key: "message", label: "Summary" },
-                      { key: "fix_type", label: "Fix Type" },
-                      { key: "fix_description", label: "Fix Applied" },
-                      { key: "execution_status", label: "Execution Status" },
-                      { key: "validation_verdict", label: "Validation" },
-                    ].map(({ key, label }) => {
-                      const value = globalAutofixData.autofix_summary[key];
-                      if (value === null || value === undefined || value === "") return null;
-                      return (
-                        <div key={`autofix-summary-${key}`} className="agent-output-row">
-                          <span>{label}</span>
-                          <strong>{formatAgentValue(value)}</strong>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
             </div>
           )}
 

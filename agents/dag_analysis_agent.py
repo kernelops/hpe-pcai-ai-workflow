@@ -163,7 +163,7 @@ IMPORTANT RULES for the corrected DAG:
 - For postcheck: use "curl -fsS http://127.0.0.1:9005/minio/health/live"
 - For validate_nfs_consistency: use "test -f {{NFS_MOUNT_POINT}}/check.txt || printf '%s\\n' 'deployment-check' | sudo tee {{NFS_MOUNT_POINT}}/check.txt >/dev/null; EXPECTED_NFS=$(cat /tmp/pcai_nfs_a_export); CURRENT_NFS=$(findmnt -n -o SOURCE {{NFS_MOUNT_POINT}}); test '$CURRENT_NFS' = '$EXPECTED_NFS' || (echo 'NFS mount inconsistency detected' >&2; exit 1); grep -qx 'deployment-check' {{NFS_MOUNT_POINT}}/check.txt"
 - DO NOT use heredocs (<<EOF) in the bash commands as they break python string concatenation! Use printf or echo with actual newlines (\\n) instead.
-- STRICT RULE: Do NOT use f-strings (f"...") or inline variables for complex bash commands. You MUST use standard multiline python strings (e.g., using `"""`) and explicit string formatting, or simple string concatenation. Avoid any unescaped backslashes or curly braces inside python strings.
+- STRICT RULE: Do NOT use f-strings (f"...") or inline variables for complex bash commands. You MUST use standard multiline python strings (e.g., triple-quoted strings) and explicit string formatting, or simple string concatenation. Avoid any unescaped backslashes or curly braces inside python strings.
 - Ensure all commands are valid one-line bash commands separated by semicolons or &&, or properly formatted multiline strings.
 - NEVER place bash semicolons outside the Python string quotes. All bash logic must remain strictly inside the string.
 - DO NOT add any new tasks or remove existing tasks

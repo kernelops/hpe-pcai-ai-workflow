@@ -1,3 +1,4 @@
+
 # api/main.py
 import uuid
 from fastapi import FastAPI, HTTPException
@@ -308,7 +309,18 @@ def run_pipeline(request: PipelineRequest):
                 }
             }
 
-        return _build_failure_analysis_response(config.dag_id, dag_run_id, failure)
+        # Failure detected — run remaining analysis agents to build the response
+        error_report = _log.analyse(failure)
+        rca = _rca.analyse(error_report)
+        alert_result = _alert.alert(rca)
+        return _build_failure_analysis_response(
+            config.dag_id,
+            dag_run_id,
+            failure,
+            error_report=error_report,
+            rca=rca,
+            alert_result=alert_result,
+        )
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -324,10 +336,16 @@ def analyze_failure(request: FailureAnalysisRequest):
             log_text=request.log_text,
             timestamp=request.timestamp,
         )
+        error_report = _log.analyse(failure)
+        rca = _rca.analyse(error_report)
+        alert_result = _alert.alert(rca)
         return _build_failure_analysis_response(
             dag_id=request.dag_id,
             dag_run_id=request.dag_run_id,
             failure=failure,
+            error_report=error_report,
+            rca=rca,
+            alert_result=alert_result,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

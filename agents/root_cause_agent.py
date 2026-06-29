@@ -121,7 +121,8 @@ Severity guide:
             if raw.startswith("json"):
                 raw = raw[4:]
 
-        parsed = json.loads(raw.strip())
+        # strict=False tolerates literal control characters inside JSON strings.
+        parsed = json.loads(raw.strip(), strict=False)
 
         # Validate classification and severity
         classification = parsed["classification"].lower()

@@ -194,7 +194,8 @@ Analyse this log and respond with ONLY valid JSON in this exact format:
             )
 
             raw = self._strip_json_fence(response.choices[0].message.content.strip())
-            parsed = json.loads(raw)
+            # strict=False tolerates literal control characters inside JSON strings.
+            parsed = json.loads(raw, strict=False)
         except Exception as exc:
             print(f"[LogAnalyser] LLM parse failed, using fallback analysis: {exc}")
             return self._build_report_without_llm(failure, rag_analysis)

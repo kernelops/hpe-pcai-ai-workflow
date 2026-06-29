@@ -1100,7 +1100,14 @@ def autofix_pipeline(request: AutofixPipelineRequest):
             phase1["pipeline_status"] = final_status
             
             attempt1_skipped = not dag_report.has_dag_issues
-            attempt1_fixed_tasks = [] if attempt1_skipped else [t for t in initial_failed_tasks if t not in patch_result_1.failed_tasks]
+            # Normalise map_index/attempt suffixes before comparing: the original
+            # failures are bare task ids (e.g. "simulate_postcheck_error") while
+            # remediation failures carry "/map_index=N", so a plain membership
+            # test wrongly reports a still-failing mapped task as "fixed".
+            _failed_after_1 = {_base_task_id(t) for t in (patch_result_1.failed_tasks or [])}
+            attempt1_fixed_tasks = [] if attempt1_skipped else [
+                t for t in initial_failed_tasks if _base_task_id(t) not in _failed_after_1
+            ]
             attempt2_skipped = attempt_2_success and len(attempt_2_results) == 0
             attempt2_fixed_tasks = [item["failed_task"] for item in attempt_2_results]
 
@@ -1121,7 +1128,14 @@ def autofix_pipeline(request: AutofixPipelineRequest):
         else:
             # Both attempts failed → escalation
             attempt1_skipped = not dag_report.has_dag_issues
-            attempt1_fixed_tasks = [] if attempt1_skipped else [t for t in initial_failed_tasks if t not in patch_result_1.failed_tasks]
+            # Normalise map_index/attempt suffixes before comparing: the original
+            # failures are bare task ids (e.g. "simulate_postcheck_error") while
+            # remediation failures carry "/map_index=N", so a plain membership
+            # test wrongly reports a still-failing mapped task as "fixed".
+            _failed_after_1 = {_base_task_id(t) for t in (patch_result_1.failed_tasks or [])}
+            attempt1_fixed_tasks = [] if attempt1_skipped else [
+                t for t in initial_failed_tasks if _base_task_id(t) not in _failed_after_1
+            ]
             attempt2_skipped = len(attempt_2_results) == 0
             
             phase1["pipeline_status"] = "escalated"

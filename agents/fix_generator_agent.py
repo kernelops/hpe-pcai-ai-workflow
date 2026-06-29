@@ -142,7 +142,9 @@ Rules:
             )
             raw = response.choices[0].message.content.strip()
             raw = self._strip_json_fence(raw)
-            parsed = json.loads(raw)
+            # strict=False tolerates literal control characters (e.g. newlines
+            # in multi-line bash fix_commands) inside JSON string values.
+            parsed = json.loads(raw, strict=False)
 
             return FixStrategy(
                 fix_type=parsed.get("fix_type", "command_fix"),

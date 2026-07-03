@@ -26,8 +26,8 @@ class DagAnalysisAgent:
         self.client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
 
     # ── Public entry point ────────────────────────────────────
-
-    def analyse(self, dag_filename: str = "deployment_workflow.py") -> DagAnalysisReport:
+    #minio_health_check
+    def analyse(self, dag_filename: str = "minio_healthcheck_dag.py") -> DagAnalysisReport:
         """Read the DAG source, query RAG, ask LLM to identify issues and produce corrected code."""
         print(f"\n[DagAnalysis] 🔍 Analysing DAG source: {dag_filename}")
 
@@ -147,16 +147,24 @@ class DagAnalysisAgent:
 
         prompt = f"""You are a senior HPE PCAI infrastructure engineer reviewing an Apache Airflow DAG.
 
-This DAG deploys software to HPC worker nodes via SSH. Some of the SSH commands are intentionally broken or contain errors.
+IMPORTANT: If the DAG has NO issues and all SSH commands are already correct, set "has_dag_issues" to false and provide an empty "issues" list and empty "corrected_source". ONLY provide a corrected_source if there are actual issues to fix.
 
-Your job is to:
-1. Identify EVERY broken/faulty SSH command in the DAG.
-2. Explain what is wrong with each one.
-3. Produce a FULLY CORRECTED version of the entire DAG Python source code.
+You are a DAG syntax validator, not a code optimizer.
 
-IMPORTANT RULES for the corrected DAG:
-- Change the dag_id to "remediation_workflow"
-- Change the tags to ["deployment", "remediation"]
+DO NOT flag:
+- Missing timeouts or retries
+- Lack of error handling
+- Absence of idempotency patterns
+- Commands that work but could be "improved"
+
+If a command works as written, consider it CORRECT even if it could be more robust.
+
+Your job: ONLY flag SSH commands that would FAIL TO RUN due to:
+- Syntax errors (missing quotes, invalid characters)
+- References to non-existent files or commands
+- Logical errors that cause immediate failure (e.g., `test -f /nonexistent` without creation)
+
+IMPORTANT RULES for you to keep in mind when making the corrected DAG:
 - Keep ALL imports, functions, and structure identical
 - Only fix the SSH command strings inside SSHOperator blocks
 - The corrected commands must be IDEMPOTENT (safe to run multiple times)
@@ -170,16 +178,41 @@ IMPORTANT RULES for the corrected DAG:
 - DO NOT add any new tasks or remove existing tasks
 - Keep the same task dependency structure
 
+Your job is to:
+1. Identify EVERY broken/faulty SSH command in the DAG.
+2. Explain what is wrong with each one.
+3. Produce a FULLY CORRECTED version of the entire DAG Python source code.
+
+You are a DAG SYNTAX validator ONLY. You check if SSH commands will FAIL TO EXECUTE.
+
+STRICT RULES — read carefully:
+- A command is CORRECT if it is valid bash syntax and the binary exists on Debian/Kali Linux
+- A command is BROKEN ONLY if it has a syntax error, references a non-existent binary, or uses an invalid flag
+- "curl -f http://localhost:9000/minio/health/live" is CORRECT — curl exists, syntax is valid
+- DO NOT flag commands because a service might not be running — that is an ENVIRONMENTAL issue, not a DAG issue
+- DO NOT flag commands because they lack error handling or retries
+- DO NOT flag commands because they could be "improved" or "made more robust"
+- DO NOT add sudo or extra commands to "ensure" something is running
+- If ALL commands are syntactically valid bash, set has_dag_issues=false immediately
+
+Ask yourself ONE question per command: "Would this command fail to run on a machine where all referenced services exist?" If yes → broken. If no → correct.
+
 Here are the SSH commands found in the DAG:
 {json.dumps(ssh_commands, indent=2)}
 
 Here is relevant knowledge from our RAG system about correct commands and fixes:
 {rag_text}
 
+CRITICAL JSON RULES:
+- In the corrected_source field, replace ALL newlines with the literal characters \n (backslash + n)
+- Replace ALL quotes inside corrected_source with \" 
+- The entire JSON response must be parseable by Python's json.loads()
+- If has_dag_issues is false, set corrected_source to "" — do not include any source code
+
 Respond with ONLY valid JSON in this exact format:
 {{
-    "has_dag_issues": true,
-    "issues": [
+    "has_dag_issues": true/false, #false if DAG is already correct
+    "issues": [  # empty list if has_dag_issues is false
         {{
             "task_id": "task name",
             "broken_command": "the original broken command",
@@ -187,7 +220,7 @@ Respond with ONLY valid JSON in this exact format:
             "suggested_fix": "the corrected command"
         }}
     ],
-    "corrected_source": "FULL corrected Python source code of the DAG"
+    "corrected_source": "FULL corrected Python source code or empty string if no issues"
 }}
 
 Here is the full DAG source code to analyse:
@@ -203,9 +236,25 @@ Here is the full DAG source code to analyse:
                 temperature=0.1,
                 max_tokens=8000,
             )
+            print(response)
             raw = response.choices[0].message.content.strip()
+            print("Content section of LLM:",raw)
             raw = self._strip_json_fence(raw)
+            print("Strip JSON fence result:",raw)
             parsed = json.loads(raw)
+            print(parsed)
+
+            print(f"[DagAnalysis]The LLM response is:\n{json.dumps(parsed, indent=2)}")
+
+            has_issues = parsed.get("has_dag_issues", len(parsed.get("issues", [])) > 0)
+            if not has_issues:
+                print("[DagAnalysis] ✅ DAG is already correct — no remediation needed")
+                return DagAnalysisReport(
+                    has_dag_issues=False,  # Explicitly false
+                    issues=[],  # Empty list
+                    corrected_source=None,  # No correction needed
+                    rag_context_used=rag_text,
+                )
 
             issues = parsed.get("issues", [])
             corrected = parsed.get("corrected_source", "")
@@ -213,7 +262,7 @@ Here is the full DAG source code to analyse:
             # Post-process: ensure dag_id is remediation_workflow
             if corrected:
                 corrected = corrected.replace(
-                    'dag_id="deployment_workflow"',
+                    'dag_id="minio_health_check"',   #minio_health_check
                     'dag_id="remediation_workflow"'
                 )
                 # Ensure tags are correct
@@ -294,7 +343,7 @@ Here is the full DAG source code to analyse:
 
         # Build a deterministic corrected source
         corrected = source
-        corrected = corrected.replace('dag_id="deployment_workflow"', 'dag_id="remediation_workflow"')
+        corrected = corrected.replace('dag_id="minio_health_check"', 'dag_id="remediation_workflow"')  #minio_health_check
         corrected = corrected.replace('tags=["deployment", "error-simulation"]', 'tags=["deployment", "remediation"]')
 
         # Fix NFS
@@ -353,8 +402,16 @@ Here is the full DAG source code to analyse:
     # ── Helpers ───────────────────────────────────────────────
 
     def _strip_json_fence(self, raw: str) -> str:
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
+        fence_match = re.search(r"```json\s*(.*?)```", raw, re.DOTALL)
+        if fence_match:
+            return fence_match.group(1).strip()
+        # Case 2: find ``` ... ``` anywhere (no language tag)
+        fence_match = re.search(r"```\s*(.*?)```", raw, re.DOTALL)
+        if fence_match:
+            candidate = fence_match.group(1).strip()
+            if candidate.startswith("{") or candidate.startswith("["):
+                return candidate
+        json_match = re.search(r"\{.*\}", raw, re.DOTALL)
+        if json_match:
+            return json_match.group(0).strip()
         return raw.strip()

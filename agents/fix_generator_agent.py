@@ -1,12 +1,10 @@
-# agents/fix_generator_agent.py
 """
+fix_generator_agent.py
 Phase 2 — Fix Generator Agent.
-Takes a RootCauseReport and produces a concrete FixStrategy
-with SSH commands to remediate the failure.
 
-Two resolution paths:
-1. Deterministic fix registry — for known simulated error patterns (high reliability).
-2. LLM-generated fixes — for unknown errors (uses RAG solution as guidance).
+New RAG-based architecture:
+  Prompt RAG (once) — analyzes RAG results + diagnostic outputs → selects fix index
+  Prompt RAG_FIX (loop) — analyzes fix execution results → selects next fix index or done
 """
 
 import json
@@ -16,247 +14,297 @@ from common.config import GROQ_API_KEY, GROQ_MODEL
 from common.models import RootCauseReport, FixStrategy
 
 
-# ── Deterministic fix registry ────────────────────────────────
-# Maps task_id patterns to pre-built fix strategies for the
-# simulated errors in deployment_workflow.py.
-
-FIX_REGISTRY: dict[str, FixStrategy] = {
-    "simulate_os_validation_error": FixStrategy(
-        fix_type="config_correction",
-        fix_commands=[
-            "sudo touch /etc/redhat-release",
-            "echo 'Red Hat Enterprise Linux release 8.8 (Ootpa)' | sudo tee /etc/redhat-release",
-        ],
-        dry_run_commands=["cat /etc/os-release"],
-        requires_approval=False,
-        estimated_risk="low",
-        description=(
-            "Create /etc/redhat-release with appropriate content to "
-            "satisfy the OS baseline validation check."
-        ),
-    ),
-    "simulate_nfs_configuration_error": FixStrategy(
-        fix_type="config_correction",
-        fix_commands=[
-            "sudo apt-get update && sudo apt-get install -y nfs-kernel-server || true",
-            "printf '%s\\n' '/srv/nfs/share *(rw,sync,no_subtree_check)' | sudo tee /etc/exports > /dev/null",
-            "sudo exportfs -ra",
-        ],
-        dry_run_commands=["cat /etc/exports", "sudo exportfs -v"],
-        requires_approval=False,
-        estimated_risk="low",
-        description=(
-            "Replace the broken NFS export option (broken_option) with valid "
-            "NFS export flags (rw,sync,no_subtree_check) and reload exports."
-        ),
-    ),
-    "simulate_minio_service_error": FixStrategy(
-        fix_type="service_restart",
-        fix_commands=[
-            (
-                "printf '[Unit]\\nDescription=MinIO (fixed)\\n"
-                "[Service]\\nExecStart=/bin/true\\nType=oneshot\\n"
-                "RemainAfterExit=yes\\n[Install]\\n"
-                "WantedBy=multi-user.target\\n' "
-                "| sudo tee /etc/systemd/system/minio-broken.service > /dev/null"
-            ),
-            "sudo systemctl daemon-reload",
-            "sudo systemctl enable --now minio-broken",
-        ],
-        dry_run_commands=["systemctl list-unit-files | grep minio || true"],
-        requires_approval=False,
-        estimated_risk="low",
-        description=(
-            "Create the missing minio-broken.service systemd unit file, "
-            "reload the daemon, and enable the service."
-        ),
-    ),
-    "simulate_postcheck_error": FixStrategy(
-        fix_type="service_restart",
-        fix_commands=[
-            (
-                "nohup python3 -c \""
-                "import http.server,socketserver; "
-                "H=type('H',(http.server.BaseHTTPRequestHandler,),{"
-                "'do_GET':lambda self:(self.send_response(200),self.end_headers(),self.wfile.write(b'OK')),"
-                "'log_message':lambda self,*a:None}); "
-                "socketserver.TCPServer(('',9005),H).serve_forever()\" &>/dev/null &"
-            ),
-            "sleep 2",
-        ],
-        dry_run_commands=["ss -tuln | grep 9005 || echo 'Port 9005 not in use'"],
-        requires_approval=False,
-        estimated_risk="low",
-        description=(
-            "Start a lightweight HTTP responder on port 9005 so the "
-            "MinIO health-check endpoint responds during post-deployment validation."
-        ),
-    ),
-    "validate_nfs_consistency": FixStrategy(
-        fix_type="nfs_mount_repair",
-        fix_commands=[
-            (
-                "set -e; "
-                "NFS_A=$(cat /tmp/pcai_nfs_a_export); "
-                "sudo umount -lf /mnt/nfs >/dev/null 2>&1 || true; "
-                "sudo mkdir -p /mnt/nfs; "
-                "timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 \"$NFS_A\" /mnt/nfs; "
-                "mount | grep ' /mnt/nfs '; "
-                "cat /mnt/nfs/check.txt"
-            ),
-        ],
-        dry_run_commands=[
-            "echo 'Before fix mount state:'; mount | grep ' /mnt/nfs ' || true",
-            "echo 'Canonical NFS A:'; cat /tmp/pcai_nfs_a_export",
-        ],
-        requires_approval=False,
-        estimated_risk="medium",
-        description=(
-            "Repair the NFS mount inconsistency by remounting workers to the "
-            "canonical NFS A export and validating check.txt."
-        ),
-    ),
-}
+ALLOWED_COMMAND_PREFIXES = [
+    "which", "ps aux", "sudo systemctl", "ss -tuln", "sudo ufw",
+    "sudo iptables", "curl", "wget", "chmod", "sudo mv", "sudo useradd",
+    "sudo mkdir", "sudo chown", "sudo tee", "sudo sed", "sudo journalctl",
+    "echo", "sleep", "cat", "ls", "sudo usermod", "sudo apt-get",
+    "sudo touch", "sudo exportfs", "sudo modprobe", "lsmod",
+    "systemctl", "netstat", "ping", "nc", "nohup", "python3",
+    "printf", "sudo printf", "id", "uname", "df", "free",
+    "mount", "sudo mount", "sudo umount", "sudo rm", "sudo cp",
+    "sudo chmod", "sudo chown", "sudo service", "sudo ln",
+    "sudo install", "sudo dpkg", "sudo snap", "sudo killall", "sudo kill",
+    "test", "stat", "find", "grep", "awk", "sed", "tr", "cut",
+    "tar", "gzip", "unzip", "sudo tar", "sudo unzip",
+    "docker", "sudo docker", "mc ", "minio ",
+    "set -e", "nohup python3",
+]
 
 
 class FixGeneratorAgent:
     """
-    Generates a concrete FixStrategy from a RootCauseReport.
-    Tries the deterministic registry first, then falls back to LLM.
+    Generates fix commands using RAG-based architecture.
     """
-
     def __init__(self):
         self.client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
 
-    # ── Public entry point ────────────────────────────────────
-
-    def generate(self, rca: RootCauseReport) -> FixStrategy:
-        task_id = rca.error_report.task_id
-        print(f"[FixGenerator] 🔧 Generating fix strategy for: {task_id}")
-
-        # 1. Try the deterministic registry
-        strategy = self._lookup_registry(task_id)
-        if strategy:
-            print(f"[FixGenerator] ✅ Registry match — {strategy.fix_type} "
-                  f"({strategy.estimated_risk} risk)")
-            return strategy
-
-        # 2. Fall back to LLM-generated fix
-        strategy = self._generate_with_llm(rca)
-        print(f"[FixGenerator] ✅ LLM-generated fix — {strategy.fix_type} "
-              f"({strategy.estimated_risk} risk)")
-        return strategy
-
-    # ── Registry lookup ───────────────────────────────────────
-
-    def _lookup_registry(self, task_id: str) -> FixStrategy | None:
-        """Exact or substring match against the fix registry."""
-        # Strip Airflow mapped-task suffix: simulate_x_error/map_index=0 → simulate_x_error
-        clean_id = re.sub(r"/map_index=\d+$", "", task_id)
-        clean_id = re.sub(r"/attempt=\d+$", "", clean_id)
-
-        # Exact match
-        if clean_id in FIX_REGISTRY:
-            return FIX_REGISTRY[clean_id].model_copy()
-        if task_id in FIX_REGISTRY:
-            return FIX_REGISTRY[task_id].model_copy()
-
-        # Substring match (e.g. "simulate_nfs" matches "simulate_nfs_configuration_error")
-        for key, strategy in FIX_REGISTRY.items():
-            if key in clean_id or clean_id in key:
-                return strategy.model_copy()
-
-        return None
-
-    # ── LLM fix generation ────────────────────────────────────
-
-    def _generate_with_llm(self, rca: RootCauseReport) -> FixStrategy:
+    def get_rag_fix_index(
+        self,
+        task_id: str,
+        raw_log: str,
+        rag_entry: dict,
+        diagnostic_results: list[dict],
+        fix_results = None,
+    ) -> dict:
         """
-        Ask the LLM to produce concrete SSH fix commands based
-        on the root cause analysis and RAG solution.
+        RAG-based prompt: Analyzes diagnostic results and picks the best fix.
+        
+        Args:
+            task_id: The failed task ID
+            raw_log: The raw log from the failure
+            rag_entry: The matched RAG entry with fix_possibilities
+            diagnostic_results: Results from running diagnostic commands
+            fix_results: Results from running fix commands (for subsequent iterations)
+        
+        Returns:
+            {
+                "selected_index": 0,  # Index in fix_possibilities, or -1 if none
+                "reasoning": "...",
+                "phase": "diagnostic" | "fix" | "verification" | "done"
+            }
         """
-        er = rca.error_report
-
-        # Extract the original command that failed from the log
-        original_command = self._extract_command_from_log(er.raw_log)
-
-        prompt = f"""You are a senior HPE PCAI infrastructure engineer.
-A deployment task failed and needs an automated SSH-based fix.
-
-Task: {er.task_id}
-Error Type: {er.error_type}
-Error Message: {er.error_message}
-Root Cause: {rca.root_cause}
-Classification: {rca.classification}
-Severity: {rca.severity}
-Engineer Action: {rca.engineer_action}
-RAG Solution: {er.rag_solution or 'none available'}
-Original Command: {original_command or 'not available'}
-
-Generate a fix strategy as ONLY valid JSON:
-{{
-    "fix_type": "one of: config_correction / service_restart / command_fix / retry",
-    "fix_commands": ["list of exact bash commands to run via SSH on the worker node"],
-    "dry_run_commands": ["optional verification commands to run first"],
-    "estimated_risk": "low / medium / high",
-    "description": "one sentence describing what the fix does",
-    "requires_approval": true or false
-}}
-
-Rules:
-- Commands must be idempotent (safe to run multiple times)
-- Use sudo where needed
-- Be specific — no placeholders
-- If unsure, set requires_approval to true and estimated_risk to high"""
 
         if not self.client:
-            return self._build_fallback_strategy(rca)
+            return {
+                "selected_index": -1,
+                "reasoning": "No LLM client available",
+                "phase": "done"
+            }
 
         try:
-            response = self.client.chat.completions.create(
-                model=GROQ_MODEL,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.1,
-            )
-            raw = response.choices[0].message.content.strip()
-            raw = self._strip_json_fence(raw)
-            parsed = json.loads(raw)
-
-            return FixStrategy(
-                fix_type=parsed.get("fix_type", "command_fix"),
-                fix_commands=parsed.get("fix_commands", [rca.engineer_action]),
-                dry_run_commands=parsed.get("dry_run_commands", []),
-                estimated_risk=parsed.get("estimated_risk", "medium"),
-                description=parsed.get("description", rca.engineer_action),
-                requires_approval=parsed.get("requires_approval", True),
-            )
+            # Build prompt based on whether we have fix_results
+            if fix_results is None or len(fix_results) ==0:
+                prompt = self._build_rag_prompt_diagnostic(task_id, raw_log, rag_entry, diagnostic_results)
+            else:
+                prompt = self._build_rag_prompt_fix(task_id, raw_log, rag_entry, diagnostic_results, fix_results)
+            
+            raw = self._call_llm([{"role": "user", "content": prompt}])
+            parsed = json.loads(self._strip_json_fence(raw))
+            
+            print(f"[FixGenerator] Reasoning    : {parsed.get('reasoning')}")
+            print(f"[FixGenerator] Selected     : {parsed.get('selected_index')}")
+            print(f"[FixGenerator] Phase        : {parsed.get('phase')}")
+            
+            return parsed
+            
         except Exception as exc:
-            print(f"[FixGenerator] LLM fix generation failed: {exc}")
-            return self._build_fallback_strategy(rca)
+            print(f"[FixGenerator] RAG prompt failed: {exc}")
+            return {
+                "selected_index": -1,
+                "reasoning": f"RAG prompt failed: {exc}",
+                "phase": "done"
+            }
 
-    # ── Helpers ───────────────────────────────────────────────
+    def build_fix_strategy(
+        self,
+        rca: RootCauseReport,
+        command_history: list[dict],
+        final_reasoning: str,
+        estimated_risk: str = "medium",
+    ) -> FixStrategy:
+        """
+        Packages the completed loop history into a FixStrategy.
+        """
+        dry_run_commands = [
+            e["command"] for e in command_history
+            if e.get("phase") == "diagnostic"
+        ]
+        fix_commands = [
+            e["command"] for e in command_history
+            if e.get("phase") in ("fix", "verification")
+        ]
 
-    def _build_fallback_strategy(self, rca: RootCauseReport) -> FixStrategy:
-        """Minimal fallback when LLM is unavailable."""
+        if not fix_commands and not dry_run_commands:
+            fix_commands = [e["command"] for e in command_history]
+
         return FixStrategy(
-            fix_type="retry",
-            fix_commands=[],
-            dry_run_commands=[],
-            estimated_risk="high",
-            description=f"Fallback: {rca.engineer_action}",
-            requires_approval=True,
+            fix_type="rag_iterative",
+            fix_commands=fix_commands,
+            dry_run_commands=dry_run_commands,
+            estimated_risk=estimated_risk,
+            description=final_reasoning or (
+                f"RAG-based iterative fix for {rca.error_report.task_id} "
+                f"— {len(command_history)} commands executed"
+            ),
+            requires_approval=False,
         )
 
-    def _extract_command_from_log(self, raw_log: str) -> str | None:
-        """Try to extract the SSH command that was executed from the Airflow log."""
-        match = re.search(r"Running command:\s*\n(.+?)(?:\n\[|$)", raw_log, re.DOTALL)
-        if match:
-            return match.group(1).strip()
-        return None
+    # ══════════════════════════════════════════════════════════
+    # PROMPT BUILDERS
+    # ══════════════════════════════════════════════════════════
 
+    def _build_rag_prompt_diagnostic(
+        self,
+        task_id: str,
+        raw_log: str,
+        rag_entry: dict,
+        diagnostic_results: list[dict],
+    ) -> str:
+        """Build prompt for first iteration (diagnostic results only)."""
+        
+        # Format fix possibilities with indices
+        fix_possibilities = rag_entry.get("fix_possibilities", [])
+        possibilities_text = ""
+        for idx, possibility in enumerate(fix_possibilities):
+            possibilities_text += f"  {idx}: {possibility}\n"
+        
+        # Format diagnostic results
+        results_text = "\n\n".join([
+            f"$ {r['command']}\n"
+            f"EXIT: {r['exit_code']}\n"
+            f"OUT: {r['stdout'] or '(empty)'}\n"
+            f"ERR: {r['stderr'] or '(empty)'}"
+            for r in diagnostic_results
+        ])
+
+        return f"""You are an automated infrastructure repair agent for HPE PCAI Linux worker nodes.
+
+A deployment task has failed. You have a RAG (Retrieval-Augmented Generation) entry that matches the error pattern.
+
+TASK ID: {task_id}
+RAW LOG: {raw_log}...
+
+RAG ENTRY - FIX POSSIBILITIES:
+{possibilities_text}
+
+DIAGNOSTIC COMMANDS EXECUTED AND THEIR OUTPUTS:
+{results_text}
+
+Your task:
+1. Analyze the diagnostic command outputs above
+2. Determine which fix_possibility (by index number) best matches the observed symptoms
+3. If none of the possibilities match, return -1
+
+Rules:
+- You must select EXACTLY ONE index from the fix_possibilities list (0, 1, 2, 3, etc.)
+- If you're unsure, select the most likely one based on the outputs
+- Only return -1 if you're confident NONE of the possibilities apply
+- This is a bare-metal Debian/Kali Linux node
+
+Respond with ONLY valid JSON:
+{{
+    "selected_index": 0,
+    "reasoning": "one sentence explaining why you selected this index based on the outputs",
+    "phase": "diagnostic"
+}}
+
+If no fix possibility matches:
+{{
+    "selected_index": -1,
+    "reasoning": "explain why none of the fix possibilities match",
+    "phase": "done"
+}}"""
+
+    def _build_rag_prompt_fix(
+        self,
+        task_id: str,
+        raw_log: str,
+        rag_entry: dict,
+        diagnostic_results: list[dict],
+        fix_results: list[dict],
+    ) -> str:
+        """Build prompt for subsequent iterations (diagnostic + fix results)."""
+        
+        fix_possibilities = rag_entry.get("fix_possibilities", [])
+        possibilities_text = ""
+        for idx, possibility in enumerate(fix_possibilities):
+            possibilities_text += f"  {idx}: {possibility}\n"
+        
+        # Format diagnostic results (summary)
+        diag_text = "\n".join([
+            f"$ {r['command']} → EXIT: {r['exit_code']}"
+            for r in diagnostic_results[:3]  # Show first few
+        ])
+        
+        # Format fix results
+        fix_text = "\n\n".join([
+            f"$ {r['command']}\n"
+            f"EXIT: {r['exit_code']}\n"
+            f"OUT: {r['stdout'] or '(empty)'}\n"
+            f"ERR: {r['stderr'] or '(empty)'}"
+            for r in fix_results
+        ])
+
+        return f"""You are an automated infrastructure repair agent for HPE PCAI Linux worker nodes.
+
+You previously selected a fix from the RAG entry and executed it. Now analyze whether the fix worked.
+
+TASK ID: {task_id}
+
+RAG ENTRY - FIX POSSIBILITIES (previously selected one):
+{possibilities_text}
+
+DIAGNOSTIC COMMANDS (summary):
+{diag_text}
+
+FIX COMMANDS EXECUTED AND THEIR OUTPUTS:
+{fix_text}
+
+Your task:
+1. Analyze whether the fix commands succeeded (exit code 0)
+2. If the fix was successful and the issue is resolved, return -1 (done)
+3. If the fix failed, check if another fix_possibility might work
+4. Return the index of the next fix to try, or -1 if done
+
+Rules:
+- If exit code is 0 for all fix commands, consider it resolved → return -1
+- If the original command returned exit code 0, consider it resolved -> return -1
+- If some fix commands failed, consider trying another possibility
+- Return the index (0, 1, 2, 3, etc.) of the next fix to try
+- Only return -1 if the issue is fully resolved
+- This is a bare-metal Debian/Kali Linux node
+
+Respond with ONLY valid JSON:
+{{
+    "selected_index": 0,
+    "reasoning": "one sentence explaining what happened and what to try next",
+    "phase": "verification"
+}}
+
+If the issue is fully resolved:
+{{
+    "selected_index": -1,
+    "reasoning": "explain why the issue is resolved",
+    "phase": "done"
+}}"""
+
+    # ══════════════════════════════════════════════════════════
+    # HELPERS (unchanged)
+    # ══════════════════════════════════════════════════════════
+
+    def _call_llm(self, messages: list[dict]) -> str:
+        if self.client is None:
+            raise RuntimeError(
+                "Groq client not initialized. Please check GROQ_API_KEY is set correctly."
+            )
+
+        response = self.client.chat.completions.create(
+            model=GROQ_MODEL,
+            messages=messages,
+            temperature=0.1,
+            max_tokens=1024,
+        )
+        print(response)
+        return response.choices[0].message.content.strip()
+    
     def _strip_json_fence(self, raw: str) -> str:
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
+        raw = raw.strip()
+        
+        fence_match = re.search(r"```json\s*(.*?)```", raw, re.DOTALL)
+        if fence_match:
+            return fence_match.group(1).strip()
+        
+        fence_match = re.search(r"```\s*(.*?)```", raw, re.DOTALL)
+        if fence_match:
+            candidate = fence_match.group(1).strip()
+            if candidate.startswith("{") or candidate.startswith("["):
+                return candidate
+        
+        start = raw.find('{')
+        end = raw.rfind('}')
+        
+        if start != -1 and end != -1 and start < end:
+            return raw[start:end + 1].strip()
+        
         return raw.strip()

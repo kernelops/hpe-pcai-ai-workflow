@@ -18,18 +18,21 @@ from dotenv import load_dotenv
 try:
     from .log_parser import parse_airflow_log
     from .dag_parser import extract_commands_from_dag
-    from .knowledge_base import build_knowledge_base, ERRORS_COLLECTION, get_embedding_function
+    from .knowledge_base import build_knowledge_base, ERRORS_COLLECTION, get_embedding_function, FIX_REGISTRY_COLLECTION
+
     from .rag_engine import (
         run_rag_pipeline,
         run_dag_command_pipeline,
+        retrieve_fix_context,
     )
 except ImportError:
     from log_parser import parse_airflow_log
     from dag_parser import extract_commands_from_dag
-    from knowledge_base import build_knowledge_base, ERRORS_COLLECTION, get_embedding_function
+    from knowledge_base import build_knowledge_base, ERRORS_COLLECTION, get_embedding_function, FIX_REGISTRY_COLLECTION
     from rag_engine import (
         run_rag_pipeline,
         run_dag_command_pipeline,
+        retrieve_fix_context,
     )
 
 load_dotenv()
@@ -141,7 +144,6 @@ class AnalyzeDAGResponse(BaseModel):
     commands_found: list[str]
     matches: list[CommandMatch]
 
-
 # --- Endpoints ---
 
 @app.get("/health")
@@ -159,13 +161,13 @@ def analyze_log(request: AnalyzeRequest):
     if not request.log_text.strip():
         raise HTTPException(status_code=400, detail="log_text cannot be empty")
 
-    print("[RAGDebug] analyze_log -> received request")
-    print(f"[RAGDebug]   dag_id={request.dag_id}, task_id={request.task_id}, log_text length={len(request.log_text)}")
+    #print("[RAGDebug] analyze_log -> received request")
+    print(f"[RAGMain]   dag_id={request.dag_id}, task_id={request.task_id}, log_text length={len(request.log_text)}")
 
     # Step 1: Parse the log
     parsed_error = parse_airflow_log(request.log_text)
-    print(f"[RAGDebug] analyze_log -> parsed_error.error_type={parsed_error.error_type}, parsed_error.error_message={parsed_error.error_message}")
-    print(f"[RAGDebug] analyze_log -> parsed_error.candidate_lines={parsed_error.candidate_lines}")
+    #print(f"[RAGDebug] analyze_log -> parsed_error.error_type={parsed_error.error_type}, parsed_error.error_message={parsed_error.error_message}")
+    #print(f"[RAGDebug] analyze_log -> parsed_error.candidate_lines={parsed_error.candidate_lines}")
 
     # Allow manual override of dag_id/task_id
     if request.dag_id:
@@ -183,13 +185,13 @@ def analyze_log(request: AnalyzeRequest):
 
     # Step 3: Run RAG pipeline
     try:
-        print(f"[RAGDebug] analyze_log -> running RAG pipeline with top_k=1")
+        print(f"[RAGMain] Running RAG pipeline...")
         result = run_rag_pipeline(
             parsed_error=parsed_error,
             chroma_client=chroma_client,
             top_k=1,
         )
-        print(f"[RAGDebug] analyze_log -> RAG pipeline returned {len(result.get('matches', []))} matches")
+        print(f"[RAGMain] analyze_log -> RAG pipeline returned {len(result.get('matches', []))} matches")
     except Exception as e:
         print(f"[RAGDebug] analyze_log -> RAG pipeline exception: {e}")
         raise HTTPException(status_code=500, detail=f"RAG pipeline error: {str(e)}")
@@ -225,6 +227,23 @@ def analyze_dag(request: AnalyzeDAGRequest):
         commands_found=result["commands_found"],
         matches=result["matches"],
     )
+
+class RetrieveFixRequest(BaseModel):
+    task_id: str
+    raw_log: str
+
+@app.post("/retrieve-fix")
+def retrieve_fix(request: RetrieveFixRequest):
+    try:
+        results = retrieve_fix_context(
+            task_id = request.task_id,
+            raw_log = request.raw_log,
+            client  = chroma_client,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Fix registry error: {str(e)}")
+
+    return {"matches": results, "count": len(results)}
 
 # @app.post("/ingest")
 # def ingest_new_error(request: IngestRequest):

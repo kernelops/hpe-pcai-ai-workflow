@@ -1341,7 +1341,7 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate }) {
           </div>
           <div className="meta-card">
             <span className="label">DAG</span>
-            <span className="value">deployment_workflow</span>
+
           </div>
           <div className="meta-card">
             <span className="label">Status</span>
@@ -1434,9 +1434,7 @@ function AgentOpsView({ agentOpsState, onRetry, runId, nodes }) {
       || firstAnalysis?.monitor_agent?.output?.failed_task
       || firstAnalysis?.analysis_task_id
       || "task-0";
-    const logText = firstAnalysis?.log_analysis_agent?.output?.error_message
-      || firstAnalysis?.combined_summary?.error_message
-      || `Task ${failedTask} failed`;
+    const logText = agentOpsState.fullLog || firstAnalysis?.log_analysis_agent?.output?.error_message || `Task ${failedTask} failed`;
     const dagRunId = firstAnalysis?.workflow_agent?.output?.dag_run_id
       || agentOpsState.data?.dag_run_id
       || runId
@@ -1454,7 +1452,8 @@ function AgentOpsView({ agentOpsState, onRetry, runId, nodes }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          dag_id: "deployment_workflow",
+          //minio_health_check
+          dag_id: "minio_health_check",
           dag_run_id: dagRunId,
           failed_task: failedTask,
           task_state: "failed",
@@ -1466,6 +1465,7 @@ function AgentOpsView({ agentOpsState, onRetry, runId, nodes }) {
         })
       });
       const data = await response.json();
+      console.log("Autofix triggered from frontend");
       if (!response.ok) throw new Error(data.detail || "Autofix failed");
 
       setAutofixStates(prev => ({
@@ -1894,6 +1894,7 @@ export default function App() {
       ...prev,
       status: "loading",
       analyzedRunId: payload.runId,
+      fullLog: payload.logs,
       error: null
     }));
 

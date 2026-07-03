@@ -12,7 +12,7 @@ from datetime import datetime
 
 
 AIRFLOW_BASE_URL = os.getenv("AIRFLOW_BASE_URL", "http://localhost:8080")
-AIRFLOW_DAG_ID = os.getenv("AIRFLOW_DAG_ID", "deployment_workflow")
+AIRFLOW_DAG_ID = os.getenv("AIRFLOW_DAG_ID", "minio_health_check")   # minio_health_check
 AIRFLOW_USERNAME = os.getenv("AIRFLOW_USERNAME", "airflow")
 AIRFLOW_PASSWORD = os.getenv("AIRFLOW_PASSWORD", "airflow")
 

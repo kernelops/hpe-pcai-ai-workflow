@@ -21,13 +21,16 @@ from common.models                 import (DeploymentConfig, TaskFailure,
                                            FixStrategy, FixResult, ValidationReport,
                                            DagAnalysisReport, DagPatchResult)
 
+MAX_FIX_ITERATIONS = 5   # hard cap on ping-pong rounds
+
 try:
     from redis import Redis
     from rq import Queue
+    _redis_conn = Redis(host="localhost", port=6379, db=0)
+    _hpc_queue = Queue("hpc_error_logs", connection=_redis_conn)
 except ImportError:
-    Redis = None
-    Queue = None
-
+    _redis_conn = None
+    _hpc_queue = None
 app = FastAPI(
     title       = "HPE PCAI — Agent Ops API",
     description = "AI agent pipeline for HPE PCAI deployment monitoring",
@@ -53,14 +56,9 @@ _val      = ValidationAgent()
 _dag_ana  = DagAnalysisAgent()
 _dag_pat  = DagPatchAgent()
 
-# Redis queue setup for HPC error logs
-_redis_conn = Redis(host="localhost", port=6379, db=0) if Redis else None
-_hpc_queue = Queue("hpc_error_logs", connection=_redis_conn) if _redis_conn else None
-
 # In-memory store for pending fix approvals
 _pending_fixes: dict[str, dict] = {}
-
-
+_analysis_cache: dict[str, dict] ={}
 
 # REQUEST SCHEMA
 
@@ -74,7 +72,7 @@ class PipelineRequest(BaseModel):
 
 
 class FailureAnalysisRequest(BaseModel):
-    dag_id      : str = "deployment_workflow"
+    dag_id      : str = "minio_health_check"  #minio_health_check
     dag_run_id  : str
     failed_task : str
     task_state  : str = "failed"
@@ -86,26 +84,26 @@ def _build_failure_analysis_response(
     dag_id: str,
     dag_run_id: str,
     failure: TaskFailure,
+    
 ):
     workflow_agent_output = {
         "thinking": [
-            f"Received failed run context for DAG: {dag_id}",
-            f"Existing Airflow run ID: {dag_run_id}",
-            "Skipping DAG trigger because the deployment already ran",
-            f"Using failed task payload for: {failure.task_id}",
+            f"Failed DAG ID: {dag_id}",
+            f"Failed DAG Run ID: {dag_run_id}",
+            f"Failed Task ID: {failure.task_id}",
         ],
         "output": {
-            "dag_run_id": dag_run_id,
             "dag_id": dag_id,
+            "dag_run_id": dag_run_id,
             "status": "existing-run",
             "run_path": dag_id,
+            "failed_task": failure.task_id,
         },
     }
 
     monitor_agent_output = {
         "thinking": [
             f"Received failure context for DAG run: {dag_run_id}",
-            "Skipping live polling and using provided failed task payload",
             f"Failure confirmed in task: {failure.task_id}",
         ],
         "output": {
@@ -117,15 +115,11 @@ def _build_failure_analysis_response(
     }
 
     error_report = _log.analyse(failure)
+    print("ERROR REPORT FROM LOG ANALYSER AGENT:\n", error_report)
 
     log_analysis_agent_output = {
         "thinking": [
-            f"Fetched raw log for task: {failure.task_id}",
-            "Chunking and tokenising log content...",
-            "Querying RAG layer for similar HPE error patterns...",
-            f"Identified error type: {error_report.error_type}",
-            f"Confidence: {error_report.confidence}",
-            f"Diagnosis: {error_report.diagnosis}",
+            "Building Log Analyser Agent output (with RAG)...",
         ],
         "output": {
             "task_id": error_report.task_id,
@@ -134,7 +128,7 @@ def _build_failure_analysis_response(
             "error_line": error_report.error_line,
             "diagnosis": error_report.diagnosis,
             "confidence": error_report.confidence,
-            "strongest_error_signal": error_report.error_message,
+            "command_that_failed": error_report.command_that_failed,
             "rag_diagnosis": error_report.rag_diagnosis,
             "rag_solution": error_report.rag_solution,
             "rag_prevention": error_report.rag_prevention,
@@ -143,28 +137,23 @@ def _build_failure_analysis_response(
     }
 
     rca = _rca.analyse(error_report)
+    print("RCA REPORT FROM ROOT CAUSE AGENT:\n", rca)
 
     root_cause_agent_output = {
         "thinking": [
-            f"Received structured error report for: {error_report.error_type}",
-            "Reasoning over cause chain with LLM...",
-            f"Classification: {rca.classification}",
-            f"Severity assigned: {rca.severity}",
-            f"Root cause identified: {rca.root_cause}",
-            f"Recommended action: {rca.engineer_action}",
+            "Building Root Cause Agent output...",
+
         ],
         "output": {
             "root_cause": rca.root_cause,
             "classification": rca.classification,
             "severity": rca.severity,
             "engineer_action": rca.engineer_action,
-            "remediation_steps": rca.engineer_action,
-            "next_check": f"Retry {failure.task_id} after applying fix",
-            "knowledge_sources": error_report.rag_sources,
         },
     }
 
     alert_result = _alert.alert(rca)
+    print("ALERT RESULT FROM ALERTING AGENT\n", alert_result)
 
     severity = rca.severity.lower()
     is_critical = severity == "critical"
@@ -205,7 +194,7 @@ def _build_failure_analysis_response(
         "channels_notified": alert_result.channels_notified or ["console"],
     }
 
-    return {
+    result = {
         "pipeline_status": "alerted",
         "dag_run_id": dag_run_id,
         "failure_detected": True,
@@ -215,8 +204,161 @@ def _build_failure_analysis_response(
         "root_cause_agent": root_cause_agent_output,
         "alerting_agent": alerting_agent_output,
         "combined_summary": combined_summary,
+        "error_report": error_report,
+        "rca": rca,
+        "alert_result": alert_result,
     }
+    _analysis_cache[dag_run_id] = result
+    return result
 
+def _run_fix_loop(
+    rca: RootCauseReport,
+    worker_nodes: list[dict],
+    mock: bool = False,
+) -> tuple[FixStrategy, FixResult]:
+    """
+    Runs the RAG-based fix loop.
+    Flow:
+      1. FixExecutor runs RAG diagnostics
+      2. FixGenerator analyzes results → selects fix index
+      3. FixExecutor executes the selected fix commands
+      4. FixGenerator re-evaluates → selects next fix or done
+      5. Loop continues until fixed or max 5 iterations
+    """
+    command_history: list[dict] = []
+    final_reasoning = ""
+    estimated_risk = "medium"
+    MAX_ITERATIONS = 5
+
+    task_id = rca.error_report.task_id
+    raw_log = rca.error_report.raw_log
+    
+    print(f"\n[FixLoop] Starting RAG-based fix loop for: {task_id}")
+    print(f"[FixLoop] Worker nodes: {len(worker_nodes)}")
+    
+    # ── Step 1: Run RAG diagnostics ─────────────────────────
+    print(f"\n[FixLoop] 🔍 Step 1: RAG Diagnostics")
+    print("-" * 40)
+    
+    rag_entry, diagnostic_results = _fix_exec.execute_rag_diagnostics(
+        task_id=task_id,
+        raw_log=raw_log,
+        worker_nodes=worker_nodes,
+        mock=False
+    )
+    
+    if not rag_entry or not diagnostic_results:
+        print("[FixLoop] ❌ RAG diagnostics failed or no match found")
+        # Return empty strategy
+        strategy = _fix_gen.build_fix_strategy(
+            rca=rca,
+            command_history=[],
+            final_reasoning="No RAG match found for this error",
+            estimated_risk="high"
+        )
+        result = _fix_exec.build_fix_result(strategy, [])
+        return strategy, result
+    
+    # Add diagnostic results to history
+    command_history.extend(diagnostic_results)
+    
+    # ── Step 2: Ping-pong loop ──────────────────────────────
+    fix_results = []
+    selected_indices = []
+    
+    for iteration in range(MAX_ITERATIONS):
+        print(f"\n[FixLoop] 🔄 Iteration {iteration + 1}/{MAX_ITERATIONS}")
+        print("-" * 40)
+        
+        # ── Step 2a: Generator analyzes and selects fix ──────
+        if iteration == 0:
+            # First iteration: Only diagnostic results
+            decision = _fix_gen.get_rag_fix_index(
+                task_id=task_id,
+                raw_log=raw_log,
+                rag_entry=rag_entry,
+                diagnostic_results=diagnostic_results,
+                fix_results=None  # No fix results yet
+            )
+        else:
+            # Subsequent iterations: Include fix results
+            decision = _fix_gen.get_rag_fix_index(
+                task_id=task_id,
+                raw_log=raw_log,
+                rag_entry=rag_entry,
+                diagnostic_results=diagnostic_results,
+                fix_results=fix_results  # Include previous fix results
+            )
+        
+        selected_index = decision.get("selected_index", -1)
+        final_reasoning = decision.get("reasoning", "")
+        phase = decision.get("phase", "done")
+        
+        print(f"[FixLoop] 📝 Selected index: {selected_index}")
+        print(f"[FixLoop] 📝 Phase: {phase}")
+        
+        # ── Step 2b: Check if done ───────────────────────────
+        if selected_index == -1 or phase == "done":
+            print(f"[FixLoop] ✅ Fix completed: {final_reasoning}")
+            break
+        
+        # ── Step 2c: Execute the selected fix ────────────────
+        print(f"[FixLoop] 🔧 Executing fix index: {selected_index}")
+        
+        fix_results = _fix_exec.execute_rag_fix(
+            rag_entry=rag_entry,
+            selected_index=selected_index,
+            worker_nodes=worker_nodes,
+            mock=mock,
+        )
+        
+        if not fix_results:
+            print("[FixLoop] ⚠️  No fix results, breaking loop")
+            break
+        
+        # Add fix results to history
+        command_history.extend(fix_results)
+        selected_indices.append(selected_index)
+        
+        # Check if fix was successful (all exit codes 0)
+        all_success = all(r.get("exit_code", -1) == 0 for r in fix_results)
+        if all_success:
+            print("[FixLoop] ✅ All fix commands succeeded!")
+            # Run verification (re-run diagnostics to confirm)
+            print("[FixLoop] 🔍 Running verification...")
+
+            # Re-run diagnostics + original failing command
+            verification_commands = [r["command"] for r in diagnostic_results]
+
+            ver_results = _fix_exec.execute_batch(
+                commands=verification_commands,
+                worker_nodes=worker_nodes,
+                phase="verification",
+                mock=mock
+            )
+            command_history.extend(ver_results)
+    
+    else:
+        # Max iterations reached
+        print(f"[FixLoop] ⚠️  Max iterations ({MAX_ITERATIONS}) reached")
+        final_reasoning = f"Max iterations reached. {len(command_history)} commands executed."
+    
+    # ── Step 3: Package results ──────────────────────────────
+    strategy = _fix_gen.build_fix_strategy(
+        rca=rca,
+        command_history=command_history,
+        final_reasoning=final_reasoning,
+        estimated_risk=estimated_risk,
+    )
+    result = _fix_exec.build_fix_result(
+        strategy=strategy,
+        command_history=command_history,
+    )
+    
+    print(f"\n[FixLoop] 🏁 Loop complete: {result.execution_status}")
+    print(f"[FixLoop] 📊 Total commands: {len(command_history)}")
+    
+    return strategy, result
 
 # ENDPOINTS
 
@@ -262,6 +404,11 @@ def run_pipeline(request: PipelineRequest):
         }
 
         # Agent 2: Monitor Workflow Agent ─
+        if dag_run_id is None:
+            raise HTTPException(
+                status_code=500, 
+                detail="Failed to trigger DAG - no dag_run_id returned"
+            )
         failure = _monitor.monitor_mock(dag_run_id, request.sample_log_path) \
                   if request.sample_log_path \
                   else _monitor.monitor(dag_run_id)
@@ -336,7 +483,7 @@ def analyze_failure(request: FailureAnalysisRequest):
 # ── Phase 2: Autofix endpoints ───────────────────────────────
 
 class GenerateFixRequest(BaseModel):
-    dag_id      : str = "deployment_workflow"
+    dag_id      : str = "minio_health_check" #minio_health_check
     dag_run_id  : str
     failed_task : str
     task_state  : str = "failed"
@@ -351,7 +498,7 @@ class ExecuteFixRequest(BaseModel):
 
 
 class AutofixPipelineRequest(BaseModel):
-    dag_id      : str = "deployment_workflow"
+    dag_id      : str = "minio_health_check" #minio_health_check
     dag_run_id  : str
     failed_task : str
     task_state  : str = "failed"
@@ -382,7 +529,11 @@ def generate_fix(request: GenerateFixRequest):
         rca = _rca.analyse(error_report)
 
         # Generate fix strategy
-        strategy = _fix_gen.generate(rca)
+        strategy, result = _run_fix_loop(
+            rca = rca,
+            worker_nodes = request.worker_nodes,
+            mock = request.mock or not request.worker_nodes,
+        )
 
         # Store for later execution
         fix_id = f"fix_{uuid.uuid4().hex[:8]}"
@@ -476,25 +627,53 @@ def autofix_pipeline(request: AutofixPipelineRequest):
             log_text=request.log_text,
             timestamp=request.timestamp,
         )
-
-        # ── Step 0: Phase 1 analysis ─────────────────────────
-        error_report = _log.analyse(failure)
-        rca = _rca.analyse(error_report)
-        alert_result = _alert.alert(rca)
+        ALLOW_PHASE1_JSON =  False
+        phase1 = {}
 
         # Build the base Phase 1 response
-        phase1 = _build_failure_analysis_response(
-            dag_id=request.dag_id,
-            dag_run_id=request.dag_run_id,
-            failure=failure,
-        )
-
-        # ── Step 1: DAG Analysis ─────────────────────────────
-        dag_report = _dag_ana.analyse("deployment_workflow.py")
+        if request.dag_run_id in _analysis_cache:
+            print(f"[AutoFixPipeline] Using cached phase 1 results for dag_run_id : {request.dag_run_id}")
+            phase1 = _analysis_cache[request.dag_run_id]
+        elif ALLOW_PHASE1_JSON:
+            print(f"[AutoFixPipeline] No cache found - using phase1.json for dag_run_id : {request.dag_run_id}")
+            import json
+            with open("api/phase1.json", "r") as f:
+                json_data = json.load(f)
+            # The JSON key format is {dag_run_id}:{worker_node_ip}
+            cache_key = f"{request.dag_run_id}:{request.worker_nodes[0]['ip'] if request.worker_nodes else 'default'}"
+            if cache_key in json_data:
+                entry = json_data[cache_key]
+                print(f"[AutoFixPipeline] Found entry for {cache_key}")
+                
+                # Build phase1 from the JSON entry
+                phase1 = {
+                    "pipeline_status": entry.get("pipeline_status", "alerted"),
+                    "dag_run_id": entry.get("dag_run_id", request.dag_run_id),
+                    "failure_detected": entry.get("failure_detected", True),
+                    "workflow_agent": entry.get("workflow_agent", {}),
+                    "monitor_agent": entry.get("monitor_agent", {}),
+                    "log_analysis_agent": entry.get("log_analysis_agent", {}),
+                    "root_cause_agent": entry.get("root_cause_agent", {}),
+                    "alerting_agent": entry.get("alerting_agent", {}),
+                    "combined_summary": entry.get("combined_summary", {}),
+                    # Store the raw objects for later use
+                    "error_report": entry.get("error_report", {}),
+                    "rca": entry.get("rca", {}),
+                    "alert_result": entry.get("alert_result", {})
+                }
+        else:
+            print(f"[AutoFixPiepeline] No cache found - running Phase 1 analysis fresh")
+            phase1 = _build_failure_analysis_response(
+                dag_id=request.dag_id,
+                dag_run_id=request.dag_run_id,
+                failure=failure,
+            )
+        # # ── Step 1: DAG Analysis ─────────────────────────────
+        dag_report = _dag_ana.analyse("minio_healthcheck_dag.py")    #minio_health_check
 
         dag_analysis_output = {
             "thinking": [
-                f"Scanning deployment_workflow.py source code...",
+                f"Scanning minio_healthcheck_dag.py source code...",   #minio_health_check
                 f"Querying RAG for correct command syntax...",
                 f"Found {len(dag_report.issues)} issue(s) in DAG source",
             ],
@@ -513,7 +692,6 @@ def autofix_pipeline(request: AutofixPipelineRequest):
             dag_analysis_output["thinking"].append(
                 "✅ DAG source code is clean. Proceeding directly to infrastructure healing..."
             )
-
         phase1["dag_analysis_agent"] = dag_analysis_output
 
         # ── Route: DAG is clean → skip to SSH-only fix ───────
@@ -526,14 +704,12 @@ def autofix_pipeline(request: AutofixPipelineRequest):
             phase1["attempt_1"] = {"status": "skipped", "reason": "No DAG issues"}
 
             # Run existing SSH fix pipeline
-            strategy = _fix_gen.generate(rca)
+            strategy, result = _run_fix_loop(
+                rca = phase1["rca"],
+                worker_nodes = request.worker_nodes,
+                mock = request.mock or not request.worker_nodes,
+                )
             approved = request.auto_approve or not strategy.requires_approval
-            result = _fix_exec.execute(
-                strategy=strategy,
-                worker_nodes=request.worker_nodes,
-                approved=approved,
-                mock=request.mock or not request.worker_nodes,
-            )
             val_report = _val.validate(
                 fix_result=result,
                 worker_nodes=request.worker_nodes,
@@ -544,7 +720,7 @@ def autofix_pipeline(request: AutofixPipelineRequest):
             phase1["fix_generator_agent"] = {
                 "thinking": [
                     f"Analysing root cause for task: {failure.task_id}",
-                    f"Classification: {rca.classification} | Severity: {rca.severity}",
+                    f"Classification: {phase1["rca"].classification} | Severity: {phase1["rca"].severity}",
                     f"Fix type: {strategy.fix_type}",
                     f"Risk: {strategy.estimated_risk}",
                     f"Commands: {len(strategy.fix_commands)} fix command(s)",
@@ -693,14 +869,11 @@ def autofix_pipeline(request: AutofixPipelineRequest):
 
             attempt1_error_report = _log.analyse(attempt1_failure)
             attempt1_rca = _rca.analyse(attempt1_error_report)
-            strategy = _fix_gen.generate(attempt1_rca)
-            approved = request.auto_approve or not strategy.requires_approval
-            result = _fix_exec.execute(
-                strategy=strategy,
-                worker_nodes=request.worker_nodes,
-                approved=approved,
-                mock=request.mock or not request.worker_nodes,
-            )
+            strategy, result = _run_fix_loop(
+                rca          = attempt1_rca,
+                worker_nodes = request.worker_nodes,
+                mock         = request.mock or not request.worker_nodes,
+          )
             val_report = _val.validate(
                 fix_result=result,
                 worker_nodes=request.worker_nodes,

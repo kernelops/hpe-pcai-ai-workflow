@@ -196,6 +196,34 @@ alpine sleep 3600
 
 # -------------------------------------------------------------------
 
+def format_rag_response(rag_json: dict) -> str:
+    """Format the RAG JSON response into a readable string."""
+    if not rag_json.get("commands_found") and not rag_json.get("matches"):
+        return "No commands found or matches available."        
+    output_lines = []
+        
+    # Format commands found
+    commands = rag_json.get("commands_found", [])
+    if commands:
+        output_lines.append(f"Commands Found ({len(commands)}):")
+        for cmd in commands:
+            output_lines.append(f"  • {cmd}")
+        output_lines.append("")
+        
+    # Format matches with documentation
+    matches = rag_json.get("matches", [])
+    if matches:
+        output_lines.append(f"Documentation Matches ({len(matches)}):")
+        for i, match in enumerate(matches, 1):
+            output_lines.append(f"\n  {i}. {match.get('command', 'Unknown')}")
+            output_lines.append(f"     Description: {match.get('description', 'N/A')}")
+            output_lines.append(f"     Usage: {match.get('usage', 'N/A')}")
+            if match.get('flags'):
+                output_lines.append(f"     Flags: {match.get('flags', 'N/A')}")
+            output_lines.append("-" * 50)
+        
+    return "\n".join(output_lines)
+
 
 def main():
 
@@ -212,9 +240,12 @@ def main():
         commands=found_commands,
         chroma_client=chroma_client,
     )
-    print("\n========== FINAL JSON OUTPUT ==========\n")
-    print(json.dumps(result, indent=2))
-    print("\n=======================================\n")
-
+    #print("\n========== FINAL JSON OUTPUT ==========\n")
+    #print(json.dumps(result, indent=2))
+    #print("\n=======================================\n")
+    print("\n[TEST] Formatted RAG Response:\n")
+    formatted_response = format_rag_response(result)
+    print(formatted_response)
+    
 if __name__ == "__main__":
     main()

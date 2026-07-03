@@ -22,7 +22,7 @@ except ImportError:
 
 
 AIRFLOW_BASE_URL = os.getenv("AIRFLOW_BASE_URL", "http://host.docker.internal:8080")
-AIRFLOW_DAG_ID = os.getenv("AIRFLOW_DAG_ID", "deployment_workflow")
+AIRFLOW_DAG_ID = os.getenv("AIRFLOW_DAG_ID", "minio_health_check")   # minio_health_check
 AIRFLOW_USERNAME = os.getenv("AIRFLOW_USERNAME", "airflow")
 AIRFLOW_PASSWORD = os.getenv("AIRFLOW_PASSWORD", "airflow")
 LLM_API_KEY = os.getenv("LLM_API_KEY", "")
@@ -451,6 +451,7 @@ def _analyze_failed_run_with_agents(run_id: str, status: str, logs: str) -> dict
                     "log_text": failure_payload.log_text,
                     "timestamp": failure_payload.timestamp or datetime.utcnow().isoformat(),
                 }
+                print("Payload:", payload)
 
                 resp = client.post(AGENT_OPS_API_URL, json=payload)
                 if not resp.is_success:
@@ -724,7 +725,7 @@ def trigger_autofix(payload: AutofixProxyRequest):
     failure_payloads = build_agent_failure_payloads(payload.logs)
     if not failure_payloads:
         raise HTTPException(
-            status_code=400,
+            status_code=450,
             detail="Unable to identify a failed task from the provided logs",
         )
 

@@ -25,6 +25,7 @@ class LogAnalyserAgent:
             print(f"task_id: {failure.task_id}")
             r = requests.post(f"{RAG_API_URL}/analyze",
                               json={
+                                  "dag_id": failure.dag_run_id,
                                   "log_text": failure.log_text,
                                   "task_id": failure.task_id,
                               }, timeout=10)
@@ -184,6 +185,7 @@ Analyse this log and respond with ONLY valid JSON in this exact format:
     "error_line": "file path and line number where error occurred if visible",
     "diagnosis": "clear 1-2 sentence explanation of what went wrong",
     "confidence": 0.0 to 1.0 float indicating your confidence
+    "command_that_failed": "the exact command that failed during execution, which needs to be rerun to verify that a fix worked"
 }}"""
 
         try:
@@ -207,10 +209,11 @@ Analyse this log and respond with ONLY valid JSON in this exact format:
             diagnosis    = parsed["diagnosis"],
             confidence   = float(parsed["confidence"]),
             raw_log      = failure.log_text,
+            command_that_failed = parsed["command_that_failed"],
             rag_error_location = rag_analysis.get("error_location"),
-            rag_diagnosis = rag_analysis.get("matches", [{}])[0].get("diagnosis") if rag_analysis.get("matches") else None,
-            rag_solution = rag_analysis.get("matches", [{}])[0].get("solution") if rag_analysis.get("matches") else None,
-            rag_prevention = rag_analysis.get("matches", [{}])[0].get("prevention") if rag_analysis.get("matches") else None,
+            rag_diagnosis = "\n\n".join(f"log-line = {m['matched_line']}\n{m.get('diagnosis', '').strip()}" for m in rag_analysis.get("matches", []) if m.get("diagnosis")) or None,
+            rag_solution = "\n\n".join(f"log-line = {m['matched_line']}\n{m.get('solution', '').strip()}" for m in rag_analysis.get("matches", []) if m.get("solution")) or None,
+            rag_prevention = "\n\n".join(f"log-line = {m['matched_line']}\n{m.get('prevention', '').strip()}" for m in rag_analysis.get("matches", []) if m.get("prevention")) or None,
             rag_sources = rag_analysis.get("retrieved_sources", []),
         )
 

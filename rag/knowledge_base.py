@@ -13,10 +13,12 @@ import math
 import os
 import re
 from typing import List, Dict
+import json
 
 # Collection names
 ERRORS_COLLECTION = "past_errors"
 COMMANDS_COLLECTION = "valid_commands"
+FIX_REGISTRY_COLLECTION = "fix_registry"
 
 
 def _normalize_embedding_input(input_data) -> List[str]:
@@ -387,7 +389,7 @@ MOCK_PAST_ERRORS = [
     },
     {
         "id": "err_030",
-        "text": "curl: Failed to connect to localhost port <PORT>: Connection refused. ",  
+        "text": "curl: Failed to connect to localhost port <PORT> adter 2 ms: Could not connect to server. ",  
         "source": "OS Validation Logs",
         "diagnosis": "The curl command failed because it could not establish a TCP connection to the specified host and port. The connection was actively refused by the target machine, indicating that no service is listening on the specified host and port, or a firewall is rejecting the connection. Likely causes are target service is not running, service is running on a different port, service crashed or exited, port is not exposed, or firewall rules are blocking the port. ",
         "solution": "Check if any service is listening on the port (ss -tuln | grep <PORT>). If nothing shows, no service is running on that port. Check whether the required service is running (ps aux | grep <SERVICE_NAME>). Start the service if not running. Verify that the service is configured to run on the expected port (cat config.yaml). If using Docker, confirm that the container is running and check port mapping. ",
@@ -925,8 +927,71 @@ VALID_COMMANDS = [
         "source":"https://docs.min.io/aistor/reference/cli/mc-retention/mc-retention-set/?tab=a68b53a2-syntax"
     }
 ]
+FIX_REGISTRY = [
+    {
+        "id": "fix_001",
+        "failed_task": "check_minio_health",
+        "error_line": 
+        [
+            "SSH operator error: exit status = 7",
+            "curl: (7) Failed to connect to localhost port 9000 after 2 ms: Could not connect to server"
+        ],
+        "fix_possibilities": ["MinIO not installed", "MinIO not running/crashed", "MinIO not on the right port", "Firewall blocking MinIO port"],
+        "diagnostic_commands": [
+            [
+                "which minio",
+                "which mc"
+            ],
+            [
+                "ps aux | grep -v grep | grep minio",
+                "sudo systemctl is-active minio",
+                "sudo systemctl status minio --no-pager"
+            ],
+            [
+                "ss -tuln | grep 9000",
+                "ss -tuln | grep -E '900[0-9]'"
+            ],
+            [
+                "sudo ufw status",
+                "sudo iptables -L INPUT -n | head -10"
+            ]
+        ],
+        "fix_commands":{
+            "MinIO not installed": [
+                "wget https://dl.min.io/server/minio/release/linux-amd64/minio -O /tmp/minio",
+                "chmod +x /tmp/minio",
+                "sudo mv /tmp/minio /usr/local/bin/minio",
+                "sudo useradd -r minio-user -s /sbin/nologin || true",
+                "sudo mkdir -p /data/minio",
+                "sudo chown -R minio-user:minio-user /data/minio",
+                "sudo tee /etc/systemd/system/minio.service > /dev/null << 'EOF'\n[Unit]\nDescription=MinIO Object Storage\nAfter=network.target\n\n[Service]\nUser=minio-user\nGroup=minio-user\nExecStart=/usr/local/bin/minio server /data/minio --address 0.0.0.0:9000 --console-address 0.0.0.0:9001\nRestart=always\nRestartSec=5\nEnvironment=MINIO_ROOT_USER=minioadmin\nEnvironment=MINIO_ROOT_PASSWORD=minioadmin\n\n[Install]\nWantedBy=multi-user.target\nEOF",
+                "sudo systemctl daemon-reload",
+                "sudo systemctl enable minio",
+                "sudo systemctl start minio",
+                "sudo apt install mc -y"
+            ],
+            "MinIO not running/crashed": [
+                "sudo systemctl start minio",
+                "sudo systemctl status minio --no-pager"
+            ],
+            "MinIO not on the right port": [
+                "sudo systemctl stop minio",
+                "sudo sed -i 's/--address.*:/--address 0.0.0.0:9000 /g' /etc/systemd/system/minio.service || true",
+                "sudo systemctl daemon-reload",
+                "sudo systemctl start minio"
+            ],
+            "Firewall blocking MinIO port": [
+                "sudo ufw allow 9000/tcp || true",
+                "sudo ufw allow 9001/tcp || true",
+                "sudo ufw reload || true",
+                "sudo iptables -I INPUT -p tcp --dport 9000 -j ACCEPT || true"
+            ]  
+        }
+    }
+]
 
 def get_embedding_function():
+
     """Returns an embedding function for ChromaDB with offline fallback."""
     if os.getenv("RAG_FORCE_LOCAL_EMBEDDINGS", "").lower() in {"1", "true", "yes"}:
         print("[KnowledgeBase] Using forced local hash embeddings.")
@@ -999,5 +1064,26 @@ def build_knowledge_base(persist_dir: str = "./chroma_db") -> chromadb.ClientAPI
         print(f"[KnowledgeBase] Added {len(VALID_COMMANDS)} command entries.")
     else:
         print(f"[KnowledgeBase] Commands collection already has {commands_col.count()} entries.")
-    
+
+    # ---- Fixes Collection ---
+    fix_col = client.get_or_create_collection(
+        name=FIX_REGISTRY_COLLECTION,
+        embedding_function=ef,
+        metadata={"hnsw:space": "cosine"}
+    )
+
+    if fix_col.count() == 0:
+        print("[KnowledgeBase] Ingesting fix registry...")
+        fix_col.add(
+            ids=[f["id"] for f in FIX_REGISTRY],
+            documents=[f["failed_task"] for f in FIX_REGISTRY],  # only task_id embedded
+            metadatas=[{
+                "error_line":            json.dumps(f["error_line"]),
+                "fix_possibilities":     json.dumps(f["fix_possibilities"]),
+                "diagnostic_commands":   json.dumps(f["diagnostic_commands"]),
+                "fix_commands":          json.dumps(f["fix_commands"]),
+            } for f in FIX_REGISTRY],
+        )
+        print(f"[KnowledgeBase] Added {len(FIX_REGISTRY)} fix registry entries.")
+        
     return client

@@ -24,6 +24,7 @@ class ErrorReport(BaseModel):
     diagnosis: str
     confidence: float
     raw_log: str
+    command_that_failed: str
     rag_error_location: Optional[str] = None
     rag_diagnosis: Optional[str] = None
     rag_solution: Optional[str] = None

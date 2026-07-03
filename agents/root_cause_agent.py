@@ -80,10 +80,6 @@ Error Location: {error_report.error_line or 'unknown'}
 Diagnosis: {error_report.diagnosis}
 {rag_context}
 
-The deployment pipeline runs these tasks in order:
-iLO Config → Switch Config → Deploy OS → Network Config → 
-OS Validation → Deploy SPP → MinIO Install → MinIO Config → NFS Config
-
 Perform root cause analysis and respond with ONLY valid JSON:
 {{
     "root_cause": "single clear sentence explaining the underlying root cause",

@@ -21,6 +21,7 @@ try:
         get_embedding_function,
         ERRORS_COLLECTION,
         COMMANDS_COLLECTION,
+        FIX_REGISTRY_COLLECTION,
     )
 except ImportError:
     from log_parser import ParsedError, format_error_location
@@ -28,6 +29,7 @@ except ImportError:
         get_embedding_function,
         ERRORS_COLLECTION,
         COMMANDS_COLLECTION,
+        FIX_REGISTRY_COLLECTION,
     )
 
 
@@ -49,7 +51,7 @@ def retrieve_matches(
     chroma_client: chromadb.ClientAPI,
     top_k: int = 1,
 ) -> List[Dict]:
-    print(f"[RAGEngine] retrieve_matches -> candidate_lines={candidate_lines}, top_k={top_k}, threshold={SIMILARITY_THRESHOLD}")
+    print(f"[RAGEngine] Parameters for RAG match:    top_k={top_k}, threshold={SIMILARITY_THRESHOLD}")
     """
     For each candidate line:
       - Query ChromaDB for the closest KB entry
@@ -101,19 +103,19 @@ def retrieve_matches(
         distances = results.get("distances", [[]])[0]
         print(f"[RAGEngine] query results for line '{line}': docs={len(documents)}, metas={len(metadatas)}, distances={len(distances)}")
         print(f"[RAGEngine] query returned documents={documents}")
-        print(f"[RAGEngine] query returned distances={distances}")
+        #print(f"[RAGEngine] query returned distances={distances}")
 
         for doc, meta, dist in zip(documents, metadatas, distances):
             similarity = _distance_to_similarity(dist)
             print(f"[RAGEngine]   doc='{doc}' dist={dist:.6f} similarity={similarity:.4f}")
 
             if similarity < SIMILARITY_THRESHOLD:
-                print(f"[RAGEngine]   skipping doc='{doc}' because similarity {similarity:.4f} < threshold {SIMILARITY_THRESHOLD}")
+                print(f"[RAGEngine]   skipping doc='{doc}' because similarity {similarity:.4f} < threshold {SIMILARITY_THRESHOLD}\n")
                 continue
 
             existing = best_per_document.get(doc)
             if existing is None or similarity > existing["similarity"]:
-                print(f"[RAGEngine]   keeping/updating best match for doc='{doc}' similarity={similarity:.4f}")
+                print(f"[RAGEngine]   keeping/updating best match for doc='{doc}' similarity={similarity:.4f}\n")
                 best_per_document[doc] = {
                     "matched_line": line,
                     "similarity": similarity,
@@ -127,9 +129,9 @@ def retrieve_matches(
                     "retrieved_sources": meta.get("retrieved_sources", ""),
                 }
 
-    print(f"[RAGEngine] retrieve_matches -> {len(best_per_document)} final match(es) after deduplication")
+    print(f"[RAGEngine] retrieve_matches -> {len(best_per_document)} final match(es) after deduplication\n")
     for match in best_per_document.values():
-        print(f"[RAGEngine]   final doc='{match['document']}' sim={match['similarity']:.4f} matched_line='{match['matched_line']}'")
+        print(f"[RAGEngine]   final doc='{match['document']}' sim={match['similarity']:.4f} matched_line='{match['matched_line']}'\n")
     # Sort by similarity descending
     ranked = sorted(best_per_document.values(), key=lambda x: x["similarity"], reverse=True)
     return ranked
@@ -187,6 +189,85 @@ def retrieve_command_matches(
 
     return list(matched_commands.values())
 
+def retrieve_fix_context(
+    task_id: str,
+    raw_log: str,
+    client: chromadb.ClientAPI,
+) -> list[dict]:
+    """
+    Retrieves fix registry entries for a failed task.
+
+    Strategy:
+    1. Embed task_id and query ChromaDB with similarity > 0.95
+    2. For each candidate, check if ALL error_line strings appear in the raw_log
+    3. Return all entries that pass both checks
+    """
+    import json
+
+    ef = get_embedding_function()
+
+    try:
+        col = client.get_collection(
+            name=FIX_REGISTRY_COLLECTION,
+            embedding_function=ef
+        )
+    except Exception as exc:
+        print(f"[RAGEngine] Fix registry collection not found: {exc}")
+        return []
+
+    try:
+        results = col.query(
+            query_texts=[task_id],  # ← Keep as task_id
+            n_results=min(10, col.count()),
+            include=["documents", "metadatas", "distances"],
+        )
+    except Exception as exc:
+        print(f"[RAGEngine] Fix registry query failed: {exc}")
+        return []
+
+    documents = results.get("documents", [[]])[0]
+    metadatas = results.get("metadatas", [[]])[0]
+    distances = results.get("distances", [[]])[0]
+
+    matched_entries = []
+
+    for doc, meta, dist in zip(documents, metadatas, distances):
+        similarity = 1.0 - dist
+
+        # Step 1: task_id similarity threshold
+        if similarity < 0.95:
+            continue
+
+        # Step 2: Check if ALL error_lines are in raw_log
+        error_lines = json.loads(meta.get("error_line", "[]"))
+        log_lower = raw_log.lower()
+
+        # Check if ALL error_lines are present
+        any_line_found = any(
+            line.lower() in log_lower
+            for line in error_lines
+        )
+
+        if not any_line_found:
+            print(f"[RAGEngine] No error lines matched for {doc}")
+            continue
+
+        print(f"[RAGEngine] Fix registry match — task: {doc}, "
+              f"similarity: {similarity:.4f}, "
+              f"all error lines found: {error_lines}")
+
+        matched_entries.append({
+            "task_id":             doc,
+            "similarity":          round(similarity, 4),
+            "matched_error_lines": error_lines,  # All lines matched
+            "error_line":          error_lines,
+            "fix_possibilities":   json.loads(meta.get("fix_possibilities", "[]")),
+            "diagnostic_commands": json.loads(meta.get("diagnostic_commands", "[]")),
+            "fix_commands":        json.loads(meta.get("fix_commands", "{}")),
+        })
+
+    return matched_entries
+
 def run_rag_pipeline(
     parsed_error: ParsedError,
     chroma_client: chromadb.ClientAPI,
@@ -201,8 +282,8 @@ def run_rag_pipeline(
     """
 
     candidate_lines = parsed_error.candidate_lines
-    print(f"[RAGEngine] run_rag_pipeline -> parsed error_type={parsed_error.error_type} error_message={parsed_error.error_message} task_id={parsed_error.task_id}")
-    print(f"[RAGEngine] run_rag_pipeline -> candidate_lines={candidate_lines}")
+    #print(f"[RAGEngine] run_rag_pipeline -> parsed error_type={parsed_error.error_type} error_message={parsed_error.error_message} task_id={parsed_error.task_id}")
+    #print(f"[RAGEngine] run_rag_pipeline -> candidate_lines={candidate_lines}")
 
     # Fallback: if log parser found no candidate lines, build one from the parsed error
     if not candidate_lines:

@@ -145,9 +145,9 @@ def extract_candidate_lines(log_text: str) -> List[str]:
 
         candidate_lines.append(message)
 
-    print(f"[RAGDebug] extract_candidate_lines -> {len(candidate_lines)} candidate lines (start_index={start_index})")
-    for i, line in enumerate(candidate_lines, 1):
-        print(f"[RAGDebug]   {i}. {line}")
+    #print(f"[RAGDebug] extract_candidate_lines -> {len(candidate_lines)} candidate lines (start_index={start_index})")
+    #for i, line in enumerate(candidate_lines, 1):
+        #print(f"[RAGLogParser]   {i}. {line}")
 
     return candidate_lines
 
@@ -218,10 +218,10 @@ def parse_airflow_log(log_text: str) -> ParsedError:
         if error_message not in candidate_lines:
             candidate_lines.append(full_error_string)
 
-    print("[RAGDebug] parse_airflow_log -> parsed error")
-    print(f"[RAGDebug]   dag_id={dag_id}, task_id={task_id}, error_type={error_type}, error_message={error_message}")
-    print(f"[RAGDebug]   file_path={file_path}, line_number={line_number}")
-    print(f"[RAGDebug]   candidate_lines={candidate_lines}")
+    #print("[RAGDebug] parse_airflow_log -> parsed error")
+    #print(f"[RAGDebug]   dag_id={dag_id}, task_id={task_id}, error_type={error_type}, error_message={error_message}")
+    #print(f"[RAGDebug]   file_path={file_path}, line_number={line_number}")
+    print(f"[RAGLogParser]   Final candidate lines are = {candidate_lines}")
 
     return ParsedError(
         task_id=task_id,

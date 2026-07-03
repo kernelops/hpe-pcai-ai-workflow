@@ -47,181 +47,178 @@ def get_worker_nodes(**context):
         return []
 
 
-def _run_node_command(node: dict, command: str) -> str:
-    """Run a shell command on a worker node using the stored SSH credentials."""
-    ip = node["ip"]
-    username = node["username"]
-    password = node.get("password", "")
+# def _run_node_command(node: dict, command: str) -> str:
+#     """Run a shell command on a worker node using the stored SSH credentials."""
+#     ip = node["ip"]
+#     username = node["username"]
+#     password = node.get("password", "")
 
-    print(f"Running on {ip}: {command}")
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    try:
-        client.connect(
-            hostname=ip,
-            username=username,
-            password=password,
-            timeout=20,
-            look_for_keys=False,
-            allow_agent=False,
-        )
-        stdin, stdout, stderr = client.exec_command(command, get_pty=True, timeout=120)
-        if "sudo" in command and password:
-            stdin.write(password + "\n")
-            stdin.flush()
+#     print(f"Running on {ip}: {command}")
+#     client = paramiko.SSHClient()
+#     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+#     try:
+#         client.connect(
+#             hostname=ip,
+#             username=username,
+#             password=password,
+#             timeout=20,
+#             look_for_keys=False,
+#             allow_agent=False,
+#         )
+#         stdin, stdout, stderr = client.exec_command(command, get_pty=True, timeout=120)
+#         if "sudo" in command and password:
+#             stdin.write(password + "\n")
+#             stdin.flush()
 
-        exit_code = stdout.channel.recv_exit_status()
-        out = stdout.read().decode("utf-8", errors="replace")
-        err = stderr.read().decode("utf-8", errors="replace")
+#         exit_code = stdout.channel.recv_exit_status()
+#         out = stdout.read().decode("utf-8", errors="replace")
+#         err = stderr.read().decode("utf-8", errors="replace")
 
-        if out.strip():
-            print(out)
-        if err.strip():
-            print(err)
-        if exit_code != 0:
-            raise RuntimeError(f"Command failed on {ip} with exit code {exit_code}: {err or out}")
-        return out
-    finally:
-        client.close()
-
-
-def _require_two_nodes(**context) -> list[dict]:
-    nodes = context["task_instance"].xcom_pull(task_ids="get_worker_nodes") or []
-    if len(nodes) < 2:
-        raise RuntimeError("NFS inconsistency demo requires at least two reachable worker nodes")
-    return nodes
+#         if out.strip():
+#             print(out)
+#         if err.strip():
+#             print(err)
+#         if exit_code != 0:
+#             raise RuntimeError(f"Command failed on {ip} with exit code {exit_code}: {err or out}")
+#         return out
+#     finally:
+#         client.close()
 
 
-def prepare_host_nfs_servers(**context):
-    """
-    Configure one host NFS export on each worker.
-    Worker 1 becomes NFS A, Worker 2 becomes NFS B.
-    """
-    nodes = _require_two_nodes(**context)
-    exports = []
-
-    for index, node in enumerate(nodes[:2], start=1):
-        ip_parts = node["ip"].split(".")
-        permitted_subnet = ".".join(ip_parts[:3]) + ".0/24" if len(ip_parts) == 4 else "*"
-        export_dir = NFS_A_EXPORT_DIR if index == 1 else NFS_B_EXPORT_DIR
-        export = f"{node['ip']}:{export_dir}"
-        exports.append(export)
-        command = (
-            "set -e; "
-            "if ! command -v exportfs >/dev/null 2>&1 || ! command -v mount.nfs >/dev/null 2>&1; then "
-            "  sudo apt-get update >/dev/null 2>&1; "
-            "  sudo apt-get install -y nfs-kernel-server nfs-common >/dev/null 2>&1; "
-            "fi; "
-            f"sudo mkdir -p {export_dir}; "
-            f"sudo chmod 777 {export_dir}; "
-            f"EXPORT_LINE='{export_dir} {permitted_subnet}(rw,sync,no_subtree_check,no_root_squash,insecure)'; "
-            "sudo sed -i '/broken_option/d' /etc/exports; "
-            f"sudo sed -i '\\#{export_dir} #d' /etc/exports; "
-            "printf '%s\\n' \"$EXPORT_LINE\" | sudo tee -a /etc/exports >/dev/null; "
-            "sudo exportfs -ra; "
-            "sudo systemctl enable --now nfs-server >/dev/null 2>&1 || "
-            "sudo systemctl enable --now nfs-kernel-server >/dev/null 2>&1 || true; "
-            "sudo systemctl restart nfs-server >/dev/null 2>&1 || "
-            "sudo systemctl restart nfs-kernel-server >/dev/null 2>&1 || true; "
-            "sudo exportfs -v; "
-            f"printf '%s\\n' '{export}' | sudo tee /tmp/pcai_nfs_{index}_export >/dev/null; "
-            f"printf '%s\\n' '{exports[0] if exports else export}' | sudo tee /tmp/pcai_nfs_a_export >/dev/null; "
-            "sleep 2"
-        )
-        _run_node_command(node, command)
-
-    for node in nodes[:2]:
-        _run_node_command(
-            node,
-            f"printf '%s\\n' '{exports[0]}' | sudo tee /tmp/pcai_nfs_a_export >/dev/null; "
-            f"printf '%s\\n' '{exports[1]}' | sudo tee /tmp/pcai_nfs_b_export >/dev/null",
-        )
-
-    print(f"NFS A export: {exports[0]}")
-    print(f"NFS B export: {exports[1]}")
-    return {"nfs_a_export": exports[0], "nfs_b_export": exports[1]}
+# def _require_two_nodes(**context) -> list[dict]:
+#     nodes = context["task_instance"].xcom_pull(task_ids="get_worker_nodes") or []
+#     if len(nodes) < 2:
+#         raise RuntimeError("NFS inconsistency demo requires at least two reachable worker nodes")
+#     return nodes
 
 
-def mount_workers_to_nfs_a(**context):
-    """Put both workers into the initial healthy state: both mounted to NFS A."""
-    nodes = _require_two_nodes(**context)
-    exports = context["task_instance"].xcom_pull(task_ids="prepare_host_nfs_servers")
-    nfs_a = exports["nfs_a_export"]
+# def prepare_host_nfs_servers(**context):
+#     """
+#     Configure one host NFS export on each worker.
+#     Worker 1 becomes NFS A, Worker 2 becomes NFS B.
+#     """
+#     nodes = _require_two_nodes(**context)
+#     exports = []
 
-    for node in nodes[:2]:
-        command = (
-            "set -e; "
-            "if ! command -v mount.nfs >/dev/null 2>&1; then "
-            "  sudo apt-get update >/dev/null 2>&1; "
-            "  sudo apt-get install -y nfs-common >/dev/null 2>&1; "
-            "fi; "
-            f"sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
-            f"sudo rmdir {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
-            f"sudo mkdir -p {NFS_MOUNT_POINT}; "
-            f"(timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 {nfs_a} {NFS_MOUNT_POINT} || "
-            f"(sleep 2; sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
-            f"timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 {nfs_a} {NFS_MOUNT_POINT})); "
-            f"printf '%s\\n' '{nfs_a}' | sudo tee /tmp/pcai_nfs_a_export >/dev/null; "
-            f"mount | grep ' {NFS_MOUNT_POINT} '"
-        )
-        _run_node_command(node, command)
+#     for index, node in enumerate(nodes[:2], start=1):
+#         ip_parts = node["ip"].split(".")
+#         permitted_subnet = ".".join(ip_parts[:3]) + ".0/24" if len(ip_parts) == 4 else "*"
+#         export_dir = NFS_A_EXPORT_DIR if index == 1 else NFS_B_EXPORT_DIR
+#         export = f"{node['ip']}:{export_dir}"
+#         exports.append(export)
+#         command = (
+#             "set -e; "
+#             "if ! command -v exportfs >/dev/null 2>&1 || ! command -v mount.nfs >/dev/null 2>&1; then "
+#             "  sudo apt-get update >/dev/null 2>&1; "
+#             "  sudo apt-get install -y nfs-kernel-server nfs-common >/dev/null 2>&1; "
+#             "fi; "
+#             f"sudo mkdir -p {export_dir}; "
+#             f"sudo chmod 777 {export_dir}; "
+#             f"EXPORT_LINE='{export_dir} {permitted_subnet}(rw,sync,no_subtree_check,no_root_squash,insecure)'; "
+#             "sudo sed -i '/broken_option/d' /etc/exports; "
+#             f"sudo sed -i '\\#{export_dir} #d' /etc/exports; "
+#             "printf '%s\\n' \"$EXPORT_LINE\" | sudo tee -a /etc/exports >/dev/null; "
+#             "sudo exportfs -ra; "
+#             "sudo systemctl enable --now nfs-server >/dev/null 2>&1 || "
+#             "sudo systemctl enable --now nfs-kernel-server >/dev/null 2>&1 || true; "
+#             "sudo systemctl restart nfs-server >/dev/null 2>&1 || "
+#             "sudo systemctl restart nfs-kernel-server >/dev/null 2>&1 || true; "
+#             "sudo exportfs -v; "
+#             f"printf '%s\\n' '{export}' | sudo tee /tmp/pcai_nfs_{index}_export >/dev/null; "
+#             f"printf '%s\\n' '{exports[0] if exports else export}' | sudo tee /tmp/pcai_nfs_a_export >/dev/null; "
+#             "sleep 2"
+#         )
+#         _run_node_command(node, command)
 
+#     for node in nodes[:2]:
+#         _run_node_command(
+#             node,
+#             f"printf '%s\\n' '{exports[0]}' | sudo tee /tmp/pcai_nfs_a_export >/dev/null; "
+#             f"printf '%s\\n' '{exports[1]}' | sudo tee /tmp/pcai_nfs_b_export >/dev/null",
+#         )
 
-def create_nfs_validation_file(**context):
-    """Write the validation file on Worker 1, which is mounted to NFS A."""
-    nodes = _require_two_nodes(**context)
-    command = (
-        "set -e; "
-        f"printf '%s\\n' 'deployment-check' | sudo tee {NFS_MOUNT_POINT}/check.txt >/dev/null; "
-        f"cat {NFS_MOUNT_POINT}/check.txt; "
-        f"mount | grep ' {NFS_MOUNT_POINT} '"
-    )
-    _run_node_command(nodes[0], command)
-
-
-def simulate_nfs_mount_inconsistency(**context):
-    """Move Worker 2 from NFS A to NFS B, creating the environment issue."""
-    nodes = _require_two_nodes(**context)
-    exports = context["task_instance"].xcom_pull(task_ids="prepare_host_nfs_servers")
-    nfs_b = exports["nfs_b_export"]
-    command = (
-        "set -e; "
-        "sudo exportfs -ra; "
-        "sudo systemctl restart nfs-server >/dev/null 2>&1 || "
-        "sudo systemctl restart nfs-kernel-server >/dev/null 2>&1 || true; "
-        "sudo exportfs -ra; "
-        f"sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
-        f"sudo rmdir {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
-        f"sudo mkdir -p {NFS_MOUNT_POINT}; "
-        f"(timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 {nfs_b} {NFS_MOUNT_POINT} || "
-        f"(sleep 2; sudo exportfs -ra; sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
-        f"timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 {nfs_b} {NFS_MOUNT_POINT})); "
-        f"printf '%s\\n' '{nfs_b}' | sudo tee /tmp/pcai_nfs_b_export >/dev/null; "
-        "echo 'NFS mount inconsistency injected: Worker 2 now points to NFS B'; "
-        f"mount | grep ' {NFS_MOUNT_POINT} '"
-    )
-    _run_node_command(nodes[1], command)
+#     print(f"NFS A export: {exports[0]}")
+#     print(f"NFS B export: {exports[1]}")
+#     return {"nfs_a_export": exports[0], "nfs_b_export": exports[1]}
 
 
-def validate_nfs_consistency(**context):
-    """
-    Validate from Worker 2.
-    This fails because Worker 1 wrote check.txt to NFS A, while Worker 2 now reads NFS B.
-    """
-    nodes = _require_two_nodes(**context)
-    command = (
-        "set -e; "
-        f"echo 'Validating NFS consistency from Worker 2'; "
-        f"mount | grep ' {NFS_MOUNT_POINT} '; "
-        f"test -f {NFS_MOUNT_POINT}/check.txt || "
-        f"printf '%s\\n' 'deployment-check' | sudo tee {NFS_MOUNT_POINT}/check.txt >/dev/null; "
-        "EXPECTED_NFS=$(cat /tmp/pcai_nfs_a_export); "
-        f"CURRENT_NFS=$(findmnt -n -o SOURCE {NFS_MOUNT_POINT}); "
-        "test \"$CURRENT_NFS\" = \"$EXPECTED_NFS\" || "
-        "(echo \"NFS mount inconsistency detected after symptom repair: expected $EXPECTED_NFS but found $CURRENT_NFS\" >&2; exit 1); "
-        f"grep -qx 'deployment-check' {NFS_MOUNT_POINT}/check.txt"
-    )
-    _run_node_command(nodes[1], command)
+# def mount_workers_to_nfs_a(**context):
+#     """Put both workers into the initial healthy state: both mounted to NFS A."""
+#     nodes = _require_two_nodes(**context)
+#     exports = context["task_instance"].xcom_pull(task_ids="prepare_host_nfs_servers")
+#     nfs_a = exports["nfs_a_export"]
+
+#     for node in nodes[:2]:
+#         command = (
+#             "set -e; "
+#             "if ! command -v mount.nfs >/dev/null 2>&1; then "
+#             "  sudo apt-get update >/dev/null 2>&1; "
+#             "  sudo apt-get install -y nfs-common >/dev/null 2>&1; "
+#             "fi; "
+#             f"sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
+#             f"sudo rmdir {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
+#             f"sudo mkdir -p {NFS_MOUNT_POINT}; "
+#             f"(timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 {nfs_a} {NFS_MOUNT_POINT} || "
+#             f"(sleep 2; sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
+#             f"timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 {nfs_a} {NFS_MOUNT_POINT})); "
+#             f"printf '%s\\n' '{nfs_a}' | sudo tee /tmp/pcai_nfs_a_export >/dev/null; "
+#             f"mount | grep ' {NFS_MOUNT_POINT} '"
+#         )
+#         _run_node_command(node, command)
+
+
+# def create_nfs_validation_file(**context):
+#     """Write the validation file on Worker 1, which is mounted to NFS A."""
+#     nodes = _require_two_nodes(**context)
+#     command = (
+#         "set -e; "
+#         f"printf '%s\\n' 'deployment-check' | sudo tee {NFS_MOUNT_POINT}/check.txt >/dev/null; "
+#         f"cat {NFS_MOUNT_POINT}/check.txt; "
+#         f"mount | grep ' {NFS_MOUNT_POINT} '"
+#     )
+#     _run_node_command(nodes[0], command)
+
+
+# def simulate_nfs_mount_inconsistency(**context):
+#     """Move Worker 2 from NFS A to NFS B, creating the environment issue."""
+#     nodes = _require_two_nodes(**context)
+#     exports = context["task_instance"].xcom_pull(task_ids="prepare_host_nfs_servers")
+#     nfs_b = exports["nfs_b_export"]
+#     command = (
+#         "set -e; "
+#         "sudo exportfs -ra; "
+#         "sudo systemctl restart nfs-server >/dev/null 2>&1 || "
+#         "sudo systemctl restart nfs-kernel-server >/dev/null 2>&1 || true; "
+#         "sudo exportfs -ra; "
+#         f"sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
+#         f"sudo rmdir {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
+#         f"sudo mkdir -p {NFS_MOUNT_POINT}; "
+#         f"(timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 {nfs_b} {NFS_MOUNT_POINT} || "
+#         f"(sleep 2; sudo exportfs -ra; sudo umount -lf {NFS_MOUNT_POINT} >/dev/null 2>&1 || true; "
+#         f"timeout 20 sudo mount -t nfs -o vers=3,nolock,timeo=5,retrans=1 {nfs_b} {NFS_MOUNT_POINT})); "
+#         f"printf '%s\\n' '{nfs_b}' | sudo tee /tmp/pcai_nfs_b_export >/dev/null; "
+#         "echo 'NFS mount inconsistency injected: Worker 2 now points to NFS B'; "
+#         f"mount | grep ' {NFS_MOUNT_POINT} '"
+#     )
+#     _run_node_command(nodes[1], command)
+
+
+# def validate_nfs_consistency(**context):
+#     """
+#     Validate from Worker 2.
+#     This fails because Worker 1 wrote check.txt to NFS A, while Worker 2 now reads NFS B.
+#     """
+#     nodes = _require_two_nodes(**context)
+#     command = (
+#         "set -e; "
+#         f"echo 'Validating NFS consistency from Worker 2'; "
+#         f"mount | grep ' {NFS_MOUNT_POINT} '; "
+#         f"test -f {NFS_MOUNT_POINT}/check.txt || "
+#         f"(echo 'NFS consistency validation failed: {NFS_MOUNT_POINT}/check.txt missing on Worker 2. "
+#         "Possible NFS mount inconsistency between worker nodes.' >&2; exit 1); "
+#         f"grep -qx 'deployment-check' {NFS_MOUNT_POINT}/check.txt"
+#     )
+#     _run_node_command(nodes[1], command)
 
 
 @provide_session
@@ -326,30 +323,30 @@ with DAG(
         do_xcom_push=True,
     ).expand(ssh_conn_id=create_connections.output)
 
-    prepare_nfs = PythonOperator(
-        task_id="prepare_host_nfs_servers",
-        python_callable=prepare_host_nfs_servers,
-    )
+    # prepare_nfs = PythonOperator(
+    #     task_id="prepare_host_nfs_servers",
+    #     python_callable=prepare_host_nfs_servers,
+    # )
 
-    mount_nfs_a = PythonOperator(
-        task_id="mount_workers_to_nfs_a",
-        python_callable=mount_workers_to_nfs_a,
-    )
+    # mount_nfs_a = PythonOperator(
+    #     task_id="mount_workers_to_nfs_a",
+    #     python_callable=mount_workers_to_nfs_a,
+    # )
 
-    create_nfs_file = PythonOperator(
-        task_id="create_nfs_validation_file",
-        python_callable=create_nfs_validation_file,
-    )
+    # create_nfs_file = PythonOperator(
+    #     task_id="create_nfs_validation_file",
+    #     python_callable=create_nfs_validation_file,
+    # )
 
-    inject_nfs_drift = PythonOperator(
-        task_id="simulate_nfs_mount_inconsistency",
-        python_callable=simulate_nfs_mount_inconsistency,
-    )
+    # inject_nfs_drift = PythonOperator(
+    #     task_id="simulate_nfs_mount_inconsistency",
+    #     python_callable=simulate_nfs_mount_inconsistency,
+    # )
 
-    validate_nfs = PythonOperator(
-        task_id="validate_nfs_consistency",
-        python_callable=validate_nfs_consistency,
-    )
+    # validate_nfs = PythonOperator(
+    #     task_id="validate_nfs_consistency",
+    #     python_callable=validate_nfs_consistency,
+    # )
 
     simulation_complete = EmptyOperator(
         task_id="simulation_complete",
@@ -360,12 +357,12 @@ with DAG(
     create_connections >> simulate_os_validation_error >> simulation_complete
     create_connections >> simulate_minio_service_error >> simulation_complete
     create_connections >> simulate_postcheck_error >> simulation_complete
-    (
-        create_connections
-        >> prepare_nfs
-        >> mount_nfs_a
-        >> create_nfs_file
-        >> inject_nfs_drift
-        >> validate_nfs
-        >> simulation_complete
-    )
+    # (
+    #     create_connections
+    #     >> prepare_nfs
+    #     >> mount_nfs_a
+    #     >> create_nfs_file
+    #     >> inject_nfs_drift
+    #     >> validate_nfs
+    #     >> simulation_complete
+    # )

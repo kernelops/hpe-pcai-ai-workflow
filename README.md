@@ -1,78 +1,125 @@
-# HPE PCAI Agent Ops and Deployment Platform
+# HPE PCAI Agent Ops — AIOps & Automated Remediation Platform
 
-An integrated development stack for running an Airflow-driven infrastructure deployment workflow with:
+<p align="center">
+  <video src="HPE_CPP_Demo_Video.mp4" width="720" controls>
+    Your browser does not support the video tag.
+    <a href="HPE_CPP_Demo_Video.mp4">Download the demo video</a>
+  </video>
+</p>
 
-- a React frontend for worker-node management, deployment control, live logs, and Agent Ops cards
-- a FastAPI backend that triggers and monitors Airflow runs
-- a LangGraph-based agent pipeline for failure analysis
-- a ChromaDB-backed RAG service for historical error retrieval and fix suggestions
+<p align="center">
+  <em>▶ Full platform demo — click to play</em>
+</p>
 
-This `dev` branch is the integration branch for frontend, Airflow, backend, agents, and RAG.
+---
+
+An end-to-end AIOps platform that monitors Airflow-driven infrastructure deployments, performs autonomous failure analysis, and executes automated remediation — all from a single dashboard.
+
+| Layer | Tech |
+|-------|------|
+| **Orchestration** | Apache Airflow (Docker Compose) |
+| **Agent Pipeline** | LangGraph multi-agent graph |
+| **Knowledge Retrieval** | ChromaDB-backed RAG with HPE knowledge base |
+| **Backend API** | FastAPI (deployment control, log streaming, agent proxy) |
+| **Frontend** | React + Vite |
+| **Task Queue** | Redis + RQ (passive HPC telemetry) |
+| **LLM** | Groq (cloud) / Ollama (local fallback) |
 
 ## Architecture
 
-The stack is split into five runtime services:
+The platform operates in **three phases**:
 
-1. Airflow
-   Runs the `deployment_workflow` DAG and produces task logs.
-2. RAG Service
-   Retrieves similar HPE docs and past incident patterns from ChromaDB.
-3. Agent API
-   Runs the agent pipeline and exposes failure-analysis endpoints.
-4. Backend API
-   Triggers DAG runs, streams live logs, validates worker nodes, and proxies Agent Ops requests.
-5. Frontend
-   Provides the UI for nodes, SSH validation, deployments, log insights, and Agent Ops.
+```
+Phase 1 — Monitoring & Analysis
+  Frontend → Backend → Airflow DAG → Task Logs
+  On failure → Agent Pipeline → Log Analysis → Root Cause → Alert
 
-High-level flow:
+Phase 2 — Hybrid Autofix
+  Attempt 1: DAG Analysis Agent → DAG Patch Agent → Re-trigger DAG
+  Attempt 2: Fix Generator → SSH Fix Executor → Validate on worker nodes
 
-1. Add worker nodes in the frontend.
-2. Validate SSH reachability.
-3. Start the Airflow deployment DAG from the UI.
-4. Backend streams combined logs from Airflow.
-5. On failure, backend sends the failed task log block to Agent Ops (Phase 1).
-6. Agent pipeline calls RAG, performs root-cause reasoning, and issues alerts (Phase 1).
-7. Hybrid Autofix (Phase 2) analyzes the DAG source code. If logic is broken, it patches the DAG and triggers a remediation run (Attempt 1).
-8. If the issue requires OS-level healing, it connects via SSH to apply fixes directly on the worker nodes and runs validation checks (Attempt 2).
+Phase 3 — Passive Telemetry (HPC Queue)
+  Redis queue → RQ Worker → Background log ingestion & analysis
+```
+
+### Service Map
+
+| Service | Port | Description |
+|---------|------|-------------|
+| **Airflow UI** | 8080 | DAG management and task logs (admin: `airflow` / `airflow`) |
+| **RAG Service** | 8002 | ChromaDB retrieval + HPE knowledge base |
+| **Agent API** | 8001 | LangGraph agent pipeline endpoints |
+| **Backend API** | 8000 | Deployment control, log streaming, agent ops proxy |
+| **Frontend** | 5173 | React dashboard |
+| **Redis** | 6379 | Task queue broker |
+
+### Agent Pipeline
+
+The LangGraph workflow chains these agents:
+
+1. **Workflow Agent** — triggers and monitors Airflow DAG runs
+2. **Monitor Agent** — detects failed tasks and extracts log blocks
+3. **Log Analyser Agent** — parses errors, queries RAG for similar patterns
+4. **Root Cause Agent** — LLM-driven root cause classification and severity
+5. **Alerting Agent** — composes alerts and routes to console/Slack/email
+6. **DAG Analysis Agent** — inspects DAG source for logic bugs (Phase 2)
+7. **DAG Patch Agent** — rewrites and validates DAG source via AST (Phase 2)
+8. **Fix Generator Agent** — produces SSH fix commands for OS-level issues (Phase 2)
+9. **Fix Executor Agent** — connects to worker nodes via SSH, applies fixes (Phase 2)
+10. **Validation Agent** — runs post-fix checks to confirm remediation (Phase 2)
 
 ## Repository Layout
 
 ```text
 hpe-pcai-ai-workflow/
-├── agents/                  # LangGraph agents
-├── airflow/                 # Local Airflow stack and DAGs
-├── api/                     # Agent Ops API
-├── backend/                 # Deployment/backend API used by the frontend
-├── common/                  # Shared config and models
-├── docs/                    # Detailed technical documentation
+├── agents/                  # LangGraph agents (workflow_graph.py is the main graph)
+├── airflow/                 # Docker Compose stack, DAGs, and Airflow config
+├── api/                     # Agent Ops API (FastAPI, port 8001)
+├── backend/                 # Deployment backend API (FastAPI, port 8000)
+├── common/                  # Shared config (config.py) and Pydantic models
 ├── frontend/                # React + Vite UI
-├── rag/                     # RAG API, knowledge base, retrieval pipeline
-├── chroma_db/               # Local Chroma persistence
-└── README.md
+├── rag/                     # RAG engine, knowledge base, ChromaDB retrieval
+├── sample_logs/             # Sample failure logs for testing the agent pipeline
+├── docs/                    # Technical documentation
+├── start.sh                 # Unified launcher (start/stop all services)
+├── main.py                  # CLI entry point for running the LangGraph pipeline
+├── .env.example             # Environment variable template
+├── requirements.txt         # Python dependencies
+├── HPE_CPP-3_Final_Presentation_Slides.pdf
+└── HPE_CPP_Demo_Video.mp4
 ```
 
 ## Prerequisites
 
-- Linux or macOS development environment
-- Python 3.10+ with a virtual environment
-- Node.js 18+ and npm
-- Docker Engine with Docker Compose
-- At least one reachable Linux VM or host with SSH enabled
+- **Linux** development environment (Ubuntu 20.04+ recommended)
+- **Python 3.10+** with `venv`
+- **Node.js 18+** and npm
+- **Docker Engine** with Docker Compose v2
+- At least one reachable Linux VM or host with SSH enabled (for deployment targets)
 
-Optional:
+### Environment Variables
 
-- `GROQ_API_KEY` for better LLM-backed RAG synthesis
-- external Slack/email credentials if you extend alert delivery
+Copy the template and fill in your keys:
+
+```bash
+cp .env.example .env
+```
+
+Required keys:
+
+| Variable | Purpose |
+|----------|---------|
+| `GROQ_API_KEY` | LLM inference via Groq (or use Ollama locally) |
+| `AIRFLOW_FERNET_KEY` | Airflow encryption key |
+| `AIRFLOW_SECRET_KEY` | Airflow webserver secret |
 
 ## One-Time Setup
 
-### 1. Clone and switch to the integration branch
+### 1. Clone the repository
 
 ```bash
 git clone <your-repo-url>
 cd hpe-pcai-ai-workflow
-git checkout dev
-export REPO_ROOT="$(pwd)"
 ```
 
 ### 2. Create and activate a Python virtual environment
@@ -88,145 +135,180 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-`requirements.txt` covers the backend API, agent API, agents, and RAG service for this integrated branch.
-Airflow dependencies are handled by Docker Compose, and frontend dependencies are handled by `frontend/package.json`.
-
 ### 4. Install frontend dependencies
 
 ```bash
-cd frontend
-npm install
-cd "$REPO_ROOT"
+cd frontend && npm install && cd ..
 ```
 
-## Run the Full Stack
+## Running the Platform
 
-We have simplified the multi-service architecture startup using a unified launcher script. 
-
-Instead of manually starting 5 different terminals for Airflow, RAG, Backend, API, and Frontend, you can now launch everything at once.
+### Start all services
 
 ```bash
-cd "$REPO_ROOT"
 ./start.sh
 ```
 
-**What this script does:**
-1. Starts the **Redis** broker via Docker.
-2. Starts the **Airflow** stack via Docker Compose.
-3. Bootstraps the Python `.venv` if it doesn't exist.
-4. Starts the **RAG API** (port 8002).
-5. Starts the **Agent API** (port 8001).
-6. Starts the **Backend API** (port 8000).
-7. Starts the **RQ Worker** for processing passive telemetry logs.
-8. Starts the **React Frontend** (port 5173).
+This single command starts **all 7 services** in the correct order:
 
-The script uses `tmux` or `xterm` (if available) to multiplex logs, or falls back to writing logs directly to the `.service_logs/` directory.
+1. Airflow stack (Docker Compose — scheduler, webserver, worker, Redis, Postgres)
+2. RAG Service (port 8002)
+3. Agent API (port 8001)
+4. Backend API (port 8000)
+5. RQ Worker (HPC error log queue)
+6. React Frontend (port 5173)
 
-To stop all services, simply press `Ctrl+C` in the terminal where you ran the script, and it will clean up all child PIDs and Docker containers.
+The script waits for Airflow to be healthy, unpauses the deployment DAG, and prints a summary with all URLs.
+
+Service logs are written to `.service_logs/`.
+
+### Stop all services
+
+```bash
+./start.sh --stop
+```
+
+This cleanly stops all Python services, the frontend, and tears down Airflow Docker containers.
+
+### Fresh start (clean slate)
+
+If you need to start completely fresh (wipe Airflow database, volumes, and all state):
+
+```bash
+cd airflow
+docker compose down -v
+cd ..
+./start.sh
+```
+
+> **Note:** `docker compose down -v` removes all Airflow volumes including the metadata database, DAG history, and logs. Use this when you want a completely clean environment.
+
+### Skip Airflow
+
+If Airflow is already running or you're working on non-Airflow components:
+
+```bash
+./start.sh --no-airflow
+```
 
 ## Quick Verification
 
-Run these from a separate terminal once all services are up:
+Once all services are up, verify from a separate terminal:
 
 ```bash
+# RAG Service
 curl http://127.0.0.1:8002/health
+
+# Agent API
 curl http://127.0.0.1:8001/health
+
+# Backend API
 curl http://127.0.0.1:8000/
+
+# Airflow API
 curl -u airflow:airflow http://127.0.0.1:8080/api/v1/dags/deployment_workflow/details
 ```
 
-## Using the UI
+## Using the Platform
 
 ### 1. Add worker nodes
 
-Open the frontend and go to `Worker Nodes`.
+Open the frontend at `http://localhost:5173` and navigate to **Worker Nodes**.
 
-For each target VM:
+For each target VM, enter:
+- IP address
+- SSH username
+- SSH password
 
-- enter the node IP address
-- enter the SSH username
-- enter the SSH password
-- save the node
+### 2. Validate SSH connectivity
 
-### 2. Validate SSH
+Go to **SSH Validation** and click **Run SSH Health Check**.
 
-Go to `SSH Validation` and click `Run SSH Health Check`.
-
-Recommended status before deployment:
-
-- `Ping`: `PASS`
-- `SSH 22`: `OPEN`
-
-Notes:
-
-- `REFUSED` means the machine is reachable but nothing is listening on port 22
-- `TIMEOUT` usually means a routing, firewall, or network path issue
+| Status | Meaning |
+|--------|---------|
+| `PASS` | Node is reachable and SSH is open |
+| `REFUSED` | Host is reachable but SSH is not listening on port 22 |
+| `TIMEOUT` | Routing, firewall, or network path issue |
 
 ### 3. Start a deployment
 
-Go to `Deployment` and click `Start Infrastructure Deployment`.
+Go to **Deployment** and click **Start Infrastructure Deployment**.
 
-What happens next:
+The platform will:
+- Trigger the Airflow DAG with your worker node credentials
+- Stream live combined logs from all tasks
+- Display task progress in the **Workflow Monitor**
+- Automatically trigger Agent Ops on failure
 
-- backend triggers the Airflow DAG
-- frontend polls live logs from the backend
-- `Workflow Monitor` displays merged task output
-- on failure, Agent Ops is triggered automatically
+### 4. Review failure analysis (Phase 1)
 
-### 4. Review failure analysis
+On a failed run, open **Agent Ops** to inspect:
+- Log analysis output and error classification
+- Root cause reasoning and severity
+- Alerting output and remediation guidance
+- RAG-retrieved similar patterns from the HPE knowledge base
 
-On a failed run, open `Agent Ops` to inspect:
+### 5. Apply autofix (Phase 2)
 
-- workflow agent context
-- monitor agent context
-- log analysis output
-- root cause classification and severity
-- alerting output and remediation guidance
+Click **Apply Autofix** to trigger the hybrid remediation pipeline:
 
-## RAG Behavior in This Branch
+- **Attempt 1 (DAG Patch):** Analyzes the DAG source code, detects logic errors, and patches via AST rewriting
+- **Attempt 2 (SSH Fix):** Generates OS-level fix commands, connects via SSH to worker nodes, executes fixes, and runs validation
 
-RAG no longer queries Chroma using only a generic Airflow exception.
+The autofix status and results are displayed in real time on the dashboard.
 
-The current query combines:
+## CLI — Running the Agent Pipeline Directly
 
-- Airflow `task_id`
-- task-based domain hints such as `minio`, `nfs`, or `postcheck`
-- parsed `error_type`
-- parsed `error_message`
-- raw log evidence such as command text and keywords like `curl`, `exportfs`, `broken_option`, `sudo`, `connection refused`, or `timed out`
+You can test the full LangGraph pipeline against sample logs without the UI:
 
-This makes retrieval more specific to the failing task and better aligned with the knowledge base contents.
+```bash
+# Phase 1 only (analysis + alerting)
+python main.py
+
+# Phase 1 + Phase 2 (analysis + autofix)
+python main.py --autofix
+```
+
+## RAG Query Strategy
+
+The RAG service builds structured queries combining:
+
+- Airflow `task_id` and domain hints (`minio`, `nfs`, `postcheck`)
+- Parsed `error_type` and `error_message`
+- Raw log evidence (command text, keywords like `curl`, `exportfs`, `connection refused`, `timed out`)
+
+This ensures retrieval is specific to the failing task and aligned with the HPE knowledge base contents.
 
 ## Troubleshooting
 
 ### DAG does not start
 
-Check that Airflow is running and the DAG is unpaused:
-
 ```bash
-cd "$REPO_ROOT/airflow"
+cd airflow
 docker compose ps
 docker compose exec airflow-webserver airflow dags list | grep deployment_workflow
 ```
 
-### Frontend is blank or shows zero nodes
+If the DAG is paused, unpause it:
 
-The backend currently stores worker nodes in memory only. If the backend restarts, node state is lost and must be re-added from the UI.
+```bash
+docker compose exec airflow-webserver airflow dags unpause deployment_workflow
+```
 
-Check current backend state:
+### Frontend shows zero nodes
+
+Worker nodes are stored in-memory. If the backend restarts, re-add nodes from the UI.
 
 ```bash
 curl http://127.0.0.1:8000/nodes
 ```
 
-### SSH shows `REFUSED`
+### SSH shows REFUSED
 
-The host is reachable, but SSH is not listening on port 22.
-
-Check on the target VM:
+SSH is not listening on port 22 on the target VM:
 
 ```bash
-sudo systemctl status ssh
+# On the target VM:
 sudo systemctl start ssh
 sudo systemctl enable ssh
 ss -tuln | grep :22
@@ -234,54 +316,35 @@ ss -tuln | grep :22
 
 ### No live logs appear
 
-Check backend log-path configuration and Airflow task logs:
+Check Airflow task logs exist:
 
 ```bash
-cd "$REPO_ROOT/airflow"
+cd airflow
 find logs -maxdepth 6 -type f | tail
-docker compose logs --tail=200 airflow-scheduler
-docker compose logs --tail=200 airflow-worker
+docker compose logs --tail=100 airflow-scheduler
 ```
 
-### Agent Ops shows analysis but `Rag Solution` is blank
+### RAG returns 500
 
-Possible causes:
-
-- the RAG service is not running
-- the agent API is not pointing to the correct `RAG_API_URL`
-- the failure matched generic evidence with no strong knowledge-base hit
-
-Check services:
+Restart with forced local embeddings:
 
 ```bash
-curl http://127.0.0.1:8002/health
-curl http://127.0.0.1:8001/health
-```
-
-### RAG returns `500 Internal Server Error`
-
-Restart the RAG service using forced local embeddings:
-
-```bash
-cd "$REPO_ROOT"
 source .venv/bin/activate
 RAG_FORCE_LOCAL_EMBEDDINGS=1 python -m uvicorn rag.main:app --host 0.0.0.0 --port 8002
 ```
 
+### Agent Ops shows blank RAG Solution
+
+- Verify the RAG service is running: `curl http://127.0.0.1:8002/health`
+- Verify the Agent API is running: `curl http://127.0.0.1:8001/health`
+- The failure may not match any knowledge base entry
+
+## Presentation
+
+📄 [Final Presentation Slides (PDF)](HPE_CPP-3_Final_Presentation_Slides.pdf)
+
 ## Development Notes
 
-- This branch is intended for integration and local validation before merging into `main`
 - Airflow runs locally through Docker Compose and is not production hardened
-- Worker node persistence is not yet implemented
-- Local RAG fallback mode is supported for offline development
-
-## Shutdown
-
-Stop the `uvicorn` and frontend processes with `Ctrl+C`.
-
-To stop Airflow:
-
-```bash
-cd "$REPO_ROOT/airflow"
-docker compose down
-```
+- Worker node persistence is in-memory only (resets on backend restart)
+- Local RAG fallback mode is supported for offline development via `RAG_FORCE_LOCAL_EMBEDDINGS=1`

@@ -42,3 +42,6 @@ model_cache/
 
 .pids/
 .service_logs/
+
+# Autofix temp artifacts
+airflow/corrected_dag

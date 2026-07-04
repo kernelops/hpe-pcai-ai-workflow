@@ -1,14 +1,9 @@
 # HPE PCAI Agent Ops — AIOps & Automated Remediation Platform
 
 <p align="center">
-  <video src="HPE_CPP_Demo_Video.mp4" width="720" controls>
-    Your browser does not support the video tag.
-    <a href="HPE_CPP_Demo_Video.mp4">Download the demo video</a>
-  </video>
-</p>
-
-<p align="center">
-  <em>▶ Full platform demo — click to play</em>
+  <a href="https://github.com/kernelops/hpe-pcai-ai-workflow/raw/dev/HPE_CPP_Demo_Video.mp4">
+    <img src="https://img.shields.io/badge/▶_Watch_Demo_Video-Click_to_Download-00b33c?style=for-the-badge&logo=github" alt="Demo Video" />
+  </a>
 </p>
 
 ---
@@ -27,20 +22,40 @@ An end-to-end AIOps platform that monitors Airflow-driven infrastructure deploym
 
 ## Architecture
 
-The platform operates in **three phases**:
+<p align="center">
+  <img src="architecture.png" alt="HPE PCAI Agent Ops Architecture" />
+</p>
 
-```
-Phase 1 — Monitoring & Analysis
-  Frontend → Backend → Airflow DAG → Task Logs
-  On failure → Agent Pipeline → Log Analysis → Root Cause → Alert
+The platform operates in **two phases**:
 
-Phase 2 — Hybrid Autofix
-  Attempt 1: DAG Analysis Agent → DAG Patch Agent → Re-trigger DAG
-  Attempt 2: Fix Generator → SSH Fix Executor → Validate on worker nodes
+### Phase 1 — Failure Detection & Root Cause Analysis
 
-Phase 3 — Passive Telemetry (HPC Queue)
-  Redis queue → RQ Worker → Background log ingestion & analysis
-```
+Airflow orchestrates infrastructure deployment across worker nodes. On task failure, the log collection layer kicks in:
+
+1. **Monitor Workflow Agent** — polls the Airflow REST API for task states, detects failures, computes timeout thresholds, and hands off to the Log Analyser. A **Redis queue** (consumed by an RQ worker) receives raw syslog/error logs from worker nodes and queues task failure events.
+2. **Log Analyser Agent** *(LLM-based)* — receives the task failure, identifies errors using RAG (ChromaDB with HPE docs, MinIO/NFS/iLO manuals, past error logs, and known error patterns). Produces a structured error report.
+3. **Root Cause Agent** *(LLM-based)* — reasons over the error report, classifies the cause as transient/config/hardware, and outputs root cause explanation + severity.
+4. **Alerting Agent** *(LLM-based)* — evaluates risk, sends Slack alerts, and produces a human-readable report.
+
+**LLM Inference** is powered by Groq API (Llama 3.3 70B, free developer tier at 500 tok/s) with Ollama (Llama 3.3 70B, local GPU) as production fallback.
+
+### Phase 2 — Automated Remediation
+
+Phase 2 uses a two-attempt strategy:
+
+**Attempt 1 — DAG-level fix:**
+1. **DAG Analysis Agent** *(LLM-based)* — takes the DAG source code + RAG context + Phase 1 analysis, scans for logic flaws, and identifies correct syntax using RAG.
+2. If issues are found in the DAG → **DAG Patch Agent** *(Non-LLM)* — patches the DAG source via AST rewriting, triggers a remediation DAG run via Airflow, and polls for task status.
+3. If Attempt 1 succeeds → **Autofix complete — DAG fixed.**
+4. If Attempt 1 fails → fetches actual failed logs from the remediation run and proceeds to Attempt 2.
+
+**Attempt 2 — Infrastructure-level fix (SSH):**
+1. **Log Analyser Agent** re-analyzes the new failure logs from Attempt 1.
+2. **Root Cause Agent** re-classifies the updated failure.
+3. **Fix Generator Agent** *(LLM-based)* — produces OS-level SSH fix commands.
+4. **Fix Executor Agent** *(Non-LLM)* — connects via SSH to worker nodes and executes the fix commands.
+5. **Validation Agent** *(Non-LLM)* — runs post-fix health checks and verifies the Redis queue.
+6. If validation passes → **Autofix complete.** If not → **Escalated to manual intervention.**
 
 ### Service Map
 
@@ -52,21 +67,6 @@ Phase 3 — Passive Telemetry (HPC Queue)
 | **Backend API** | 8000 | Deployment control, log streaming, agent ops proxy |
 | **Frontend** | 5173 | React dashboard |
 | **Redis** | 6379 | Task queue broker |
-
-### Agent Pipeline
-
-The LangGraph workflow chains these agents:
-
-1. **Workflow Agent** — triggers and monitors Airflow DAG runs
-2. **Monitor Agent** — detects failed tasks and extracts log blocks
-3. **Log Analyser Agent** — parses errors, queries RAG for similar patterns
-4. **Root Cause Agent** — LLM-driven root cause classification and severity
-5. **Alerting Agent** — composes alerts and routes to console/Slack/email
-6. **DAG Analysis Agent** — inspects DAG source for logic bugs (Phase 2)
-7. **DAG Patch Agent** — rewrites and validates DAG source via AST (Phase 2)
-8. **Fix Generator Agent** — produces SSH fix commands for OS-level issues (Phase 2)
-9. **Fix Executor Agent** — connects to worker nodes via SSH, applies fixes (Phase 2)
-10. **Validation Agent** — runs post-fix checks to confirm remediation (Phase 2)
 
 ## Repository Layout
 
@@ -85,6 +85,7 @@ hpe-pcai-ai-workflow/
 ├── main.py                  # CLI entry point for running the LangGraph pipeline
 ├── .env.example             # Environment variable template
 ├── requirements.txt         # Python dependencies
+├── architecture.png         # System architecture diagram
 ├── HPE_CPP-3_Final_Presentation_Slides.pdf
 └── HPE_CPP_Demo_Video.mp4
 ```

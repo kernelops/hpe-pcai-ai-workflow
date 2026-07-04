@@ -1,4 +1,4 @@
-# HPE PCAI Agent Ops — AIOps & Automated Remediation Platform
+# AI-ENABLED BUILD WORKFLOW FOR INFRASTRUCTURE DEPLOYMENT
 
 <p align="center">
   <a href="https://github.com/kernelops/hpe-pcai-ai-workflow/raw/dev/HPE_CPP_Demo_Video.mp4">
@@ -18,7 +18,7 @@ An end-to-end AIOps platform that monitors Airflow-driven infrastructure deploym
 | **Backend API** | FastAPI (deployment control, log streaming, agent proxy) |
 | **Frontend** | React + Vite |
 | **Task Queue** | Redis + RQ (passive HPC telemetry) |
-| **LLM** | Groq (cloud) / Ollama (local fallback) |
+| **LLM** | Groq (cloud) - Llama 3.3 70B|
 
 ## Architecture
 
@@ -37,7 +37,7 @@ Airflow orchestrates infrastructure deployment across worker nodes. On task fail
 3. **Root Cause Agent** *(LLM-based)* — reasons over the error report, classifies the cause as transient/config/hardware, and outputs root cause explanation + severity.
 4. **Alerting Agent** *(LLM-based)* — evaluates risk, sends Slack alerts, and produces a human-readable report.
 
-**LLM Inference** is powered by Groq API (Llama 3.3 70B, free developer tier at 500 tok/s) with Ollama (Llama 3.3 70B, local GPU) as production fallback.
+**LLM Inference** is powered by Groq API (Llama 3.3 70B, free developer tier at 500 tok/s). 
 
 ### Phase 2 — Automated Remediation
 

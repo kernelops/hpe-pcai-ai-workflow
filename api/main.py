@@ -86,10 +86,16 @@ def _build_failure_analysis_response(
     dag_id: str,
     dag_run_id: str,
     failure: TaskFailure,
-    error_report,
-    rca,
-    alert_result,
+    error_report=None,
+    rca=None,
+    alert_result=None,
 ):
+    if error_report is None:
+        error_report = _log.analyse(failure)
+    if rca is None:
+        rca = _rca.analyse(error_report)
+    if alert_result is None:
+        alert_result = _alert.alert(rca)
     workflow_agent_output = {
         "thinking": [
             f"Received failed run context for DAG: {dag_id}",
@@ -514,7 +520,7 @@ def autofix_pipeline(request: AutofixPipelineRequest):
 
         # ── Step 1: DAG Analysis ─────────────────────────────
         dag_filename = f"{request.dag_id}.py"
-        
+
         # Bypass LLM analysis for the known good DAG to prevent hallucinations
         if request.dag_id == "good_deployment_workflow":
             from agents.dag_analysis_agent import DagAnalysisReport
@@ -522,13 +528,16 @@ def autofix_pipeline(request: AutofixPipelineRequest):
                 source_code = f.read()
             dag_report = DagAnalysisReport(
                 has_dag_issues=False,
-                issue_count=0,
                 issues=[],
-                patched_source=source_code,
-                rag_sources=[],
+                corrected_source=source_code,
+                rag_context_used="",
             )
         else:
-            dag_report = _dag_ana.analyse(dag_filename)
+            dag_report = _dag_ana.analyse(
+                dag_filename,
+                dag_id=request.dag_id,
+                failed_task=request.failed_task
+            )
 
         dag_analysis_output = {
             "thinking": [
@@ -542,6 +551,8 @@ def autofix_pipeline(request: AutofixPipelineRequest):
                 "rag_context_used": dag_report.rag_context_used,
             },
         }
+        dag_analysis_output["thinking"].append("✅ LLM analysis completed successfully — generated corrected DAG code.")
+        
         # Add issue details to thinking
         for issue in dag_report.issues:
             dag_analysis_output["thinking"].append(
@@ -556,9 +567,25 @@ def autofix_pipeline(request: AutofixPipelineRequest):
 
         # ── Route: DAG is clean → skip to SSH-only fix ───────
         if not dag_report.has_dag_issues:
+            dag_patch_thinking = [
+                "DAG source is clean — skipping DAG patch",
+                "Proceeding directly to SSH infrastructure healing..."
+            ]
+            
+            # If a clean/corrected DAG source is provided, copy it to remediation_workflow.py
+            if dag_report.corrected_source:
+                dag_patch_thinking.append("Copying clean DAG to remediation_workflow.py for verification run")
+                written = _dag_pat._write_dag(dag_report.corrected_source)
+                if written:
+                    dag_patch_thinking.append("Waiting for Airflow to detect remediation_workflow...")
+                    if _dag_pat._wait_for_dag_available():
+                        _dag_pat._unpause_dag()
+                        dag_patch_thinking.append("remediation_workflow is ready and unpaused")
+                    else:
+                        dag_patch_thinking.append("⚠️ Airflow did not detect remediation_workflow in time")
+
             phase1["dag_patch_agent"] = {
-                "thinking": ["DAG source is clean — skipping DAG patch",
-                             "Proceeding directly to SSH infrastructure healing..."],
+                "thinking": dag_patch_thinking,
                 "output": {"skipped": True, "reason": "No DAG issues found"},
             }
             phase1["attempt_1"] = {"status": "skipped", "reason": "No DAG issues"}
@@ -682,18 +709,32 @@ def autofix_pipeline(request: AutofixPipelineRequest):
             if val_report.is_valid:
                 phase1["validation_agent"]["thinking"].append("Triggering final verification DAG run...")
                 
-                # Temporarily point dag_pat to the original DAG
-                original_dag_id = _dag_pat.REMEDIATION_DAG_ID
-                _dag_pat.REMEDIATION_DAG_ID = request.dag_id
-                try:
-                    conf = {"worker_nodes": request.worker_nodes} if request.worker_nodes else {}
-                    verification_run_id = _dag_pat._trigger_dag(conf)
-                    if verification_run_id:
-                        phase1["validation_agent"]["thinking"].append(f"Verification DAG triggered: {verification_run_id}")
-                        verification_outcome, _ = _dag_pat._poll_dag_run(verification_run_id)
-                        phase1["validation_agent"]["thinking"].append(f"Verification run outcome: {verification_outcome.upper()}")
-                finally:
-                    _dag_pat.REMEDIATION_DAG_ID = original_dag_id
+                # Check if we should use remediation_workflow for verification
+                use_remediation = bool(dag_report.corrected_source)
+                
+                if use_remediation:
+                    try:
+                        conf = {"worker_nodes": request.worker_nodes} if request.worker_nodes else {}
+                        verification_run_id = _dag_pat._trigger_dag(conf)
+                        if verification_run_id:
+                            phase1["validation_agent"]["thinking"].append(f"Verification DAG (remediation) triggered: {verification_run_id}")
+                            verification_outcome, _ = _dag_pat._poll_dag_run(verification_run_id)
+                            phase1["validation_agent"]["thinking"].append(f"Verification run outcome: {verification_outcome.upper()}")
+                    except Exception as exc:
+                        phase1["validation_agent"]["thinking"].append(f"Error triggering verification DAG: {exc}")
+                else:
+                    # Temporarily point dag_pat to the original DAG
+                    original_dag_id = _dag_pat.REMEDIATION_DAG_ID
+                    _dag_pat.REMEDIATION_DAG_ID = request.dag_id
+                    try:
+                        conf = {"worker_nodes": request.worker_nodes} if request.worker_nodes else {}
+                        verification_run_id = _dag_pat._trigger_dag(conf)
+                        if verification_run_id:
+                            phase1["validation_agent"]["thinking"].append(f"Verification DAG triggered: {verification_run_id}")
+                            verification_outcome, _ = _dag_pat._poll_dag_run(verification_run_id)
+                            phase1["validation_agent"]["thinking"].append(f"Verification run outcome: {verification_outcome.upper()}")
+                    finally:
+                        _dag_pat.REMEDIATION_DAG_ID = original_dag_id
                 
                 final_status = "fixed" if verification_outcome == "success" else "escalated"
                 phase1["pipeline_status"] = final_status

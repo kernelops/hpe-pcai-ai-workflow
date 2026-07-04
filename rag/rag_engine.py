@@ -323,8 +323,20 @@ def retrieve_fix_strategies(
     strategies = []
     for doc, meta, dist in zip(documents, metadatas, distances):
         similarity = _distance_to_similarity(dist)
+        
+        # Boost similarity for explicit keyword match (especially helpful for local hash embeddings fallback)
+        doc_lower = doc.lower()
+        query_lower = query_text.lower()
+        keywords = ["apparmor", "kvm", "nfs", "minio", "os_validation", "postcheck"]
+        boost = 0.0
+        for kw in keywords:
+            if kw in query_lower and kw in doc_lower:
+                boost = 0.5
+                break
+        similarity += boost
+        
         print(f"[RAGEngine]   fix strategy match: task_id='{meta.get('task_id')}' "
-              f"sim={similarity:.4f} desc='{meta.get('description', '')[:60]}'")
+              f"sim={similarity:.4f} (boosted by {boost:.1f}) desc='{meta.get('description', '')[:60]}'")
 
         # Use a lower threshold — we want broad matches as context for the LLM
         if similarity < 0.3:
@@ -338,6 +350,7 @@ def retrieve_fix_strategies(
             "estimated_risk": meta.get("estimated_risk", "medium"),
             "description": meta.get("description", ""),
             "requires_approval": meta.get("requires_approval", "true"),
+            "dag_source_corrections": meta.get("dag_source_corrections", "[]"),
             "similarity": round(similarity, 4),
             "matched_document": doc,
         })

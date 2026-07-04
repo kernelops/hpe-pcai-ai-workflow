@@ -165,6 +165,7 @@ class FixStrategyMatch(BaseModel):
     estimated_risk: str
     description: str
     requires_approval: str
+    dag_source_corrections: str = "[]"
     similarity: float
     matched_document: str
 
@@ -188,14 +189,40 @@ def analyze_log(request: AnalyzeRequest):
     Receives raw Airflow log text, returns error location + KB-matched solutions.
     No LLM involved — diagnosis/solution/prevention come directly from the knowledge base.
     """
-    if not request.log_text.strip():
-        raise HTTPException(status_code=400, detail="log_text cannot be empty")
-
-    print("[RAGDebug] analyze_log -> received request")
-    print(f"[RAGDebug]   dag_id={request.dag_id}, task_id={request.task_id}, log_text length={len(request.log_text)}")
+    log_text = request.log_text
+    # If the log text contains multiple task sections, try to isolate the target task's log
+    if request.task_id and "=====" in log_text:
+        import re
+        clean_task_id = re.sub(r"/(?:map_index|attempt)=\d+", "", request.task_id)
+        clean_task_id = re.sub(r"/map_index=\d+$", "", clean_task_id)
+        clean_task_id = re.sub(r"/attempt=\d+$", "", clean_task_id)
+        
+        lines = log_text.splitlines()
+        start_idx = -1
+        for i, line in enumerate(lines):
+            if line.startswith("=====") and line.endswith("====="):
+                # Extract header name: strip ===== and whitespace, then strip task_id=
+                header_name = line.replace("=", "").strip()
+                header_name = header_name.replace("task_id=", "").strip()
+                # Clean header name (remove map_index / attempt)
+                clean_header = re.sub(r"/(?:map_index|attempt)=\d+", "", header_name)
+                clean_header = re.sub(r"/map_index=\d+$", "", clean_header)
+                clean_header = re.sub(r"/attempt=\d+$", "", clean_header)
+                if clean_header == clean_task_id:
+                    start_idx = i
+                    break
+        
+        if start_idx != -1:
+            end_idx = len(lines)
+            for i in range(start_idx + 1, len(lines)):
+                if lines[i].startswith("=====") and lines[i].endswith("====="):
+                    end_idx = i
+                    break
+            log_text = "\n".join(lines[start_idx:end_idx])
+            print(f"[RAGDebug] Isolated log for task {request.task_id} ({len(log_text)} chars)")
 
     # Step 1: Parse the log
-    parsed_error = parse_airflow_log(request.log_text)
+    parsed_error = parse_airflow_log(log_text)
     print(f"[RAGDebug] analyze_log -> parsed_error.error_type={parsed_error.error_type}, parsed_error.error_message={parsed_error.error_message}")
     print(f"[RAGDebug] analyze_log -> parsed_error.candidate_lines={parsed_error.candidate_lines}")
 

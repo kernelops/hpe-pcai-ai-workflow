@@ -130,7 +130,7 @@ Rules:
 - Commands must be idempotent (safe to run multiple times)
 - Use sudo where needed
 - Be specific — no placeholders
-- If the known fix strategies from the knowledge base are relevant to the actual error, use them as a strong starting point
+- If a relevant known fix strategy exists in the "Known Fix Strategies from Knowledge Base" section, you MUST use its exact "Fix Commands" and "Verification Commands" list without omitting any commands or altering their logic, as they are tested and correct.
 - If the actual error is DIFFERENT from what the known strategies address, generate a novel fix
 - If unsure, set requires_approval to true and estimated_risk to high"""
 

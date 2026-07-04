@@ -134,8 +134,7 @@ class DagPatchAgent:
                         print(f"[DagPatch]   ✅ DAG detected by Airflow ({elapsed}s)")
                         return True
                     else:
-                        print(f"[DagPatch]   ⚠️  DAG detected but has import errors!")
-                        return False
+                        print(f"[DagPatch]   ⚠️  DAG detected but has import errors (waiting to clear)... ({elapsed}s)")
                 elif resp.status_code == 404:
                     print(f"[DagPatch]   ... DAG not yet visible ({elapsed}s)")
                 else:

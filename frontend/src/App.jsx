@@ -456,7 +456,7 @@ function hasFailureSignals(logText) {
 }
 
 function useToast() {
-  const show = () => {};
+  const show = () => { };
 
   return { show, node: null };
 }
@@ -677,7 +677,7 @@ function NodesView({ nodes, onAdd, onRemove, loading, error }) {
       alert(validationError);
       return;
     }
-    
+
     setIsSubmitting(true);
     const success = await onAdd(form);
     if (success) {
@@ -730,7 +730,7 @@ function NodesView({ nodes, onAdd, onRemove, loading, error }) {
     setSelectedNodeIndex(nodeIndex);
     setShowDiagnostics(true);
     setDiagnostics(null);
-    
+
     try {
       const response = await fetch(`${API_BASE}/nodes/${nodeIndex}/diagnostics`);
       if (!response.ok) {
@@ -763,14 +763,14 @@ function NodesView({ nodes, onAdd, onRemove, loading, error }) {
         <h2>Worker Nodes</h2>
         <span className="node-count">{nodes.length} nodes</span>
       </div>
-      
+
       {error && (
         <div className="error-message">
           <span className="error-icon">⚠️</span>
           {error}
         </div>
       )}
-      
+
       <form className="node-form" onSubmit={handleSubmit}>
         <div className="field">
           <label htmlFor="node-ip">IP Address</label>
@@ -809,9 +809,9 @@ function NodesView({ nodes, onAdd, onRemove, loading, error }) {
             minLength="4"
           />
         </div>
-        <button 
-          className="secondary-btn" 
-          type="submit" 
+        <button
+          className="secondary-btn"
+          type="submit"
           disabled={loading || isSubmitting}
         >
           {isSubmitting ? "Adding..." : "Add Worker Node"}
@@ -858,7 +858,7 @@ function NodesView({ nodes, onAdd, onRemove, loading, error }) {
           )}
         </div>
       )}
-      
+
       <div className="table-wrapper">
         <table className="nodes-table">
           <thead>
@@ -925,7 +925,7 @@ function NodesView({ nodes, onAdd, onRemove, loading, error }) {
           </tbody>
         </table>
       </div>
-      
+
       {showDiagnostics && (
         <div className="diagnostics-modal" onClick={(e) => {
           if (e.target === e.currentTarget) {
@@ -935,15 +935,15 @@ function NodesView({ nodes, onAdd, onRemove, loading, error }) {
           <div className="diagnostics-content">
             <div className="diagnostics-header">
               <h3>Node Diagnostics</h3>
-              <button 
-                className="ghost-btn" 
+              <button
+                className="ghost-btn"
                 onClick={() => setShowDiagnostics(false)}
                 style={{ padding: '4px 8px' }}
               >
                 ✕
               </button>
             </div>
-            
+
             {diagnostics ? (
               <div className="diagnostics-results">
                 {diagnostics.error ? (
@@ -962,13 +962,13 @@ function NodesView({ nodes, onAdd, onRemove, loading, error }) {
                         <div><strong>Last Checked:</strong> {formatLastChecked(diagnostics.node.last_checked)}</div>
                       </div>
                     </div>
-                    
+
                     <div className="diagnostic-section">
                       <h4>Connectivity Tests</h4>
-                      
+
                       {diagnostics.tests.ping && (
                         <div className="test-result">
-                          <strong>Ping Test:</strong> 
+                          <strong>Ping Test:</strong>
                           <span className={diagnostics.tests.ping.success ? "test-success" : "test-error"}>
                             {diagnostics.tests.ping.success ? "✓ Passed" : "✗ Failed"}
                           </span>
@@ -980,7 +980,7 @@ function NodesView({ nodes, onAdd, onRemove, loading, error }) {
                           )}
                         </div>
                       )}
-                      
+
                       {diagnostics.tests.port_scan && (
                         <div className="test-result">
                           <strong>Port Scan:</strong>
@@ -999,7 +999,7 @@ function NodesView({ nodes, onAdd, onRemove, loading, error }) {
                           </div>
                         </div>
                       )}
-                      
+
                       {diagnostics.tests.dns && (
                         <div className="test-result">
                           <strong>DNS Resolution:</strong>
@@ -1097,8 +1097,8 @@ function HealthView({ metrics, onRefresh, loading, nodes, apiBase }) {
         <h2>SSH Validation</h2>
         <div className="monitor-controls">
           <button className="ghost-btn" onClick={runRefreshAndChecks} disabled={checksLoading || loading}>
-          {checksLoading || loading ? "Checking..." : "Run SSH Health Check"}
-        </button>
+            {checksLoading || loading ? "Checking..." : "Run SSH Health Check"}
+          </button>
         </div>
       </div>
       <div className="health-check-tags">
@@ -1371,9 +1371,60 @@ function LogInsightsView({ insightData, apiBase, toast }) {
   );
 }
 
-function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate, onActiveDagIdChange }) {
+function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate, activeDagId, onActiveDagIdChange }) {
   const [currentRunId, setCurrentRunId] = useState(null);
+  const [selectedDagId, setSelectedDagId] = useState(activeDagId || "deployment_workflow");
   const [status, setStatus] = useState("Idle");
+  const [availableDags, setAvailableDags] = useState([]);
+  const [loadingDags, setLoadingDags] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const fetchDags = async () => {
+      setLoadingDags(true);
+      try {
+        const res = await fetch(`${apiBase}/dags`);
+        if (!res.ok) {
+          throw new Error("Failed to fetch DAG list");
+        }
+        const data = await res.json();
+        if (active && Array.isArray(data)) {
+          setAvailableDags(data);
+          // If current selected DAG is not in the list, set to default
+          const exists = data.some(d => d.dag_id === selectedDagId);
+          if (!exists && data.length > 0) {
+            const defaultDag = data.find(d => d.dag_id === "deployment_workflow") || data[0];
+            setSelectedDagId(defaultDag.dag_id);
+            onActiveDagIdChange?.(defaultDag.dag_id);
+          }
+        }
+      } catch (err) {
+        console.error("Error loading active DAGs:", err);
+        if (active) {
+          const fallbackList = [
+            { dag_id: "deployment_workflow", display_name: "Software Deployment (Broken)", tags: ["deployment"] },
+            { dag_id: "good_deployment_workflow", display_name: "Software Deployment (Healthy)", tags: ["deployment"] },
+            { dag_id: "env_error_04_apparmor_block", display_name: "OS error: AppArmor Block", tags: ["environmental-error"] },
+            { dag_id: "env_error_05_kvm_permission", display_name: "OS error: KVM Permission Denied", tags: ["environmental-error"] }
+          ];
+          setAvailableDags(fallbackList);
+        }
+      } finally {
+        if (active) setLoadingDags(false);
+      }
+    };
+
+    fetchDags();
+    return () => {
+      active = false;
+    };
+  }, [apiBase]);
+
+  useEffect(() => {
+    if (activeDagId) {
+      setSelectedDagId(activeDagId);
+    }
+  }, [activeDagId]);
   const [logs, setLogs] = useState("");
   const [taskStreams, setTaskStreams] = useState(0);
   const [lastUpdated, setLastUpdated] = useState(null);
@@ -1506,27 +1557,73 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate, onAct
   }, [logs, autoScroll]);
 
   const statusClass = status?.toLowerCase().replace(/\s+/g, "-");
+
+  // Group the available DAGs
+  const deploymentDags = availableDags.filter(d => 
+    d.tags?.includes("deployment") && !d.tags?.includes("environmental-error") && !d.tags?.includes("provisioning")
+  );
+  const environmentalDags = availableDags.filter(d => 
+    d.tags?.includes("environmental-error") || d.tags?.includes("provisioning") || d.tags?.includes("kvm") || d.dag_id.startsWith("env_")
+  );
+  const otherDags = availableDags.filter(d => 
+    !deploymentDags.includes(d) && !environmentalDags.includes(d)
+  );
+
   return (
     <>
       <section className="panel deployment-status">
         <div className="panel-header">
           <h2>Airflow Deployment</h2>
-          <button 
-            className="primary-btn" 
-            onClick={() => startDeployment("deployment_workflow")}
-            disabled={isDeploying}
-            style={{ background: '#ef4444', color: 'white', border: 'none', marginRight: '8px' }}
-          >
-            {isDeploying ? "Deploying..." : "Run Deployment (Broken)"}
-          </button>
-          <button 
-            className="primary-btn" 
-            onClick={() => startDeployment("good_deployment_workflow")}
-            disabled={isDeploying}
-            style={{ background: '#10b981', color: 'white', border: 'none' }}
-          >
-            {isDeploying ? "Deploying..." : "Run Deployment (Healthy)"}
-          </button>
+          <div className="deployment-actions" style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <select
+              className="dag-select"
+              value={selectedDagId}
+              onChange={(e) => {
+                const val = e.target.value;
+                setSelectedDagId(val);
+                onActiveDagIdChange?.(val);
+              }}
+              disabled={isDeploying || loadingDags}
+            >
+              {loadingDags && availableDags.length === 0 && (
+                <option value="">Loading DAGs...</option>
+              )}
+              {deploymentDags.length > 0 && (
+                <optgroup label="Software Deployment">
+                  {deploymentDags.map(d => (
+                    <option key={d.dag_id} value={d.dag_id} title={d.description || ""}>
+                      {d.display_name}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+              {environmentalDags.length > 0 && (
+                <optgroup label="Environmental / OS Errors">
+                  {environmentalDags.map(d => (
+                    <option key={d.dag_id} value={d.dag_id} title={d.description || ""}>
+                      {d.display_name}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+              {otherDags.length > 0 && (
+                <optgroup label="Other Workflows">
+                  {otherDags.map(d => (
+                    <option key={d.dag_id} value={d.dag_id} title={d.description || ""}>
+                      {d.display_name}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+            </select>
+            <button
+              className="primary-btn"
+              onClick={() => startDeployment(selectedDagId)}
+              disabled={isDeploying}
+            >
+              🚀 {isDeploying ? "Deploying..." : "Start Deployment"}
+            </button>
+          </div>
         </div>
         <div className="deployment-info">
           <p style={{ marginBottom: '12px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
@@ -1541,7 +1638,7 @@ function DeploymentView({ apiBase, toast, onStatusChange, onInsightUpdate, onAct
           </div>
           <div className="meta-card">
             <span className="label">DAG</span>
-            <span className="value">deployment_workflow</span>
+            <span className="value">{selectedDagId}</span>
           </div>
           <div className="meta-card meta-card-status">
             <span className="label">Status</span>
@@ -1626,25 +1723,27 @@ function AgentOpsView({ agentOpsState, onRetry, runId, dagId, nodes }) {
     return () => clearInterval(intervalId);
   }, []);
 
-  const triggerAutofix = async () => {
-    const firstAnalysis = analyses[0];
-    if (!firstAnalysis) return;
+  const triggerAutofix = async (overrideAnalysis = null, idx = "global") => {
+    const targetAnalysis = overrideAnalysis || analyses[0];
+    if (!targetAnalysis) return;
 
-    const failedTask = firstAnalysis?.combined_summary?.failed_task
-      || firstAnalysis?.monitor_agent?.output?.failed_task
-      || firstAnalysis?.analysis_task_id
+    const failedTask = targetAnalysis?.combined_summary?.failed_task
+      || targetAnalysis?.monitor_agent?.output?.failed_task
+      || targetAnalysis?.analysis_task_id
       || "task-0";
-    const logText = firstAnalysis?.log_analysis_agent?.output?.error_message
-      || firstAnalysis?.combined_summary?.error_message
+    const logText = targetAnalysis?.log_analysis_agent?.output?.error_message
+      || targetAnalysis?.combined_summary?.error_message
       || `Task ${failedTask} failed`;
-    const dagRunId = firstAnalysis?.workflow_agent?.output?.dag_run_id
+    const dagRunId = targetAnalysis?.workflow_agent?.output?.dag_run_id
       || agentOpsState.data?.dag_run_id
       || runId
       || "mock_run";
 
+    const key = overrideAnalysis ? (failedTask || idx) : "global";
+
     setAutofixStates(prev => ({
       ...prev,
-      global: { status: "loading", data: null, error: null }
+      [key]: { status: "loading", data: null, error: null }
     }));
 
     const agentApiBase = API_BASE.replace(/:8000\b/, ":8001");
@@ -1670,12 +1769,12 @@ function AgentOpsView({ agentOpsState, onRetry, runId, dagId, nodes }) {
 
       setAutofixStates(prev => ({
         ...prev,
-        global: { status: "ready", data: data, error: null }
+        [key]: { status: "ready", data: data, error: null }
       }));
     } catch (err) {
       setAutofixStates(prev => ({
         ...prev,
-        global: { status: "error", data: null, error: err.message }
+        [key]: { status: "error", data: null, error: err.message }
       }));
     }
   };
@@ -1743,8 +1842,8 @@ function AgentOpsView({ agentOpsState, onRetry, runId, dagId, nodes }) {
                     style={{ fontSize: '0.85rem', padding: '0.5rem 1.2rem' }}
                   >
                     {globalAutofixState?.status === "loading" ? "⏳ Analyzing & Fixing..." :
-                     globalAutofixState?.status === "ready" ? "✅ Autofix Complete" :
-                     "🔧 Apply Autofix (All Errors)"}
+                      globalAutofixState?.status === "ready" ? "✅ Autofix Complete" :
+                        "🔧 Apply Autofix (All Errors)"}
                   </button>
                 </div>
               </div>
@@ -1804,7 +1903,7 @@ function AgentOpsView({ agentOpsState, onRetry, runId, dagId, nodes }) {
                     <h3>🔧 Autofix Summary</h3>
                     <span className={`agent-card-status ${globalAutofixData.autofix_summary.final_status === 'fixed' ? 'status-fixed' : 'status-failed'}`}>
                       {globalAutofixData.autofix_summary.final_status === 'fixed' ? '✅ All Errors Resolved' :
-                       globalAutofixData.autofix_summary.final_status === 'escalated' ? '🚨 Escalated to Human' : '❌ Fix Failed'}
+                        globalAutofixData.autofix_summary.final_status === 'escalated' ? '🚨 Escalated to Human' : '❌ Fix Failed'}
                     </span>
                   </div>
                   <div className="agent-summary-grid">
@@ -1815,16 +1914,16 @@ function AgentOpsView({ agentOpsState, onRetry, runId, dagId, nodes }) {
                     <div className="agent-output-row">
                       <span>Attempt 1 (DAG Fix)</span>
                       <strong>
-                        {globalAutofixData.autofix_summary.attempt1_skipped 
-                          ? "Skipped (DAG source is clean)" 
+                        {globalAutofixData.autofix_summary.attempt1_skipped
+                          ? "Skipped (DAG source is clean)"
                           : `${globalAutofixData.autofix_summary.attempt1_fixed_tasks?.length || 0} tasks fixed (${globalAutofixData.autofix_summary.attempt1_fixed_tasks?.join(", ") || "none"})`}
                       </strong>
                     </div>
                     <div className="agent-output-row">
                       <span>Attempt 2 (SSH Fix)</span>
                       <strong>
-                        {globalAutofixData.autofix_summary.attempt2_skipped 
-                          ? "Skipped (No remaining infrastructure issues)" 
+                        {globalAutofixData.autofix_summary.attempt2_skipped
+                          ? "Skipped (No remaining infrastructure issues)"
                           : `${globalAutofixData.autofix_summary.attempt2_fixed_tasks?.length || 0} tasks fixed (${globalAutofixData.autofix_summary.attempt2_fixed_tasks?.join(", ") || "none"})`}
                       </strong>
                     </div>
@@ -1950,7 +2049,7 @@ function AgentOpsView({ agentOpsState, onRetry, runId, dagId, nodes }) {
               );
             })}
           </div>
-          
+
           {/* Phase 3: Escalated Incidents from Queue */}
           {queueData.errors.length > 0 && (
             <div className="agentops-incidents">
@@ -1961,7 +2060,7 @@ function AgentOpsView({ agentOpsState, onRetry, runId, dagId, nodes }) {
               {queueData.errors.map((qErr, idx) => {
                 const analysisTaskId = qErr.task_id || `queue-${idx}`;
                 const autofixState = autofixStates[analysisTaskId];
-                
+
                 // Create a mock analysis object to pass to triggerAutofix
                 const mockAnalysis = {
                   combined_summary: {
@@ -1990,12 +2089,12 @@ function AgentOpsView({ agentOpsState, onRetry, runId, dagId, nodes }) {
                           style={{ background: '#f59e0b', color: '#0f172a' }}
                         >
                           {autofixState?.status === "loading" ? "⏳ Fixing..." :
-                           autofixState?.status === "ready" ? "✅ Fixed" :
-                           "🔧 Re-Fix Escalation"}
+                            autofixState?.status === "ready" ? "✅ Fixed" :
+                              "🔧 Re-Fix Escalation"}
                         </button>
                       </div>
                     </div>
-                    
+
                     <div className="agentops-grid">
                       <article className="agent-card">
                         <div className="agent-card-header">
@@ -2009,7 +2108,7 @@ function AgentOpsView({ agentOpsState, onRetry, runId, dagId, nodes }) {
                           </pre>
                         </div>
                       </article>
-                      
+
                       {/* Show Fix Generator/Executor if it was re-fixed */}
                       {autofixState?.data && ["fix_generator_agent", "fix_executor_agent", "validation_agent"].map(key => {
                         const cardData = autofixState.data[key];
@@ -2134,11 +2233,11 @@ export default function App() {
         prev.status === "loading"
           ? prev
           : {
-              status: "idle",
-              analyzedRunId: null,
-              data: null,
-              error: null
-            }
+            status: "idle",
+            analyzedRunId: null,
+            data: null,
+            error: null
+          }
       );
       return;
     }
@@ -2186,6 +2285,7 @@ export default function App() {
         toast={{ show }}
         onStatusChange={setLastDeploymentStatus}
         onInsightUpdate={setInsightData}
+        activeDagId={activeDagId}
         onActiveDagIdChange={setActiveDagId}
       />
     ),

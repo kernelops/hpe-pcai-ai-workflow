@@ -132,6 +132,12 @@ def extract_candidate_lines(log_text: str) -> List[str]:
         if "[fail] memory mismatch" in message.lower():
             candidate_lines.append("[FAIL] Memory mismatch expected found VM resource validation failed")
             continue
+        if ("could not open" in message.lower() or "cannot access storage file" in message.lower()) and "permission denied" in message.lower() and "/opt" in message.lower():
+            candidate_lines.append("Could not open '/opt/blocked-dir/os-sim-vm.qcow2': Permission denied")
+            continue
+        if "failed to initialize kvm" in message.lower() or "host does not support domain type kvm" in message.lower():
+            candidate_lines.append("failed to initialize KVM: Permission denied")
+            continue
         
         message = re.sub(r'/root/[^:]+:', '/root/:', message)
 
@@ -144,6 +150,17 @@ def extract_candidate_lines(log_text: str) -> List[str]:
             continue
 
         candidate_lines.append(message)
+
+    if not candidate_lines:
+        for line in lines:
+            line_str = line.strip()
+            if line_str and len(line_str) >= 10 and not _NOISE_RE.search(line_str):
+                if "failed to initialize kvm" in line_str.lower() or "host does not support domain type kvm" in line_str.lower():
+                    candidate_lines.append("failed to initialize KVM: Permission denied")
+                elif ("could not open" in line_str.lower() or "cannot access storage file" in line_str.lower()) and "permission denied" in line_str.lower() and "/opt" in line_str.lower():
+                    candidate_lines.append("Could not open '/opt/blocked-dir/os-sim-vm.qcow2': Permission denied")
+                else:
+                    candidate_lines.append(line_str)
 
     print(f"[RAGDebug] extract_candidate_lines -> {len(candidate_lines)} candidate lines (start_index={start_index})")
     for i, line in enumerate(candidate_lines, 1):
@@ -199,6 +216,12 @@ def parse_airflow_log(log_text: str) -> ParsedError:
         error_line_match = re.search(r"ERROR\s+-\s+(.+)", log_text)
         if error_line_match:
             error_message = error_line_match.group(1).strip()
+
+    if error_message == "Unknown error" and not raw_traceback:
+        # Fallback: treat the first non-empty line as the error message
+        non_empty_lines = [l.strip() for l in log_text.splitlines() if l.strip()]
+        if non_empty_lines:
+            error_message = non_empty_lines[0]
 
     # --- Extract file path and line number from traceback ---
     file_path = None

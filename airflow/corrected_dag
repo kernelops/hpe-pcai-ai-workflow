@@ -72,22 +72,22 @@ def create_airflow_connections(session=None, **context):
         password = node.get("password", "")
         conn_id = f"worker_node_{ip.replace('.', '_')}"
 
-        existing = session.query(Connection).filter(Connection.conn_id == conn_id).first()
-        if existing:
-            print(f"Connection already exists: {conn_id}")
-        else:
-            session.add(
-                Connection(
-                    conn_id=conn_id,
-                    conn_type="ssh",
-                    host=ip,
-                    login=username,
-                    password=password,
-                    port=22,
-                )
+        # Bulk delete first to prevent cryptography.fernet.InvalidToken on decryption
+        session.query(Connection).filter(Connection.conn_id == conn_id).delete(synchronize_session=False)
+        session.commit()
+
+        session.add(
+            Connection(
+                conn_id=conn_id,
+                conn_type="ssh",
+                host=ip,
+                login=username,
+                password=password,
+                port=22,
             )
-            session.commit()
-            print(f"Created connection for {ip}")
+        )
+        session.commit()
+        print(f"Created connection for {ip}")
 
         conn_ids.append(conn_id)
 
@@ -309,6 +309,7 @@ fi
         task_id="validate_os_portable",
         get_pty=True,
         do_xcom_push=True,
+        cmd_timeout=30,
         command="""
 set -e
 echo '[OS] Running portable Linux OS validation.'

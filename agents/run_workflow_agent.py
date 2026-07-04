@@ -23,8 +23,9 @@ class RunWorkflowAgent:
             print(f"[RunAgent] Airflow unreachable: {e}")
             return False
 
-    def trigger_dag(self, config: DeploymentConfig) -> str | None:
-        print(f"[RunAgent] Triggering DAG: {config.dag_id}")
+    def trigger_dag(self, config: DeploymentConfig, dag_id: str | None = None) -> str | None:
+        target_dag_id = dag_id or config.dag_id
+        print(f"[RunAgent] Triggering DAG: {target_dag_id}")
 
         if not self.check_airflow_health():
             print("[RunAgent] ❌ Airflow not reachable. Aborting.")
@@ -40,7 +41,7 @@ class RunWorkflowAgent:
         }
 
         response = requests.post(
-            f"{self.base_url}/api/v1/dags/{config.dag_id}/dagRuns",
+            f"{self.base_url}/api/v1/dags/{target_dag_id}/dagRuns",
             json=payload,
             auth=self.auth,
             headers=self.headers
@@ -55,7 +56,8 @@ class RunWorkflowAgent:
             return None
 
     # ── MOCK for testing without real Airflow ─────────────────
-    def trigger_dag_mock(self, config: DeploymentConfig) -> str:
+    def trigger_dag_mock(self, config: DeploymentConfig, dag_id: str | None = None) -> str:
+        target_dag_id = dag_id or config.dag_id
         run_id = f"manual__{datetime.now().strftime('%Y-%m-%dT%H:%M:%S')}"
-        print(f"[RunAgent] 🧪 MOCK — DAG triggered. Run ID: {run_id}")
+        print(f"[RunAgent] 🧪 MOCK — DAG triggered ({target_dag_id}). Run ID: {run_id}")
         return run_id

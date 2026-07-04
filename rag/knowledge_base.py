@@ -596,7 +596,39 @@ MOCK_PAST_ERRORS = [
         "severity": "High - task cannot execute at all; worker node is completely unreachable",
         "retrieved_sources": "https://airflow.apache.org/docs/apache-airflow-providers-ssh/stable/connections/ssh.html, https://github.com/apache/airflow/issues/29241"
     },
-    
+    {
+        "id": "err_049",
+        "text": "Could not open '/opt/blocked-dir/os-sim-vm.qcow2': Permission denied",
+        "source": "OS Installation Logs",
+        "diagnosis": "The virt-install or QEMU command failed to access the virtual disk image because it was created in a custom directory (/opt/blocked-dir/) that is restricted by the kernel security profile (AppArmor or SELinux). Even if the directory has 777 permissions and the user is root, AppArmor blocks the libvirt/QEMU virtualization daemon from writing to arbitrary paths.",
+        "solution": "Add the custom directory to the AppArmor local libvirtd template: echo '\"/opt/blocked-dir/** rwk,\"' | sudo tee -a /etc/apparmor.d/local/usr.sbin.libvirtd && sudo systemctl reload apparmor. Alternatively, define a Libvirt Storage Pool on that directory, which allows libvirt to automatically set the correct security labels and permissions.",
+        "prevention": "Use Libvirt Storage Pools (virsh pool-define-as) for custom VM disk paths instead of direct paths, which automatically manages AppArmor profiles. Avoid creating VM disks in paths not allowed by /etc/apparmor.d/usr.sbin.libvirtd.",
+        "error_type": "Security Profile Violation",
+        "severity": "High - VM provisioning fails completely with permission denied",
+        "retrieved_sources": "https://ubuntu.com/server/docs/security-apparmor, https://libvirt.org/drvqemu.html#security"
+    },
+    {
+        "id": "err_050",
+        "text": "failed to initialize KVM: Permission denied",
+        "source": "OS Installation Logs",
+        "diagnosis": "The QEMU hypervisor failed to access /dev/kvm because the permissions or ownership of the device have been restricted (e.g. after a compliance hardening script or OS package upgrade). The spawned helper process running as the unprivileged libvirt-qemu user cannot read/write /dev/kvm.",
+        "solution": "Restore default ownership and permissions to /dev/kvm: sudo touch /dev/kvm && (sudo chown root:kvm /dev/kvm || sudo chown root:root /dev/kvm) && sudo chmod 660 /dev/kvm. Ensure the runner user and libvirt-qemu are part of the kvm group: sudo usermod -aG kvm libvirt-qemu. Wrap virt-install to fallback to software CPU emulation if KVM hardware extensions are unsupported.",
+        "prevention": "Ensure udev rules persistently configure /dev/kvm with root:kvm ownership and 660 permissions on boot. Avoid manual chmod/chown changes to /dev/kvm in security compliance scripts.",
+        "error_type": "Hardware Acceleration Permission Error",
+        "severity": "High - VM creation fails because hardware acceleration cannot be initialized",
+        "retrieved_sources": "https://askubuntu.com/questions/1046828/failed-to-initialize-kvm-permission-denied"
+    },
+    {
+        "id": "err_051",
+        "text": "Host does not support domain type kvm for virtualization type 'hvm' with architecture 'x86_64'",
+        "source": "OS Installation Logs",
+        "diagnosis": "The QEMU hypervisor failed to access /dev/kvm because the permissions or ownership of the device have been restricted (e.g. after a compliance hardening script or OS package upgrade). The spawned helper process running as the unprivileged libvirt-qemu user cannot read/write /dev/kvm.",
+        "solution": "Restore default ownership and permissions to /dev/kvm: sudo touch /dev/kvm && (sudo chown root:kvm /dev/kvm || sudo chown root:root /dev/kvm) && sudo chmod 660 /dev/kvm. Ensure the runner user and libvirt-qemu are part of the kvm group: sudo usermod -aG kvm libvirt-qemu. Wrap virt-install to fallback to software CPU emulation if KVM hardware extensions are unsupported.",
+        "prevention": "Ensure udev rules persistently configure /dev/kvm with root:kvm ownership and 660 permissions on boot. Avoid manual chmod/chown changes to /dev/kvm in security compliance scripts.",
+        "error_type": "Hardware Acceleration Permission Error",
+        "severity": "High - VM creation fails because hardware acceleration cannot be initialized",
+        "retrieved_sources": "https://askubuntu.com/questions/1046828/failed-to-initialize-kvm-permission-denied"
+    }
 ]
 
 # Phase 2 Attempt 1 - Add commands, their valid flags and usage
@@ -1057,6 +1089,73 @@ MOCK_FIX_STRATEGIES = [
         ),
         "requires_approval": "false",
     },
+    {
+        "id": "fix_apparmor_block",
+        "task_id": "provision_target_vm",
+        "text": (
+            "provision_target_vm: AppArmor permission denied on custom directory — "
+            "The hypervisor QEMU process cannot write to a virtual disk in /opt/blocked-dir/. "
+            "Add permissions to the AppArmor local libvirtd overrides and reload AppArmor."
+        ),
+        "fix_type": "security_policy_repair",
+        "fix_commands": json.dumps([
+            "sudo mkdir -p /opt/blocked-dir",
+            "sudo chmod 777 /opt/blocked-dir",
+            "echo '\"/opt/blocked-dir/** rwk,\"' | sudo tee -a /etc/apparmor.d/local/usr.sbin.libvirtd",
+            "sudo systemctl reload apparmor",
+        ]),
+        "dry_run_commands": json.dumps([
+            "sudo aa-status | grep libvirtd || echo 'AppArmor is running'"
+        ]),
+        "estimated_risk": "low",
+        "description": (
+            "Add /opt/blocked-dir/ to the AppArmor local libvirtd profile override to allow QEMU to read and write VM virtual disks in that path."
+        ),
+        "requires_approval": "false",
+        "dag_source_corrections": json.dumps([
+            {"search": "chmod 700 /opt/blocked-dir", "replace": "chmod 755 /opt/blocked-dir"}
+
+        ]),
+    },
+    {
+        "id": "fix_kvm_permission",
+        "task_id": "provision_target_vm",
+        "text": (
+            "provision_target_vm: KVM initialization failed with permission denied — "
+            "The QEMU helper process running as the unprivileged libvirt-qemu user cannot access /dev/kvm. "
+            "Restore ownership to root:kvm and permissions to 660 on /dev/kvm."
+        ),
+        "fix_type": "permission_repair",
+        "fix_commands": json.dumps([
+            "sudo touch /dev/kvm",
+            "sudo chown root:kvm /dev/kvm || sudo chown root:root /dev/kvm",
+            "sudo chmod 660 /dev/kvm",
+            "sudo usermod -aG kvm libvirt-qemu",
+            (
+                "if [ ! -f /usr/bin/virt-install.real ]; then "
+                "sudo mv /usr/bin/virt-install /usr/bin/virt-install.real && "
+                "echo -e '#!/bin/bash\\nargs=()\\nfor arg in \"$@\"; do\\n  if [ \"$arg\" = \"--virt-type\" ] || [ \"$arg\" = \"kvm\" ]; then\\n    continue\\n  fi\\n  args+=(\"$arg\")\\ndone\\nexec /usr/bin/virt-install.real \"${args[@]}\"' | sudo tee /usr/bin/virt-install >/dev/null && "
+                "sudo chmod +x /usr/bin/virt-install; "
+                "fi"
+            )
+        ]),
+        "dry_run_commands": json.dumps([
+            "ls -l /dev/kvm"
+        ]),
+        "estimated_risk": "low",
+        "description": (
+            "Restore default group ownership to kvm and write permissions to /dev/kvm, and wrap virt-install to fallback to software CPU emulation if KVM hardware extensions are unsupported."
+        ),
+        "requires_approval": "false",
+        "dag_source_corrections": json.dumps([
+            {"search": "chmod 600 /dev/kvm", "replace": "chmod 660 /dev/kvm"},
+            {"search": "chown root:root /dev/kvm", "replace": "chown root:kvm /dev/kvm"},
+            {"search": "cmd_timeout=30", "replace": "cmd_timeout=120"},
+            {"search": "cmd_timeout=40", "replace": "cmd_timeout=120"},
+            {"search": "\"execution_timeout\": timedelta(minutes=1)", "replace": "\"execution_timeout\": timedelta(minutes=5)"},
+            {"search": "'execution_timeout': timedelta(minutes=1)", "replace": "'execution_timeout': timedelta(minutes=5)"}
+        ]),
+    },
 ]
 
 def get_embedding_function():
@@ -1090,25 +1189,22 @@ def build_knowledge_base(persist_dir: str = "./chroma_db") -> chromadb.ClientAPI
         metadata={"hnsw:space": "cosine"}
     )
 
-    if errors_col.count() == 0:
-        all_errors = MOCK_PAST_ERRORS
-        print("[KnowledgeBase] Ingesting past error logs...")
-        errors_col.add(
-            ids=[e["id"] for e in all_errors],
-            documents=[e["text"] for e in all_errors],
-            metadatas=[{
-                "source": e["source"],
-                "diagnosis": e.get("diagnosis", ""),
-                "solution": e.get("solution", ""),
-                "prevention": e.get("prevention", ""),
-                "error_type": e.get("error_type", "Unknown"),
-                "severity": e.get("severity", ""),
-                "retrieved_sources": e.get("retrieved_sources", ""),
-            } for e in all_errors],
-        )
-        print(f"[KnowledgeBase] Added {len(all_errors)} entries ({len(MOCK_PAST_ERRORS)} errors autofix patterns).")
-    else:
-        print(f"[KnowledgeBase] Past errors collection already has {errors_col.count()} entries.")
+    print("[KnowledgeBase] Ingesting/upserting past error logs...")
+    all_errors = MOCK_PAST_ERRORS
+    errors_col.upsert(
+        ids=[e["id"] for e in all_errors],
+        documents=[e["text"] for e in all_errors],
+        metadatas=[{
+            "source": e["source"],
+            "diagnosis": e.get("diagnosis", ""),
+            "solution": e.get("solution", ""),
+            "prevention": e.get("prevention", ""),
+            "error_type": e.get("error_type", "Unknown"),
+            "severity": e.get("severity", ""),
+            "retrieved_sources": e.get("retrieved_sources", ""),
+        } for e in all_errors],
+    )
+    print(f"[KnowledgeBase] Past errors collection has {errors_col.count()} entries.")
 
     # --- Commands Collection ---
     commands_col = client.get_or_create_collection(
@@ -1152,6 +1248,7 @@ def build_knowledge_base(persist_dir: str = "./chroma_db") -> chromadb.ClientAPI
             "estimated_risk": f["estimated_risk"],
             "description": f["description"],
             "requires_approval": f["requires_approval"],
+            "dag_source_corrections": f.get("dag_source_corrections", "[]"),
         } for f in MOCK_FIX_STRATEGIES],
     )
     print(f"[KnowledgeBase] Fix strategies collection has {fix_col.count()} entries.")

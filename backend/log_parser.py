@@ -24,7 +24,7 @@ class AgentFailurePayload:
 
 def extract_task_sections(logs: str) -> List[ParsedTaskSection]:
     sections: List[ParsedTaskSection] = []
-    pattern = re.compile(r"^===== task_id=(.+?) =====\s*$", re.MULTILINE)
+    pattern = re.compile(r"^===== (?:task_id=)?(.+?) =====\s*$", re.MULTILINE)
     matches = list(pattern.finditer(logs))
 
     for index, match in enumerate(matches):

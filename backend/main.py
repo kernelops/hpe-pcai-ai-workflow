@@ -78,6 +78,14 @@ class LogSummaryResponse(BaseModel):
     confidence: str
 
 
+class DagInfo(BaseModel):
+    dag_id: str
+    description: Optional[str] = None
+    tags: List[str] = []
+    is_paused: bool = False
+    display_name: str
+
+
 class AgentOpsAnalyzeRequest(BaseModel):
     dag_id: str = AIRFLOW_DAG_ID
     run_id: str
@@ -586,6 +594,100 @@ def start_deployment(request: DeploymentStartRequest = DeploymentStartRequest())
         state=state,
         message=f"Airflow deployment started on {len(reachable_nodes)} worker nodes"
     )
+
+
+@app.get("/dags", response_model=List[DagInfo])
+def get_active_dags():
+    """
+    Fetch the list of currently active DAGs from Airflow API, with a fallback
+    to scanning the local DAG files if Airflow API is unreachable or returns empty.
+    """
+    dags = []
+    # Attempt to query Airflow's REST API
+    try:
+        with _airflow_client() as client:
+            resp = client.get("/api/v1/dags?only_active=true")
+            if resp.status_code == 200:
+                data = resp.json()
+                for dag_data in data.get("dags", []):
+                    dag_id = dag_data.get("dag_id")
+                    # Skip remediation_workflow to avoid manual triggers of healing
+                    if dag_id == "remediation_workflow":
+                        continue
+                    dags.append({
+                        "dag_id": dag_id,
+                        "description": dag_data.get("description"),
+                        "tags": [t.get("name") for t in dag_data.get("tags", []) if isinstance(t, dict)] if dag_data.get("tags") else [],
+                        "is_paused": dag_data.get("is_paused", False)
+                    })
+    except Exception as exc:
+        print(f"Warning: failed to fetch dags from Airflow API: {exc}")
+
+    # Fallback: scan local files
+    if not dags:
+        print("Falling back to local filesystem for DAG list...")
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        dags_dir = os.path.join(current_dir, "..", "airflow", "dags")
+        if not os.path.exists(dags_dir):
+            dags_dir = "airflow/dags"
+            
+        if os.path.exists(dags_dir):
+            for filepath in glob.glob(os.path.join(dags_dir, "*.py")):
+                filename = os.path.basename(filepath)
+                if filename in ("common_utils.py", "remediation_workflow.py", "__init__.py"):
+                    continue
+                dag_id = filename[:-3]  # remove .py
+                
+                # Attempt to extract metadata (description/tags) using regex
+                description = None
+                tags = []
+                try:
+                    with open(filepath, "r", encoding="utf-8") as f:
+                        content = f.read()
+                        
+                        desc_match = re.search(r'description\s*=\s*["\']([^"\']+)["\']', content)
+                        if desc_match:
+                            description = desc_match.group(1)
+                            
+                        tags_match = re.search(r'tags\s*=\s*\[([^\]]+)\]', content)
+                        if tags_match:
+                            raw_tags = tags_match.group(1)
+                            tags = [t.strip().strip('"\'') for t in raw_tags.split(",") if t.strip()]
+                except Exception as parse_err:
+                    print(f"Error parsing local DAG file {filename} for metadata: {parse_err}")
+                
+                dags.append({
+                    "dag_id": dag_id,
+                    "description": description,
+                    "tags": tags,
+                    "is_paused": False
+                })
+
+    # Map dag_id to user-friendly names
+    friendly_names = {
+        "deployment_workflow": "Software Deployment (Broken)",
+        "good_deployment_workflow": "Software Deployment (Healthy)",
+        "env_error_04_apparmor_block": "OS error: AppArmor Block",
+        "env_error_05_kvm_permission": "OS error: KVM Permission Denied"
+    }
+    
+    formatted_dags = []
+    for dag in dags:
+        dag_id = dag["dag_id"]
+        display_name = friendly_names.get(dag_id)
+        if not display_name:
+            # Derive title from dag_id
+            display_name = dag_id.replace("_", " ").title()
+            
+        formatted_dags.append(DagInfo(
+            dag_id=dag_id,
+            description=dag["description"],
+            tags=dag["tags"],
+            is_paused=dag["is_paused"],
+            display_name=display_name
+        ))
+        
+    return formatted_dags
 
 
 @app.get("/deployments/{run_id}/logs/{task_id}", response_model=DeploymentLogResponse)

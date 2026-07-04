@@ -72,8 +72,13 @@ def node_run_workflow(state: PipelineState) -> PipelineState:
     print("\n[Graph] ▶ Node: Run Workflow Agent")
     config = state["deployment_config"]
 
-    run_id = _run.trigger_dag_mock(config) if state["sample_log_path"] \
-             else _run.trigger_dag(config)
+    dag_id = config.dag_id
+    if (state.get("retry_count", 0) > 0 or state.get("current_attempt", 1) > 1) and state.get("dag_analysis_report") and state["dag_analysis_report"].corrected_source:
+        dag_id = "remediation_workflow"
+        print(f"[Graph] Verification run: Overriding DAG ID to '{dag_id}'")
+
+    run_id = _run.trigger_dag_mock(config, dag_id=dag_id) if state["sample_log_path"] \
+             else _run.trigger_dag(config, dag_id=dag_id)
 
     state["dag_run_id"]       = run_id
     state["pipeline_status"]  = "running" if run_id else "failed"
@@ -90,8 +95,12 @@ def node_monitor_workflow(state: PipelineState) -> PipelineState:
     run_id   = state["dag_run_id"]
     log_path = state["sample_log_path"]
 
+    dag_id = state["deployment_config"].dag_id
+    if (state.get("retry_count", 0) > 0 or state.get("current_attempt", 1) > 1) and state.get("dag_analysis_report") and state["dag_analysis_report"].corrected_source:
+        dag_id = "remediation_workflow"
+
     failure = _monitor.monitor_mock(run_id, log_path) if log_path \
-              else _monitor.monitor(run_id)
+              else _monitor.monitor(run_id, dag_id=dag_id)
 
     state["task_failure"]      = failure
     state["failure_detected"]  = failure is not None
@@ -141,12 +150,20 @@ def node_log_only(state: PipelineState) -> PipelineState:
 
 def node_dag_analysis(state: PipelineState) -> PipelineState:
     print("\n[Graph] 🔍 Node: DAG Analysis Agent")
-    report = _dag_ana.analyse("deployment_workflow.py")
+    dag_id = state["deployment_config"].dag_id if state.get("deployment_config") else "deployment_workflow"
+    dag_filename = "deployment_workflow.py"
+    if dag_id:
+        dag_filename = f"{dag_id}.py"
+    report = _dag_ana.analyse(dag_filename, dag_id=dag_id)
     state["dag_analysis_report"] = report
+    print("  ✅ LLM analysis completed successfully — generated corrected DAG code.")
     if report.has_dag_issues:
         print(f"  Found {len(report.issues)} DAG issue(s) — will attempt DAG patch")
     else:
         print("  DAG source is clean — will proceed to SSH healing")
+        if report.corrected_source:
+            print("  Writing clean DAG to remediation_workflow.py for verification run")
+            _dag_pat._write_dag(report.corrected_source)
     return state
 
 

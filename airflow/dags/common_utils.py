@@ -32,18 +32,13 @@ def create_airflow_connections(session=None, **context):
         username = node["username"]
         password = node.get("password", "")
         conn_id = f"worker_node_{ip.replace('.', '_')}"
-        existing = session.query(Connection).filter(Connection.conn_id == conn_id).first()
-        if existing:
-            existing.host = ip
-            existing.login = username
-            existing.password = password
-            existing.port = 22
-            session.commit()
-        else:
-            session.add(Connection(
-                conn_id=conn_id, conn_type="ssh", host=ip, login=username, password=password, port=22
-            ))
-            session.commit()
+        # Bulk delete first to prevent cryptography.fernet.InvalidToken on decryption
+        session.query(Connection).filter(Connection.conn_id == conn_id).delete(synchronize_session=False)
+        session.commit()
+        session.add(Connection(
+            conn_id=conn_id, conn_type="ssh", host=ip, login=username, password=password, port=22
+        ))
+        session.commit()
         conn_ids.append(conn_id)
     return conn_ids
 

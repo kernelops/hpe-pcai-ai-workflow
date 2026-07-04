@@ -109,37 +109,44 @@ Severity guide:
                   f"Severity: {report.severity}")
             return report
 
-        response = self.client.chat.completions.create(
-            model=GROQ_MODEL,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.1
-        )
+        try:
+            response = self.client.chat.completions.create(
+                model=GROQ_MODEL,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.1
+            )
 
-        raw = response.choices[0].message.content.strip()
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
+            raw = response.choices[0].message.content.strip()
+            if raw.startswith("```"):
+                raw = raw.split("```")[1]
+                if raw.startswith("json"):
+                    raw = raw[4:]
 
-        parsed = json.loads(raw.strip())
+            parsed = json.loads(raw.strip())
 
-        # Validate classification and severity
-        classification = parsed["classification"].lower()
-        severity       = parsed["severity"].lower()
+            # Validate classification and severity
+            classification = parsed["classification"].lower()
+            severity       = parsed["severity"].lower()
 
-        if classification not in VALID_CLASSIFICATIONS:
-            classification = "config"
-        if severity not in VALID_SEVERITIES:
-            severity = "high"
+            if classification not in VALID_CLASSIFICATIONS:
+                classification = "config"
+            if severity not in VALID_SEVERITIES:
+                severity = "high"
 
-        report = RootCauseReport(
-            error_report     = error_report,
-            root_cause       = parsed["root_cause"],
-            classification   = classification,
-            severity         = severity,
-            engineer_action  = parsed["engineer_action"]
-        )
+            report = RootCauseReport(
+                error_report     = error_report,
+                root_cause       = parsed["root_cause"],
+                classification   = classification,
+                severity         = severity,
+                engineer_action  = parsed["engineer_action"]
+            )
 
-        print(f"[RootCauseAgent] ✅ Root cause: {report.classification} | "
-              f"Severity: {report.severity}")
-        return report
+            print(f"[RootCauseAgent] ✅ Root cause: {report.classification} | "
+                  f"Severity: {report.severity}")
+            return report
+        except Exception as exc:
+            print(f"[RootCauseAgent] LLM analysis failed: {exc}, using fallback")
+            report = self._build_fallback_report(error_report)
+            print(f"[RootCauseAgent] ✅ Fallback root cause: {report.classification} | "
+                  f"Severity: {report.severity}")
+            return report
